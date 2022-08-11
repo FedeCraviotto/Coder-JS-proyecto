@@ -63,6 +63,8 @@ ul {
     list-style: none;
 }
 
+
+
 table {
     text-align: left;
     border: 1px solid black;
@@ -81,3 +83,6 @@ th, td {
     height: 100px;
 }
 
+td ul li {
+    background-color: #edead0;
+}

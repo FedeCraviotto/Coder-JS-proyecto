@@ -12,81 +12,215 @@
     <h2 class="title">Seleccioná una opción</h2>
     <div class="interacciones-container">
         <ul class="interacciones">
-            <li><button class="btn">Armar rutina</button></li>
-            <li><button class="btn">Anotar Repeticiones</button></li>
-            <li><button class="btn">Generar próxima sesión</button></li>
+            <li><button id="crearSesiones" class="btn">Crear Sesiones</button></li>
+            <li><button id="anotarRepeticiones" class="btn">Anotar Repeticiones</button></li>
+            <li><button id="generarProximaSesion" class="btn">Generar próxima sesión</button></li>
         </ul>
         <ul class="interacciones">
-            <li><button class="btn disabled">Modificar ejercicio</button></li>
-            <li><button class="btn disabled">Agregar ejercicio</button></li>
+            <li><button id="agregarEjercicio" class="btn">Agregar ejercicio</button></li>
+            <li><button id="eliminarEjercicio" class="btn">Eliminar ejercicio</button></li>
+            <li><button id="eliminarSesion" class="btn">Eliminar sesión</button></li>
+            <li><button id="borrarRutina" class="btn">Borrar rutina</button></li>
         </ul>
-        <ul class="interacciones">
-            <li><button class="btn disabled">Eliminar ejercicio</button></li>
-            <li><button class="btn disabled">Eliminar sesión</button></li>
-            <li><button class="btn disabled">Blanquear rutina</button></li>
     </div>
+    <div class="routine-container">
 
+    </div>
     
-    <table>
-        <caption>Rutina01 - Actual</caption>
-        <tr>
-            <th>Ejercicio</th>
-            <th>Cantidad de Series</th>
-            <th>Rangos de Repeticiones</th>
-            <th>Pesos</th>
-        </tr>
-        <tr>
-            <td>Jalon Unilateral</td>
-            <td>3</td>
-            <td>8-12 8-12 10-15</td>
-            <td>40 50 40</td>
-        </tr>
-        <tr>
-            <td>Remo con barra</td>
-            <td>2</td>
-            <td>8-12 10-15</td>
-            <td>50 40</td>
-        </tr>
-        <tr>
-            <td>Pecho inclinado manc</td>
-            <td>3</td>
-            <td>8-12 8-12 10-15</td>
-            <td>40 50 40</td>
-        </tr>
-    </table>    
-
-    <table>
-        <caption>Rutina01 - Próxima Semana</caption>
-        <tr>
-            <th>Ejercicio</th>
-            <th>Cantidad de Series</th>
-            <th>Rangos de Repeticiones</th>
-            <th>Pesos</th>
-        </tr>
-        <tr>
-            <td>Jalon Unilateral</td>
-            <td>3</td>
-            <td>8-12 8-12 10-15</td>
-            <td>40 50 40</td>
-        </tr>
-        <tr>
-            <td>Remo con barra</td>
-            <td>2</td>
-            <td>8-12 10-15</td>
-            <td>50 40</td>
-        </tr>
-        <tr>
-            <td>Pecho inclinado manc</td>
-            <td>3</td>
-            <td>8-12 8-12 10-15</td>
-            <td>40 50 40</td>
-        </tr>
-    </table>    
+    
     <script src="app.js">
-
     </script>
+
+
+
+
+
     <script>
+        //Para que al ingresar, si hay storage, renderice la tabla.
+        crearTablas()
+    
+        // CALLBACK - Solo renderiza las tablas.
+        // No modifica el array rutina. No borra.
+        function crearTablas() {
+            const routineContainer = document.querySelector('.routine-container');
+            
+            rutina.forEach((sesion, i) => {
+            const tablaDeSesion = document.createElement('table')
+            tablaDeSesion.innerHTML = `
+            <caption>${sesion.nombre}</caption>
+                <tr>
+                    <th>Ejercicio</th>
+                    <th>Cantidad de Series</th>
+                    <th>Series Base</th>
+                    <th>Pesos Anteriores</th>
+                    <th>Series Realizadas</th>
+                    <th>Proximas Series</th>
+                    <th>Proximos Pesos</th>
+                </tr>
+                    `;
+                    
+                    sesion.ejercicios.forEach((ejercicio, indice) => {
+                        let seriesBaseUnidas = ejercicio.seriesBase.map(serie => serie.join(" - "));
+                        let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
+                        let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
+                        let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ")
+                        let proximasSeriesUnidas = ejercicio.proximasSeries.map(serie => serie.join(" - "))
 
+                        let seriesBaseTD = document.createElement('td')
+                        let seriesBaseUL = document.createElement('ul')
+                        ejercicio.seriesBase.forEach((serie, i) => {
+                            let seriesBaseLI = document.createElement('li')
+                            seriesBaseLI.innerText = serie
+                            seriesBaseUL.append(seriesBaseLI);
+                        })
+                        seriesBaseTD.append(seriesBaseUL)
+
+                        let proximasSeriesTD = document.createElement('td')
+                        let proximasSeriesUL = document.createElement('ul')
+                        ejercicio.proximasSeries.forEach((serie, i) => {
+                            let proximasSeriesLI = document.createElement('li')
+                            proximasSeriesLI.innerText = serie
+                            proximasSeriesUL.append(proximasSeriesLI);
+                        })
+                        proximasSeriesTD.append(proximasSeriesUL)
+
+                        const nuevoEjercicio = document.createElement('tr')
+                        nuevoEjercicio.innerHTML = `
+                        <td>${ejercicio.nombre}</td>
+                        <td>${ejercicio.seriesBase.length}</td>
+                        <td>${ultimosPesosUnidos}</td>
+                        <td>${seriesRealizadasUnidas}</td>
+                        <td>${proximosPesosUnidos}</td>`
+                        nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
+                        nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
+                        tablaDeSesion.append(nuevoEjercicio)
+                        
+                    })
+                    tablaDeSesion.id ="sesion" + (i+1)
+                    routineContainer.append(tablaDeSesion);
+                });
+            };
+
+            // Modifica rutina, guarda el storage, vuelve a renderizar.
+            function agregarEjercicio() {
+                pedirSesion();
+                obtenerIndice();
+                let nombreEjercicio = prompt('Ingresa el nombre del ejercicio a agregar')
+
+                let cantidadSeries = parseInt(prompt('¿Cuantas series de este ejercicio vas a querer hacer por sesión?.\nIngresá un número'));
+                let arrayBases = []
+                for(let i=1; i<=cantidadSeries; i++) {
+
+                    let rangoRepeticionesPorSerie = prompt('Ingresá los rangos para cada serie.\nRecordá: primero el mínimo de repeticiones, luego un espacio, y luego el máximo de repeticiones\nRepsMínimas-espacio-RepsMáximas');
+                    let arrayRangoReps = rangoRepeticionesPorSerie.split(' ').map((string) => {
+                        return parseInt(string);
+                    })
+                
+                    arrayBases.push(arrayRangoReps);
+                }
+                let pedirPesos = prompt('Ingresá todos los pesos iniciales para cada serie del ejercicio\nRecordá ingresarlo así: peso-espacio-peso');
+                let arrayDePesos = pedirPesos.split(' ').map((string) => {
+                    return parseInt(string);
+                })
+
+                rutina[numeroDeSesionIngresada].ejercicios.push(
+                    {
+                    nombre:nombreEjercicio,
+                    seriesBase:[arrayBases],
+                    seriesRealizadas:[],
+                    ultimosPesos:[],
+                    proximosPesos: [arrayDePesos],
+                    proximasSeries:[]
+                    });
+
+                localStorage.setItem('rutina', JSON.stringify(rutina));
+                reemplazarSesiones();
+            };
+            
+
+            // CALLBACK
+            //Borra visualmente, y renderiza de nuevo todas las tablas.
+            function reemplazarSesiones() {
+                borrarTablas()
+                crearTablas()
+            }
+            
+            //Borra 1 ejercicio del array. Actualiza storage. Renderiza.
+            function eliminarEjercicio() {
+                pedirSesion();
+                obtenerIndice();
+                pedirEjercicio();
+                obtenerIndiceEjercicio();
+                rutina[numeroDeSesionIngresada].ejercicios.splice(numeroDeEjercicioIngresado, 1);
+                localStorage.setItem('rutina', JSON.stringify(rutina));
+                reemplazarSesiones();
+            };
+
+            //Borra 1 sesion del array. Actualiza storage. Renderiza
+            function eliminarSesion() {
+                pedirSesion ();
+                obtenerIndice();
+                rutina.splice(numeroDeSesionIngresada, 1);
+                localStorage.setItem('rutina', JSON.stringify(rutina));
+                reemplazarSesiones();
+            };
+            
+            //Borra del array. Actualiza storage. No renderiza
+            function borrarRutina() {
+                rutina = [];
+                localStorage.removeItem('rutina');
+                borrarTablas();            
+            };
+                        // NO BUTTON - CALLBACK  de borrarRutina()
+            //Solamente borra visualmente las tablas.
+            function borrarTablas() {
+                const todasLasTablas = document.querySelectorAll('table');
+                todasLasTablas.forEach((table) => {
+                    table.remove()
+                });
+            }
+
+
+            ///////////////// EVENTOS
+            //Button
+            const btncrearSesiones = document.querySelector('#crearSesiones')
+            btncrearSesiones.addEventListener('click', ()=> {
+                crearSesiones();
+            })
+            
+            const btnAnotarRepeticiones = document.querySelector('#anotarRepeticiones');
+            btnAnotarRepeticiones.addEventListener('click', () => {
+                anotarRepeticiones();
+            })
+            
+            const btngenerarProximaSesion = document.querySelector('#generarProximaSesion');
+            btngenerarProximaSesion.addEventListener('click', () => {
+                generarProximaSesion();
+            })
+            
+            const btnAgregarEjercicio = document.querySelector('#agregarEjercicio');
+            btnAgregarEjercicio.addEventListener('click', () => {
+                agregarEjercicio();
+            })
+
+            
+            
+            const btnEliminarEjercicio = document.querySelector('#eliminarEjercicio');
+            btnEliminarEjercicio.addEventListener('click', () => {
+                eliminarEjercicio();
+            })
+            
+            const btnEliminarSesion = document.querySelector('#eliminarSesion');
+            btnEliminarSesion.addEventListener('click', () => {
+                eliminarSesion();
+            })
+            
+            const btnborrarRutina = document.querySelector('#borrarRutina');
+            btnborrarRutina.addEventListener('click', () => {
+                borrarRutina();
+            })
+            // bold a proxima serie. Y crear ejercicio.
     </script>
+
 </body>
 </html>
