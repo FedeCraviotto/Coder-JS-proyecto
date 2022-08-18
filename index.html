@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>SimpleRoutine - FNC C-37520 - CoderHouse</title>
+    <title>RutinApp - FNC C-37520 - CoderHouse</title>
 </head>
 <body>
 
     
-    <h1 class="title">Vladimir Routine</h1>
+    <h1 class="title">RutinApp</h1>
     <h2 class="title">Seleccioná una opción</h2>
     <div class="interacciones-container">
         <ul class="interacciones">
@@ -35,17 +35,19 @@
         </ul>
     </div>
     <ul id="aboutCuadro" class="hidden">
-        <li>Esta aplicación fue creada para ser destinada a personas con una rutina de ejercicios n cantidad de días a la semana</li>
-        <li>Comenzamos con "Crear Sesiones". Este botón va a pedir una gran cantidad de información, que deberá ser ingresada de cierta manera específica señalada en los prompts paso a paso, y luego renderizará una tabla por cada sesión, con el nombre de cada ejercicio, y otros datos que se explican a continuación</li>
-        <li>Cantidad de Series: cuantas veces por día vas a realizar ese ejercicio, cierta cantidad de veces (o repeticiones) de manera ininterrumpida, pero separada entre serie y serie. </li>
-        <li>Series base: son rangos con un número mínimo y otro máximo, de repeticiones de cierto ejercicio. Supongamos que queremos hacer sentadillas, vamos a poner el objetivo de -por ejemplo- hacer entre 6 y 9 sentadillas para la primera serie, entre 7 y 10 repeticiones más para la segunda serie, y entre 5 y 7 para la tercera serie.</li>
-        <li>Próximos Pesos: van a ser los pesos que va a levantar en cada serie de cada ejercicio. Cada peso corresponde a una serie. Van a haber tantos pesos como series haya.</li>
-        <li>La persona luego de Crear Sesiones va a poder ir a entrenar ya con estos 3 datos: Nombre del Ejercicio, para saber cual tiene que hacer, cantidad de Series por ejercicio, y cuantos pesos va a tener que levantar en cada serie.</li>
-        <li>Generalmente mientras entrenamos anotamos las repeticiones realizadas en cada serie, para luego comparar las repeticiones Realizadas, con las series Base objetivos, y si superamos el máximo de series base, el proximo peso para esa sesión va a incrementarse en 5 kilos. Sino, se va a mantener el peso porque va a querer decir que todavía no estamos en condiciones de levantar mas peso.</li>
-        <li>Al volver de entrenar va a poder anotar las repeticiones de toda la sesión (Anotar Reps Sesion), o va a poder anotar las repeticiones de 1 solo ejercicio (Anotar Reps x1)</li>
-        <li>Luego de anotar las repeticiones, generalmente antes de iniciar la semana y habiendo anotado todas las repeticiones realizadas de todos los ejercicios y de todas las series, por fin, la persona va a poder tocar en "Próxima Sesion" para tener en la tabla los Proximos Pesos y las Proximas Series, para poder encarar el entrenamiento de la semana entrante.</li>
-        <li>De la misma manera que va a poder realizar este procedimiento para la sesión entera, el usuario va a tener la opción de agregar un ejercicio en caso de haberse olvidado (+Ejercicio), va a poder agregar una nueva sesión entera (+Sesion), y va a poder tanto anotar las repeticiones unicamente de ese ejercicio (Anotar Reps x1), como así también generar los próximos pesos y repeticiones para la semana que viene SOLAMENTE para ese ejercicio si así lo deseare (Prox Sesion x1)</li>
-        <li>Además, va a poder borrar sesiones y ejercicios (-Sesion y -Ejercicios), así como borrar el Storage Local de la rutina entera (Borrar Rutina)</li>
+        <li>Esta aplicación está destinada a aquellos usuarios con una rutina de entrenamiento semanal</li>
+        <li>Resuelve el problema de determinar el objetivo semana tras semana, respecto a tener que calcular la cantidad de repeticiones y los pesos a levantar en cada ejercicio.</li>
+        <li>Para comenzar, podemos hacer click en "+Sesión", para crear una nueva sesión de entrenamiento. Este botón va a pedir una gran cantidad de información, que deberá ser ingresada de la manera solicitada en cada ventana a medida que vayan progresando en el armado de la sesión, y al finalizar, renderizará la tabla correspondiente para esa sesión de entrenamiento, con el nombre de la sesión, el nombre de cada ejercicio, y otros datos que se explican a continuación.</li>
+        <li>Series base: son rangos -con un número mínimo y otro máximo- de repeticiones de cierto ejercicio. Supongamos que queremos hacer sentadillas, vamos a poner el objetivo de -por ejemplo- hacer entre 6 y 9 sentadillas para la primera serie, entre 7 y 10 repeticiones más para la segunda serie, y entre 5 y 7 para la tercera serie.</li>
+        <li>Cantidad de Series: refiere a la cantidad de veces que vas a realizar ese ejercicio, ese día específico (es decir en esa sesión de entrenamiento específica). En el ejemplo anterior, vamos a hacer 3 series del ejercicio "Sentadillas"</li>
+        <li>Próximos Pesos: van a ser los pesos que el usuario a levantar en cada serie de cada ejercicio. Cada peso corresponde a una serie. Siguiendo con nuestro ejemplo, podría anotar que para la primera serie de "Sentadilla" voy a manejar un peso de 60kg. Para la segunda y la tercera serie, voy a realizar las repeticiones manejando un peso de 65kg.</li>
+        <li>Luego de completar el procedimiento para crear una sesión (luego de clickear en "+Sesion") la idea es que el usuario vaya a entrenar con los datos necesarios para encarar esa sesión de entrenamiento. Esos datos -que van a aparecer en la tabla- son: Nombre del Ejercicio, para saber cual va a tener que hacer; Series Base, para saber cuantas series tiene que realizar de cada ejercicio y cuantas son las repeticiones objetivo para cada serie; y "Proximos Pesos", para saber qué pesos va a tener que manejar en cada serie.</li>
+        <li>Si el usuario se olvidó de agregar un ejercicio al momento de crear la sesión de entrenamiento, va a poder agregarlo clickeando en "+Ejercicio".</li>
+        <li>De la misma manera, va a poder eliminar fácilmente toda una sesión, o un ejercicio en particular, e incluso todas las sesiones, haciendo click en "-Sesion", "-Ejercicio", y en "Borrar Rutina", respectivamente.</li>
+        <li>Generalmente mientras el usuario entrena anota las repeticiones realizadas en cada serie, para luego comparar las Repeticiones Realizadas con las Series Base que estableció como objetivo. De acuerdo a las series base, entonces, si superamos el rango de repeticiones máximo, el proximo peso para esa serie va a incrementarse en 5 kilos. Caso contrario, para la próxima sesión se va a mantener ese peso, dado que la persona no alcanzó el objetivo de repeticiones a realizar para esa serie en particular.</li>
+        <li>El usuario, al volver de entrenar, va a poder anotar las repeticiones de toda la sesión clickeando en "Anotar Reps Sesion". También va a poder optar por anotar las repeticiones de 1 solo ejercicio clickeando en "Anotar Reps x1". Esto puede ser de utilidad en caso de querer agregar un ejercicio a cierta sesión en particular, ya habiendo anotado las repeticiones realizadas del resto de los ejercicios, y luego teniendo que anotar las series realizadas para ese último ejercicio agregado.</li>
+        <li>Luego de anotar las repeticiones, el usuario va a poder hacer click en "Próxima Sesion" para actualizar los valores de la tabla, y poder tener acceso a los nuevos "Proximos Pesos" y "Proximas Series" para  encarar el entrenamiento de la semana entrante. Además, al igual que podría suceder al momento de anotar repeticiones realizadas, el usuario va a poder generar los valores actualizados -para la semana entrante- de un solo ejercicio en particular (clickeando en Prox Sesion x1). </li>
+        <li><strong>La aplicación está todavía por optimizar, tanto a nivel responsive, como funcionalmente, y respecto la prolijidad del código</strong></li>
     </ul>
 
 <div class="modal-container container-hidden">
