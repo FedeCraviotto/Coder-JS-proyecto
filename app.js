@@ -6,6 +6,11 @@ if (localStorage.getItem('rutina')){
     rutina = [];
 }
 
+const bodyElem = document.querySelector('body');
+const darkmodeCheckbox = document.querySelector('#darkmode-toggle');
+darkmodeCheckbox.addEventListener('change', () => {
+        bodyElem.classList.toggle("darkBC");
+})
 
 const aboutCuadro = document.querySelector('#aboutCuadro');
 const btnAbout = document.querySelector('.btn-about');
