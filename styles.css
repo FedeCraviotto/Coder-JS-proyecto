@@ -140,7 +140,7 @@ a {
     text-decoration: none;
 }
 
-h1 {
+h1 span{
     font-size: 20px;
 }
 
@@ -319,4 +319,9 @@ input {
 .close:hover {
     color: #36453B;;
     background-color: #a0e8af;
+}
+
+.introTT {
+    background-color: #242424;
+    line-height: 1.5;
 }

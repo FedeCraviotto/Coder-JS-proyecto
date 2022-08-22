@@ -898,7 +898,10 @@ $('#darkmode-toggle').change(() => {
 })
 //EVENTOS - Panel Principal
 $('.btn-about').click(() => {
-    $('#aboutCuadro').hasClass('hidden')?$('#aboutCuadro').removeClass('hidden'): $('#aboutCuadro').addClass('hidden')
+    introJs().setOptions({
+        disableInteraction: true,
+        exitOnOverlayClick: false,
+      }).start();
 })
 
 $('.btn-anotarRepsSesion').click(() => {
@@ -936,3 +939,11 @@ $('.btn-borrarRutina').click(() => {
 $('.btn-agregarSesion').click(() => {
     agregarSesion()
 });
+
+//Sweet Alert
+Swal.fire({
+    title: 'Bienvenido',
+    text: 'Tocá "Explicación" para más info sobre la App',
+    icon: 'info',
+    confirmButtonText: 'OK',
+  })
