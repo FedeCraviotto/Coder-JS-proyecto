@@ -1,74 +1,49 @@
-let rutina;
-if (localStorage.getItem('rutina')){
-    rutina = JSON.parse(localStorage.getItem('rutina'));
-    crearTablas()
-} else {
-    rutina = [];
-}
+let rutina = JSON.parse(localStorage.getItem('rutina')) || []
+crearTablas()
 
-const bodyElem = document.querySelector('body');
-const darkmodeCheckbox = document.querySelector('#darkmode-toggle');
-darkmodeCheckbox.addEventListener('change', () => {
-        bodyElem.classList.toggle("darkBC");
+//Darkmode
+$('#darkmode-toggle').change(() => {
+    $('body').toggleClass("darkBC");
+})
+//EVENTOS - Panel Principal
+$('.btn-about').click(() => {
+    $('#aboutCuadro').hasClass('hidden')?$('#aboutCuadro').removeClass('hidden'): $('#aboutCuadro').addClass('hidden')
 })
 
-const aboutCuadro = document.querySelector('#aboutCuadro');
-const btnAbout = document.querySelector('.btn-about');
-btnAbout.addEventListener('click', () => {
-    if (aboutCuadro.classList.contains('hidden')) {
-        aboutCuadro.classList.remove('hidden')
-    } else {
-        aboutCuadro.classList.add('hidden')
-    }
-})
-
-const btnAnotarRepsSesion = document.querySelector('.btn-anotarRepsSesion');
-btnAnotarRepsSesion.addEventListener('click', () => {
+$('.btn-anotarRepsSesion').click(() => {
         anotarRepeticionesDeTodaUnaSesion();
 })
 
-const btngenerarProximaSesion = document.querySelector('.btn-generarProximaSesion');
-btngenerarProximaSesion.addEventListener('click', () => {
+$('.btn-generarProximaSesion').click(() => {
     generarProximaSesionCompleta();
-    
 })
 
-const btnGenerarProximaSesionx1 = document.querySelector('.btn-generarProximaSesionx1');
-btnGenerarProximaSesionx1.addEventListener('click', () => {
+$('.btn-generarProximaSesionx1').click(() => {
     generarProximaSesionUnicoEjercicio();
 })
 
-
-const btnAgregarEjercicio = document.querySelector('.btn-agregarEjercicio');
-btnAgregarEjercicio.addEventListener('click', () => {
+$('.btn-agregarEjercicio').click(() => {
     agregarEjercicio();
 });
 
-
-const btnAnotarRepsx1 = document.querySelector('.btn-anotarRepsx1');
-btnAnotarRepsx1.addEventListener('click', () => {
+$('.btn-anotarRepsx1').click(() => {
     anotarRepsSoloUno();
 })
 
 
-const btnEliminarEjercicio = document.querySelector('.btn-eliminarEjercicio');
-btnEliminarEjercicio.addEventListener('click', () => {
+$('.btn-eliminarEjercicio').click(() => {
     eliminarEjercicio();
 })
 
-const btnEliminarSesion = document.querySelector('.btn-eliminarSesion');
-btnEliminarSesion.addEventListener('click', () => {
+$('.btn-eliminarSesion').click(() => {
     eliminarSesion();
 })
 
-const btnBorrarRutina = document.querySelector('.btn-borrarRutina');
-btnBorrarRutina.addEventListener('click', () => {
+$('.btn-borrarRutina').click(() => {
     borrarRutina();
 })
 
-
-const botonAgregarSesion = document.querySelector('.btn-agregarSesion');
-botonAgregarSesion.addEventListener('click', () => {
+$('.btn-agregarSesion').click(() => {
     agregarSesion()
 });
 
@@ -78,41 +53,16 @@ let nombreDeEjercicioIngresado = "";
 let numeroDeEjercicioIngresado = 0;
 let modalContainer = document.querySelector('.modal-container')
 let modalPadre = document.querySelector('.modal')
-
-// Le pongo valor 2 para probar, tiene que quedar sin inicializar
-
-// let nuevaSesion ={
-//     nombre:"Lunes",
-//     ejercicios: [
-//         { 
-//             nombre:"Jalon",
-//             seriesBase:[[8,12], [8,12]],
-//             seriesRealizadas:[],
-//             ultimosPesos:[],
-//             proximosPesos: [30, 35],
-//             proximasSeries:[]
-//         },
-//         { 
-//             nombre:"Remo",
-//             seriesBase:[[6,9], [6,9], [7,10]],
-//             seriesRealizadas:[],
-//             ultimosPesos:[],
-//             proximosPesos: [40, 55, 60],
-//             proximasSeries:[]
-//         }
-//     ]
-// };
-// let cantidadEjercicios = 2;
-
 let cantidadEjercicios;
 let nuevaSesion;
+let nuevoEjercicio;
+
 let btnContinuar1;
 let btnContinuar2;
 let btnContinuar3;
 let btnContinuar4;
 let btnContinuar5;
 let btnContinuar6;
-let nuevoEjercicio;
 
 function agregarBotonClose () {
     let botonClose = document.createElement('button');
