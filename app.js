@@ -30,7 +30,6 @@ $('.btn-anotarRepsx1').click(() => {
     anotarRepsSoloUno();
 })
 
-
 $('.btn-eliminarEjercicio').click(() => {
     eliminarEjercicio();
 })
@@ -51,8 +50,6 @@ let nombreDeSesionIngresado = "";
 let numeroDeSesionIngresada = 0;
 let nombreDeEjercicioIngresado = "";
 let numeroDeEjercicioIngresado = 0;
-let modalContainer = document.querySelector('.modal-container')
-let modalPadre = document.querySelector('.modal')
 let cantidadEjercicios;
 let nuevaSesion;
 let nuevoEjercicio;
@@ -97,13 +94,11 @@ function agregarBotonClose () {
             $('.modal').addClass('modal-close');}, 100)
         //Pantalla gris
         setTimeout(function(){
-            modalContainer.classList.toggle('container-hidden');}, 400)
+            $('.modal-container').toggleClass('container-hidden');}, 400)
             nuevaSesion = undefined;
             $('.modal').html("")
     }) 
 }
-
-
 
 function agregarSesion() {
     let nuevoParrafo1 = document.createElement('p');
@@ -120,7 +115,7 @@ function agregarSesion() {
     $('.modal').append(nuevoParrafo1, nuevoInput1, nuevoParrafo2, nuevoInput2, btnContinuar1)
     //Pantalla gris
     setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
         $('.modal').removeClass('modal-close');}, 600)
@@ -281,7 +276,7 @@ function agregarSesion() {
                 setTimeout(function(){
                     $('.modal').toggleClass('modal-close');
                     setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
+                        $('.modal-container').toggleClass('container-hidden');
                     }, 300)
                 }, 300)
                 
@@ -311,7 +306,7 @@ function agregarEjercicio() {
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
     //Pantalla gris
     setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
         $('.modal').removeClass('modal-close');}, 600)
@@ -467,7 +462,7 @@ function agregarEjercicio() {
                         setTimeout(function(){
                             $('.modal').toggleClass('modal-close');
                             setTimeout(function(){
-                                modalContainer.classList.toggle('container-hidden');
+                                $('.modal-container').toggleClass('container-hidden');
                             }, 300)
                         }, 300)
                         
@@ -495,7 +490,7 @@ function anotarRepeticionesDeTodaUnaSesion() {
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
     //Pantalla gris
     setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
         $('.modal').removeClass('modal-close');}, 300)
@@ -556,7 +551,7 @@ function anotarRepeticionesDeTodaUnaSesion() {
                 setTimeout(function(){
                     $('.modal').toggleClass('modal-close');
                     setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
+                        $('.modal-container').toggleClass('container-hidden');
                     }, 300)
                 }, 300)
                 console.log(rutina)
@@ -578,7 +573,7 @@ function anotarRepsSoloUno() {
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1) //Append
     setTimeout(function(){ //Pantalla gris
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Click en Continuar
@@ -651,7 +646,7 @@ function anotarRepsSoloUno() {
                         setTimeout(function(){
                             $('.modal').toggleClass('modal-close');
                             setTimeout(function(){
-                                modalContainer.classList.toggle('container-hidden');
+                                $('.modal-container').toggleClass('container-hidden');
                             }, 300)
                         }, 300)
                         localStorage.setItem('rutina', JSON.stringify(rutina));
@@ -673,7 +668,7 @@ function generarProximaSesionUnicoEjercicio() {
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
     setTimeout(function(){ //Pantalla gris
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { // Continuar
@@ -726,7 +721,7 @@ function generarProximaSesionUnicoEjercicio() {
                     setTimeout(function(){
                         $('.modal').toggleClass('modal-close');
                         setTimeout(function(){
-                            modalContainer.classList.toggle('container-hidden');
+                            $('.modal-container').toggleClass('container-hidden');
                         }, 300)
                     }, 300)
                 equipararUltimosPesosConProximosUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
@@ -749,7 +744,7 @@ function generarProximaSesionCompleta() {
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
     setTimeout(function(){ //Pantalla gris
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { // Continuar
@@ -779,7 +774,7 @@ function generarProximaSesionCompleta() {
             setTimeout(function(){
                 $('.modal').toggleClass('modal-close');
                 setTimeout(function(){
-                    modalContainer.classList.toggle('container-hidden');
+                    $('.modal-container').toggleClass('container-hidden');
                 }, 300);
             }, 300);
 
@@ -802,7 +797,7 @@ function eliminarEjercicio() {
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
     setTimeout(function(){ //Pantalla gris
-        modalContainer.classList.toggle('container-hidden');}, 300)
+        $('.modal-container').toggleClass('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Continuar
@@ -854,7 +849,7 @@ function eliminarEjercicio() {
                 setTimeout(function(){
                     $('.modal').toggleClass('modal-close');
                     setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
+                        $('.modal-container').toggleClass('container-hidden');
                     }, 300);
                 }, 300);
                 
@@ -868,20 +863,16 @@ function eliminarEjercicio() {
 };
 
 function eliminarSesion() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
     nuevoParrafo1.textContent = `Ingrese el nombre de sesion a eliminar`
     nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
     agregarBotonClose()
-    // Creo el boton y lo agrego
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Pantalla gris
+        $('.modal-container').toggleClass('container-hidden');}, 300)
+    setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
@@ -902,12 +893,12 @@ function eliminarSesion() {
         setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
         setTimeout(function(){ //Baja el modal
-            $('.modal').classList.toggleClass('modal-close');}, 300)
+            $('.modal').toggleClass('modal-close');}, 300)
             btnContinuar2.addEventListener('click', () => { // Continuar 
                 setTimeout(function(){
                     $('.modal').toggleClass('modal-close');
                     setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
+                        $('.modal-container').toggleClass('container-hidden');
                     }, 300)
                 }, 300)
             rutina.splice(numeroDeSesionIngresada, 1);
@@ -947,8 +938,8 @@ function actualizarSeries(num) {
                 nuevasSeries.push(ejercicio.seriesBase[i]);
             } else {
                 let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie);
-                nuevoRangoDeSeries.push(ejercicio.seriesBase[i][1]);
+                nuevoRangoDeSeries.push(serie, ejercicio.seriesBase[i][1]);
+                // nuevoRangoDeSeries.push(ejercicio.seriesBase[i][1]);
                 nuevasSeries.push(nuevoRangoDeSeries);
             }
         })
@@ -979,8 +970,8 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
                 nuevasSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i]);
             } else {
                 let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie);
-                nuevoRangoDeSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
+                nuevoRangoDeSeries.push(serie, rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
+                // nuevoRangoDeSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
                 nuevasSeries.push(nuevoRangoDeSeries);
             }
         })
