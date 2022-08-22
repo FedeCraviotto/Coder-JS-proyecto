@@ -1,51 +1,7 @@
 let rutina = JSON.parse(localStorage.getItem('rutina')) || []
 crearTablas()
 
-//Darkmode
-$('#darkmode-toggle').change(() => {
-    $('body').toggleClass("darkBC");
-})
-//EVENTOS - Panel Principal
-$('.btn-about').click(() => {
-    $('#aboutCuadro').hasClass('hidden')?$('#aboutCuadro').removeClass('hidden'): $('#aboutCuadro').addClass('hidden')
-})
-
-$('.btn-anotarRepsSesion').click(() => {
-        anotarRepeticionesDeTodaUnaSesion();
-})
-
-$('.btn-generarProximaSesion').click(() => {
-    generarProximaSesionCompleta();
-})
-
-$('.btn-generarProximaSesionx1').click(() => {
-    generarProximaSesionUnicoEjercicio();
-})
-
-$('.btn-agregarEjercicio').click(() => {
-    agregarEjercicio();
-});
-
-$('.btn-anotarRepsx1').click(() => {
-    anotarRepsSoloUno();
-})
-
-$('.btn-eliminarEjercicio').click(() => {
-    eliminarEjercicio();
-})
-
-$('.btn-eliminarSesion').click(() => {
-    eliminarSesion();
-})
-
-$('.btn-borrarRutina').click(() => {
-    borrarRutina();
-})
-
-$('.btn-agregarSesion').click(() => {
-    agregarSesion()
-});
-
+// Variables
 let nombreDeSesionIngresado = ""; 
 let numeroDeSesionIngresada = 0;
 let nombreDeEjercicioIngresado = "";
@@ -59,7 +15,6 @@ let btnContinuar3;
 let btnContinuar4;
 let btnContinuar5;
 let btnContinuar6;
-
 /*Btn Create Functions */
 function crearBtn1Continuar () {
     btnContinuar1 = document.createElement('button');
@@ -87,19 +42,16 @@ function agregarBotonClose () {
     botonClose.setAttribute('class', 'btn close');
     botonClose.textContent = 'X';
     $('.modal').append(botonClose);
-    $('.close').click(() => {
-        //Setea la sesión a cero
-        //Sube el modal
-        setTimeout(function(){
+    $('.close').click(() => { 
+        setTimeout(function(){ //Sube el modal
             $('.modal').addClass('modal-close');}, 100)
-        //Pantalla gris
-        setTimeout(function(){
+        setTimeout(function(){ //Pantalla gris
             $('.modal-container').toggleClass('container-hidden');}, 400)
             nuevaSesion = undefined;
             $('.modal').html("")
     }) 
 }
-
+// Funciones Core
 function agregarSesion() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -110,18 +62,13 @@ function agregarSesion() {
     nuevoParrafo2.textContent = 'Ingrese la cantidad de ejercicios para esta sesion';
     nuevoInput2.setAttribute('id',`input-cantidadDeEjercicios`)
     agregarBotonClose();
-    // Creo el boton y lo agrego
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, nuevoParrafo2, nuevoInput2, btnContinuar1)
-    //Pantalla gris
-    setTimeout(function(){
+    setTimeout(function(){ //Pantalla gris
         $('.modal-container').toggleClass('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Baja el modal
         $('.modal').removeClass('modal-close');}, 600)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
+    btnContinuar1.addEventListener('click', () => { // Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesion');
         console.log(nombreSesionPorInput.value);
         nuevaSesion ={
@@ -130,7 +77,7 @@ function agregarSesion() {
         };
         let cantidadEjerciciosPorInput = document.getElementById('input-cantidadDeEjercicios');
         cantidadEjercicios = parseInt(cantidadEjerciciosPorInput.value);
-        $('.modal').html(""); //Creo los inputs y los agrego
+        $('.modal').html(""); //Blanqueo
         agregarBotonClose()
         for (let i=1; i<=cantidadEjercicios; i++) {
         let nuevoParrafo = document.createElement('p');
@@ -139,22 +86,17 @@ function agregarSesion() {
         nuevoParrafo.textContent = `Ingrese el nombre para el ejercicio ${i}`
         $('.modal').append(nuevoParrafo, nuevoInput)
         } 
-        // Creo el boton y lo agrego
         crearBtn2Continuar()
         $('.modal').append(btnContinuar2);
-    
-    //Sube el modal
-    setTimeout(function(){
-        $('.modal').toggleClass('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        $('.modal').toggleClass('modal-close');}, 300);
-    
-    btnContinuar2.addEventListener('click', () => {
+        setTimeout(function(){ //Sube el modal
+            $('.modal').toggleClass('modal-close');})
+        setTimeout(function(){ //Baja el modal
+            $('.modal').toggleClass('modal-close');}, 300);
+    btnContinuar2.addEventListener('click', () => { // Continuar
         for (let i=1; i<=cantidadEjercicios; i++) {
         const inputValue = document.getElementById(`inputNombreEjercicio${i}`)            
         nuevaSesion.ejercicios.push(
-            { //Se agregan los datos a la nuevaSesion
+            {
                 nombre:inputValue.value,
                 seriesBase:[],
                 seriesRealizadas:[],
@@ -164,8 +106,7 @@ function agregarSesion() {
             }
             );
         }      
-    //Blanqueo el modal
-    $('.modal').html("")
+    $('.modal').html("") //Blanqueo el modal
     agregarBotonClose()
     for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
         let nuevoParrafo = document.createElement('p');
@@ -176,27 +117,21 @@ function agregarSesion() {
         }
         crearBtn3Continuar()
         $('.modal').append(btnContinuar3);  
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Baja el modal
             $('.modal').toggleClass('modal-close');}, 300)
-            btnContinuar3.addEventListener('click', () => {
+            btnContinuar3.addEventListener('click', () => { // Continuar
                 for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
                     const inputValue = parseInt(document.getElementById(`inputCantidadDeSeriesEjercicio${i+1}`).value)        
                     for (let j=1; j<=inputValue; j++) {
                         nuevaSesion.ejercicios[i].seriesBase.push([]);
                     }
                 }
-                    
-                    
-        //Blanqueo el modal
-        $('.modal').html("")
+        $('.modal').html("") //Blanqueo el modal
         agregarBotonClose()
         for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
             for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                //Por cada serie creo los input para reps min/max
                 let nuevoParrafoMin = document.createElement('p');
                 let nuevoInputMin = document.createElement('input');
                 let nuevoParrafoMax = document.createElement('p');
@@ -210,14 +145,11 @@ function agregarSesion() {
         }
         crearBtn4Continuar()
         $('.modal').append(btnContinuar4);
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Baja el modal
             $('.modal').toggleClass('modal-close');}, 300);
-        // Toca en Continuar 
-        btnContinuar4.addEventListener('click', () => {
+        btnContinuar4.addEventListener('click', () => { // Continuar 
             for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
                 for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
                     let inputValueMin = parseInt(document.getElementById
@@ -228,8 +160,7 @@ function agregarSesion() {
                             nuevaSesion.ejercicios[i].seriesBase[j].push(inputValueMax);
                 }
             }
-        //Blanqueo el modal
-        $('.modal').html("")
+        $('.modal').html("") //Blanqueo el modal
         agregarBotonClose()
         for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
             for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
@@ -242,15 +173,11 @@ function agregarSesion() {
         }
         crearBtn5Continuar()
         $('.modal').append(btnContinuar5);
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
+        setTimeout(function(){ // Baja el modal
             $('.modal').toggleClass('modal-close');}, 300)
-            //La persona llena el contenido (Series Minimas y maximas de cada ejercicio de la sesion)
-            // Toca en Continuar 
-            btnContinuar5.addEventListener('click', () => {
+            btnContinuar5.addEventListener('click', () => { // Continuar 
                     for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
                         for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
                             let inputValue = parseInt(document.getElementById
@@ -258,21 +185,17 @@ function agregarSesion() {
                 nuevaSesion.ejercicios[i].proximosPesos.push(inputValue);
             }
         }
-        //blanqueo el modal
-        $('.modal').html("");
+        $('.modal').html(""); //blanqueo el modal
         let ultimoParrafo = document.createElement('p');
         ultimoParrafo.textContent = 'Sesión creada con éxito'
         btnContinuar6 = document.createElement('button');
         btnContinuar6.textContent='Finalizar';
         $('.modal').append(ultimoParrafo, btnContinuar6);
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Baja el modal
             $('.modal').toggleClass('modal-close');}, 300)
-            // Toca en Continuar 
-            btnContinuar6.addEventListener('click', () => {
+            btnContinuar6.addEventListener('click', () => { // Continuar 
                 setTimeout(function(){
                     $('.modal').toggleClass('modal-close');
                     setTimeout(function(){
@@ -292,37 +215,27 @@ function agregarSesion() {
     })
     })
 }
-
-
 function agregarEjercicio() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
     nuevoParrafo1.textContent = `Ingrese el nombre de sesion en el cual vas a agregar el ejercicio`
     nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
     agregarBotonClose()
-    // Creo el boton y lo agrego
     crearBtn1Continuar()
     $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    //Pantalla gris
-    setTimeout(function(){
+    setTimeout(function(){ //Pantalla gris
         $('.modal-container').toggleClass('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        $('.modal').removeClass('modal-close');}, 600)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
+    setTimeout(function(){ //Baja el modal
+        $('.modal').removeClass('modal-close');}, 600) 
+    btnContinuar1.addEventListener('click', () => { // Continuar
         let nombreSesionPorInput = nuevoInput1.value;
         nombreDeSesionIngresado = nombreSesionPorInput;
         console.log(nombreDeSesionIngresado)
         rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
+            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
         })
         console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Creo los inputs y los agrego
+        $('.modal').html(""); //Blanqueo
         agregarBotonClose()
         let nuevoParrafoNombreEj = document.createElement('p');
         let nuevoInputNombreEj = document.createElement('input');
@@ -330,16 +243,11 @@ function agregarEjercicio() {
         nuevoParrafoNombreEj.textContent = `Ingrese el nombre para el ejercicio`
         crearBtn2Continuar()
         $('.modal').append(nuevoParrafoNombreEj, nuevoInputNombreEj, btnContinuar2)
-
-    //Sube el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Sube el modal
         $('.modal').toggleClass('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Baja el modal
         $('.modal').toggleClass('modal-close');}, 300);
-        
-        // Toca en Continuar 
-        btnContinuar2.addEventListener('click', () => {
+        btnContinuar2.addEventListener('click', () => { // Continuar
             const inputValue = nuevoInputNombreEj.value            
             nuevoEjercicio ={
             nombre:inputValue,
@@ -350,9 +258,7 @@ function agregarEjercicio() {
             proximasSeries:[]
         }
         console.log(nuevoEjercicio)
-        
-        //Blanqueo el modal
-        $('.modal').html("");
+        $('.modal').html(""); //Blanqueo el modal
         agregarBotonClose();
         let nuevoParrafo = document.createElement('p');
         let nuevoInput = document.createElement('input');
@@ -360,28 +266,19 @@ function agregarEjercicio() {
         nuevoParrafo.textContent = `Ingrese cantidad de series para el ejercicio`
         crearBtn3Continuar() 
         $('.modal').append(nuevoParrafo, nuevoInput, btnContinuar3);
-
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Sube el modal
             $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
+        setTimeout(function(){ //Baja el modal
             $('.modal').toggleClass('modal-close');}, 300)
-        //La persona llena el contenido (cant series del Ejercicio nuevo)
-        // Toca en Continuar 
-        btnContinuar3.addEventListener('click', () => {
-
+        btnContinuar3.addEventListener('click', () => { // Continuar 
         let inputValue = parseInt(document.getElementById('inputQSeries').value)
         console.log(inputValue);       
         for (let i=1; i<=inputValue; i++) {
             nuevoEjercicio.seriesBase.push([]);    
         }
-
-        //Blanqueo el modal
-        $('.modal').html("")
+        $('.modal').html("") //Blanqueo el modal
         agregarBotonClose()
     for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-        //Por cada serie creo los input para reps min/max
         let nuevoParrafoMin = document.createElement('p');
         let nuevoInputMin = document.createElement('input');
         let nuevoParrafoMax = document.createElement('p');
@@ -394,28 +291,20 @@ function agregarEjercicio() {
     }
     crearBtn4Continuar()
     $('.modal').append(btnContinuar4);
-    //Sube el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Sube el modal
         $('.modal').toggleClass('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
+    setTimeout(function(){ //Baja el modal
         $('.modal').toggleClass('modal-close');}, 300);
-        
-        //La persona llena el contenido (Repeticiones Minimas y maximas de cada serie, del nuevo Ejercicio)
-        // Toca en Continuar 
-        btnContinuar4.addEventListener('click', () => {
-
-    for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-        let inputValueMin = parseInt(document.getElementById
-        (`inputSerie${i+1}Min`).value);
-        let inputValueMax = parseInt(document.getElementById
-            (`inputSerie${i+1}Max`).value);      
-            nuevoEjercicio.seriesBase[i].push(inputValueMin);
-            nuevoEjercicio.seriesBase[i].push(inputValueMax);
+        btnContinuar4.addEventListener('click', () => { // Toca en Continuar 
+        for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
+            let inputValueMin = parseInt(document.getElementById
+            (`inputSerie${i+1}Min`).value);
+            let inputValueMax = parseInt(document.getElementById
+                (`inputSerie${i+1}Max`).value);      
+                nuevoEjercicio.seriesBase[i].push(inputValueMin);
+                nuevoEjercicio.seriesBase[i].push(inputValueMax);
         }
-
-        //Blanqueo el modal
-        $('.modal').html("")
+        $('.modal').html("") //Blanqueo el modal
         agregarBotonClose()
                         
     for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
@@ -427,15 +316,11 @@ function agregarEjercicio() {
         }
         crearBtn5Continuar()
         $('.modal').append(btnContinuar5);
-        //Sube el modal
-        setTimeout(function(){
+        setTimeout(function(){//Sube el modal
             $('.modal').toggleClass('modal-close');})
-            //Baja el modal
-            setTimeout(function(){
+            setTimeout(function(){ //Baja el modal
                 $('.modal').toggleClass('modal-close');}, 300)
-                //La persona llena el contenido (Series Minimas y maximas de cada ejercicio de la sesion)
-                // Toca en Continuar 
-                btnContinuar5.addEventListener('click', () => {
+                btnContinuar5.addEventListener('click', () => { // Toca en Continuar 
                     for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
                         let inputValue = parseInt(document.getElementById
                             (`inputPesoSerie${i+1}`).value)       
@@ -479,7 +364,6 @@ function agregarEjercicio() {
     })
 })
 }
-
 function anotarRepeticionesDeTodaUnaSesion() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -562,8 +446,6 @@ function anotarRepeticionesDeTodaUnaSesion() {
         })
     })
 }
-
-
 function anotarRepsSoloUno() {
     let nuevoParrafo1 = document.createElement('p'); //Creo todo
     let nuevoInput1 = document.createElement('input');
@@ -581,9 +463,7 @@ function anotarRepsSoloUno() {
         nombreDeSesionIngresado = nombreSesionPorInput.value;
         console.log(nombreDeSesionIngresado)
         rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
+            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
         })
         console.log(numeroDeSesionIngresada)
         $('.modal').html(""); //Blanqueo
@@ -604,9 +484,7 @@ function anotarRepsSoloUno() {
             nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
             console.log(nombreDeEjercicioIngresado)
             rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
+                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
             })
             console.log(numeroDeEjercicioIngresado)
             $('.modal').html(""); //Creo los inputs y los agrego
@@ -657,8 +535,6 @@ function anotarRepsSoloUno() {
         })
     })
 }
-
-
 function generarProximaSesionUnicoEjercicio() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -676,9 +552,7 @@ function generarProximaSesionUnicoEjercicio() {
         nombreDeSesionIngresado = nombreSesionPorInput.value;
         console.log(nombreDeSesionIngresado)
         rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
+            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
         })
         console.log(numeroDeSesionIngresada)
         $('.modal').html(""); //Blanqueo
@@ -699,9 +573,7 @@ function generarProximaSesionUnicoEjercicio() {
             nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
             console.log(nombreDeEjercicioIngresado)
             rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
+                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
             })
             console.log(numeroDeEjercicioIngresado)
             $('.modal').html(""); //Blanqueo
@@ -734,7 +606,6 @@ function generarProximaSesionUnicoEjercicio() {
         })
     })
 }
-
 function generarProximaSesionCompleta() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -752,9 +623,7 @@ function generarProximaSesionCompleta() {
         nombreDeSesionIngresado = nombreSesionPorInput.value;
         console.log(nombreDeSesionIngresado)
         rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
+            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
         })
         console.log(numeroDeSesionIngresada)
         $('.modal').html(""); //Blanqueo
@@ -787,7 +656,6 @@ function generarProximaSesionCompleta() {
         });
     });
 };
-
 function eliminarEjercicio() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -805,9 +673,7 @@ function eliminarEjercicio() {
         nombreDeSesionIngresado = nombreSesionPorInput.value;
         console.log(nombreDeSesionIngresado)
         rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
+            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
         })
         console.log(numeroDeSesionIngresada)
         $('.modal').html(""); //Blanqueo
@@ -827,9 +693,7 @@ function eliminarEjercicio() {
             nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
             console.log(nombreDeEjercicioIngresado)
             rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
+                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
             })
             console.log(numeroDeEjercicioIngresado)
             $('.modal').html(""); //Blanqueo
@@ -852,7 +716,6 @@ function eliminarEjercicio() {
                         $('.modal-container').toggleClass('container-hidden');
                     }, 300);
                 }, 300);
-                
                 rutina[numeroDeSesionIngresada].ejercicios.splice(numeroDeEjercicioIngresado, 1);
                 localStorage.setItem('rutina', JSON.stringify(rutina));
                 reemplazarSesiones();
@@ -861,7 +724,6 @@ function eliminarEjercicio() {
         });
     });
 };
-
 function eliminarSesion() {
     let nuevoParrafo1 = document.createElement('p');
     let nuevoInput1 = document.createElement('input');
@@ -908,28 +770,21 @@ function eliminarSesion() {
         })
     })
 }
-
 /*FUNCIONES CALCULOS*/
 function equipararUltimosPesosConProximos(num) {
     rutina[num].ejercicios.forEach((ejercicio) => {
         ejercicio.ultimosPesos = ejercicio.proximosPesos;
     })
 }
-
 function actualizarPesos(num) {
     rutina[num].ejercicios.forEach((ejercicio) => {
         let nuevosPesos = [];
         ejercicio.seriesRealizadas.forEach((serie, i) =>{
-            if (serie>=ejercicio.seriesBase[i][1]) {
-                nuevosPesos.push(ejercicio.ultimosPesos[i] + 5)
-            } else {
-                nuevosPesos.push(ejercicio.ultimosPesos[i])
-            }
+            serie>=ejercicio.seriesBase[i][1]?nuevosPesos.push(ejercicio.ultimosPesos[i] + 5):nuevosPesos.push(ejercicio.ultimosPesos[i])  
         })
         ejercicio.proximosPesos = nuevosPesos;
     })
 }
-
 function actualizarSeries(num) {
     rutina[num].ejercicios.forEach((ejercicio) => {
         let nuevasSeries = [];
@@ -939,7 +794,6 @@ function actualizarSeries(num) {
             } else {
                 let nuevoRangoDeSeries = [];
                 nuevoRangoDeSeries.push(serie, ejercicio.seriesBase[i][1]);
-                // nuevoRangoDeSeries.push(ejercicio.seriesBase[i][1]);
                 nuevasSeries.push(nuevoRangoDeSeries);
             }
         })
@@ -950,19 +804,13 @@ function actualizarSeries(num) {
 function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
     rutina[sesion].ejercicios[ejercicio].ultimosPesos =rutina[sesion].ejercicios[ejercicio].proximosPesos;
 }
-
 function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
     let nuevosPesos = [];
     rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) =>{
-            if (serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
-                nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5)
-            } else {
-                nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i])
-            }
+        serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]?nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5): nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i])
         })
         rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
 }
-
 function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
     let nuevasSeries = [];
     rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
@@ -971,17 +819,13 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
             } else {
                 let nuevoRangoDeSeries = [];
                 nuevoRangoDeSeries.push(serie, rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
-                // nuevoRangoDeSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
                 nuevasSeries.push(nuevoRangoDeSeries);
             }
         })
         rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
 }
-
 /*FUNCIONES RENDER TABLA*/
-// CALLBACK - Solo renderiza las tablas. No modifica el array rutina. No borra.
 function crearTablas() {
-    const routineContainer = document.querySelector('.routine-container');
     rutina.forEach((sesion, i) => {
     const tablaDeSesion = document.createElement('table')
     tablaDeSesion.innerHTML = `
@@ -995,14 +839,11 @@ function crearTablas() {
             <th>Proximas Series</th>
             <th>Proximos Pesos</th>
         </tr>
-            `;
-            
+            `;  
         sesion.ejercicios.forEach((ejercicio, indice) => {
-            
             let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
             let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
             let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ")
-
             let seriesBaseTD = document.createElement('td')
             let seriesBaseUL = document.createElement('ul')
             ejercicio.seriesBase.forEach((serie, i) => {
@@ -1011,7 +852,6 @@ function crearTablas() {
             seriesBaseUL.append(seriesBaseLI);
             })
             seriesBaseTD.append(seriesBaseUL)
-
             let proximasSeriesTD = document.createElement('td')
             let proximasSeriesUL = document.createElement('ul')
             ejercicio.proximasSeries.forEach((serie, i) => {
@@ -1020,7 +860,6 @@ function crearTablas() {
             proximasSeriesUL.append(proximasSeriesLI);
             })
             proximasSeriesTD.append(proximasSeriesUL)
-
             const nuevoEjercicio = document.createElement('tr')
             nuevoEjercicio.innerHTML = `
             <td>${ejercicio.nombre}</td>
@@ -1030,20 +869,16 @@ function crearTablas() {
             <td>${proximosPesosUnidos}</td>`
             nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
             nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
-            tablaDeSesion.append(nuevoEjercicio)
-            
+            tablaDeSesion.append(nuevoEjercicio)  
         })
-        tablaDeSesion.id ="sesion" + (i+1)
-        routineContainer.append(tablaDeSesion);
+        $('.routine-container').append(tablaDeSesion);
     });
 };
-  
 // CALLBACK - //Borra visualmente, y renderiza de nuevo todas las tablas.
 function reemplazarSesiones() {
     borrarTablas()
     crearTablas()
 }
-
 //Borra del array. Actualiza storage. No renderiza // NO BUTTON - CALLBACK  de borrarRutina() //Solamente borra visualmente las tablas.
 function borrarTablas() {
     const todasLasTablas = document.querySelectorAll('table');
@@ -1056,3 +891,48 @@ function borrarRutina() {
     localStorage.removeItem('rutina');
     borrarTablas();            
 };
+
+//Darkmode
+$('#darkmode-toggle').change(() => {
+    $('body').toggleClass("darkBC");
+})
+//EVENTOS - Panel Principal
+$('.btn-about').click(() => {
+    $('#aboutCuadro').hasClass('hidden')?$('#aboutCuadro').removeClass('hidden'): $('#aboutCuadro').addClass('hidden')
+})
+
+$('.btn-anotarRepsSesion').click(() => {
+        anotarRepeticionesDeTodaUnaSesion();
+})
+
+$('.btn-generarProximaSesion').click(() => {
+    generarProximaSesionCompleta();
+})
+
+$('.btn-generarProximaSesionx1').click(() => {
+    generarProximaSesionUnicoEjercicio();
+})
+
+$('.btn-agregarEjercicio').click(() => {
+    agregarEjercicio();
+});
+
+$('.btn-anotarRepsx1').click(() => {
+    anotarRepsSoloUno();
+})
+
+$('.btn-eliminarEjercicio').click(() => {
+    eliminarEjercicio();
+})
+
+$('.btn-eliminarSesion').click(() => {
+    eliminarSesion();
+})
+
+$('.btn-borrarRutina').click(() => {
+    borrarRutina();
+})
+
+$('.btn-agregarSesion').click(() => {
+    agregarSesion()
+});
