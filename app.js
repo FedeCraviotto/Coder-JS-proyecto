@@ -52,6 +52,7 @@ let numeroDeSesionIngresada = 0;
 let nombreDeEjercicioIngresado = "";
 let numeroDeEjercicioIngresado = 0;
 let modalContainer = document.querySelector('.modal-container')
+let modalPadre = document.querySelector('.modal')
 let cantidadEjercicios;
 let nuevaSesion;
 let nuevoEjercicio;
@@ -93,7 +94,7 @@ function agregarBotonClose () {
         //Setea la sesión a cero
         //Sube el modal
         setTimeout(function(){
-            $('.modal').toggle('modal-close');}, 100)
+            $('.modal').addClass('modal-close');}, 100)
         //Pantalla gris
         setTimeout(function(){
             modalContainer.classList.toggle('container-hidden');}, 400)
@@ -122,7 +123,7 @@ function agregarSesion() {
         modalContainer.classList.toggle('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
-        $('.modal').toggleClass('modal-close');}, 600)
+        $('.modal').removeClass('modal-close');}, 600)
         
     btnContinuar1.addEventListener('click', () => {
         
@@ -313,7 +314,7 @@ function agregarEjercicio() {
         modalContainer.classList.toggle('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
-        $('.modal').toggleClass('modal-close');}, 600)
+        $('.modal').removeClass('modal-close');}, 600)
         
     btnContinuar1.addEventListener('click', () => {
         
@@ -497,7 +498,7 @@ function anotarRepeticionesDeTodaUnaSesion() {
         modalContainer.classList.toggle('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => {
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;
@@ -579,7 +580,7 @@ function anotarRepsSoloUno() {
     setTimeout(function(){ //Pantalla gris
         modalContainer.classList.toggle('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Click en Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;
@@ -674,7 +675,7 @@ function generarProximaSesionUnicoEjercicio() {
     setTimeout(function(){ //Pantalla gris
         modalContainer.classList.toggle('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { // Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;
@@ -750,7 +751,7 @@ function generarProximaSesionCompleta() {
     setTimeout(function(){ //Pantalla gris
         modalContainer.classList.toggle('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { // Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;
@@ -803,7 +804,7 @@ function eliminarEjercicio() {
     setTimeout(function(){ //Pantalla gris
         modalContainer.classList.toggle('container-hidden');}, 300)
     setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;
@@ -881,7 +882,7 @@ function eliminarSesion() {
         modalContainer.classList.toggle('container-hidden');}, 300)
     //Baja el modal
     setTimeout(function(){
-        $('.modal').toggleClass('modal-close');}, 300)
+        $('.modal').removeClass('modal-close');}, 300)
     btnContinuar1.addEventListener('click', () => { //Continuar
         let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
         nombreDeSesionIngresado = nombreSesionPorInput.value;

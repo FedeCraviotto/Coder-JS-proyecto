@@ -270,17 +270,14 @@ input {
 .modal {
     /* max-width: 1200px;
     max-height: 800px;*/
-    width: 80%;
-    max-height: 70%;
-    /* background-color: rgba(23, 44, 68, 0.9); */
+    max-width: 1200px;
+    max-height: 600px;
+
     background-color: rgba(24, 19, 19, 0.9);
     text-align: center;
-    /*descomentar*/
-    position: absolute;
-    top:0;
-    /*descomentar*/
+    position: relative;
     transition: transform 400ms;
-    transform: translateY(100%);
+    transform: translateY(0%);
     z-index: 20;
     display: flex;
     flex-wrap: wrap;
@@ -288,10 +285,7 @@ input {
     align-items: center;
     padding: 20px;
     border-radius: 20px;
-    
 
-    /*agregado*/
-    /* visibility: hidden; */
 }
 
 .modal p {
@@ -302,9 +296,6 @@ input {
 .modal-close {
     transition: transform 500ms;
     transform: translateY(-500%);
-    display: block!important;
-    /*agregado*/
-    visibility: visible;
 }
 
 input {
