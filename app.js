@@ -1,5 +1,22 @@
-let rutina = JSON.parse(localStorage.getItem('rutina')) || []
-crearTablas()
+let rutina = JSON.parse(localStorage.getItem('rutina'));
+
+async function leerRutinaAXIOS () {
+    try {
+        const { data } = await axios('data/rutina.json')
+        rutina = data;
+        crearTablas();
+        Swal.fire({
+            title: 'Rutina cargada desde JSON',
+            text: 'Se ve que no tenías nada guardado en tu navegador. Hemos creado una tabla de muestra',
+            icon: 'info',
+            confirmButtonText: 'OK',
+        });
+    } catch {
+        rutina = [];
+    }
+}
+
+rutina.length==0?leerRutinaAXIOS():crearTablas();
 
 // Variables
 let nombreDeSesionIngresado = ""; 

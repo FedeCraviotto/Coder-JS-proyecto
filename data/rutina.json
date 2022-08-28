@@ -1,0 +1,82 @@
+[
+    {
+        "nombre": "Rutina desde JSON",
+        "ejercicios": [
+            {
+                "nombre": "Remo en Banco",
+                "seriesBase": [
+                    [
+                        6,
+                        10
+                    ],
+                    [
+                        6,
+                        10
+                    ],
+                    [
+                        6,
+                        10
+                    ]
+                ],
+                "seriesRealizadas": [],
+                "ultimosPesos": [],
+                "proximosPesos": [
+                    15,
+                    15,
+                    15
+                ],
+                "proximasSeries": []
+            },
+            {
+                "nombre": "Tricep Pushdown",
+                "seriesBase": [
+                    [
+                        8,
+                        17
+                    ],
+                    [
+                        8,
+                        17
+                    ],
+                    [
+                        8,
+                        17
+                    ]
+                ],
+                "seriesRealizadas": [],
+                "ultimosPesos": [],
+                "proximosPesos": [
+                    10,
+                    10,
+                    10
+                ],
+                "proximasSeries": []
+            },
+            {
+                "nombre": "Tricep Overhead",
+                "seriesBase": [
+                    [
+                        10,
+                        20
+                    ],
+                    [
+                        10,
+                        20
+                    ],
+                    [
+                        9,
+                        16
+                    ]
+                ],
+                "seriesRealizadas": [],
+                "ultimosPesos": [],
+                "proximosPesos": [
+                    10,
+                    10,
+                    15
+                ],
+                "proximasSeries": []
+            }
+        ]
+    }
+]
