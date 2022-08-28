@@ -6,13 +6,13 @@ Swal.fire({
     icon: 'info',
     confirmButtonText: 'OK',
   }).then(() => {
-    rutina = JSON.parse(localStorage.getItem('rutina'));
+    rutina = JSON.parse(localStorage.getItem('rutina')) || [];
     rutina.length==0?leerRutinaAXIOS():crearTablas();
   })
 
 async function leerRutinaAXIOS () {
     try {
-        const { data } = await axios('data/rutina.json')
+        const { data } = await axios('./data/rutina.json')
         rutina = data;
         crearTablas();
         Swal.fire({
