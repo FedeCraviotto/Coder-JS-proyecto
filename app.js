@@ -1,4 +1,14 @@
-let rutina = JSON.parse(localStorage.getItem('rutina'));
+let rutina;
+//Sweet Alert
+Swal.fire({
+    title: 'Bienvenido',
+    text: 'Tocá "Explicación" para más info sobre la App',
+    icon: 'info',
+    confirmButtonText: 'OK',
+  }).then(() => {
+    rutina = JSON.parse(localStorage.getItem('rutina'));
+    rutina.length==0?leerRutinaAXIOS():crearTablas();
+  })
 
 async function leerRutinaAXIOS () {
     try {
@@ -15,8 +25,6 @@ async function leerRutinaAXIOS () {
         rutina = [];
     }
 }
-
-rutina.length==0?leerRutinaAXIOS():crearTablas();
 
 // Variables
 let nombreDeSesionIngresado = ""; 
@@ -956,11 +964,3 @@ $('.btn-borrarRutina').click(() => {
 $('.btn-agregarSesion').click(() => {
     agregarSesion()
 });
-
-//Sweet Alert
-Swal.fire({
-    title: 'Bienvenido',
-    text: 'Tocá "Explicación" para más info sobre la App',
-    icon: 'info',
-    confirmButtonText: 'OK',
-  })
