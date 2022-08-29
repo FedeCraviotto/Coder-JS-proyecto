@@ -52,6 +52,9 @@ const ejZona = document.querySelector('#zonaAEstimular');
 const ejGif = document.querySelector('#gifIndicaciones');
 const btnExerciseQuery = document.querySelector('.btn-exercise-query');
 const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
+const btnTranslationQuery = document.querySelector('.btn-translation-query');
+const inputTranslationQuery = document.querySelector('#translation-query');
+const spanTranslationResult = document.querySelector('#translation-result');
 
 // Variables
 let nombreDeSesionIngresado = ""; 
@@ -911,8 +914,36 @@ function filtrarInput(textbox, inputFilter, errMsg) {
 
   filtrarInput(document.getElementById("inputNumeroEjercicio"), (value) => {
     return /^\d*\.?\d*$/.test(value); // Permitir solo números
-  }, "Recordá ingresar números entre 0001 y 1327");
+  }, "Recordá ingresar números entre 1 y 1326");
 
+
+// Translate API function & request setup
+async function requestTranslation () {
+    try {
+        let mensajeATraducir = inputTranslationQuery.value;
+        const encodedParams = new URLSearchParams();
+        encodedParams.append("q", mensajeATraducir);
+        encodedParams.append("target", "es");
+        encodedParams.append("source", "en");
+        const translateOptions = {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                'Accept-Encoding': 'application/gzip',
+                'X-RapidAPI-Key': '16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95',
+                'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
+            },
+            body: encodedParams
+        };
+
+        const traduccionObj = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', translateOptions);
+        const data = await traduccionObj.json()
+        let traduccion = data.data.translations[0].translatedText;
+        spanTranslationResult.innerText = `"${traduccion}"`;
+    } catch {
+        (err => console.error(err));
+    } 
+}
 
 /*FUNCIONES RENDER TABLA*/
 function crearTablas() {
@@ -1053,3 +1084,15 @@ inputNumeroEjercicio.addEventListener('keydown',  (e) => {
           ejGif.src = ejercicioBuscado.gifUrl;
         }
 })
+
+//EVENTOS Translate API
+btnTranslationQuery.addEventListener('click', () => {
+    requestTranslation();
+})
+
+inputTranslationQuery.addEventListener('keydown',  (e) => {
+    if (e.key === "Enter") {
+        requestTranslation();
+    }
+})
+

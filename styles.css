@@ -89,6 +89,26 @@ input:focus {
     outline: none;
 }
 
+.exercise-container input {
+    color: #101612;
+    background-color: #b7cddf;
+    border: none;
+    width: 200px;
+    font-size: 18px;
+}
+
+.exercise-element {
+    margin: 10px auto;
+}
+
+.translation-title {
+    font-size: 20px;
+}
+
+.underlined {
+    text-decoration: underline;
+}
+
 .title {
     margin: 15px;
 }
