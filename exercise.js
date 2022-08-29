@@ -7,8 +7,8 @@ const btnExerciseQuery = document.querySelector('.btn-exercise-query');
 const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
 const btnExerciseAbout = document.querySelector('.btn-exercise-about');
 
-let idEjercicio;
 let arrayDeEjercicios;
+let idEjercicio;
 let ejercicioBuscado;
 
 
@@ -19,7 +19,6 @@ const options = {
 		'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
 	}
 };
-
 fetch('https://exercisedb.p.rapidapi.com/exercises', options)
 	.then(response => response.json())
 	.then(response => {
@@ -29,7 +28,7 @@ fetch('https://exercisedb.p.rapidapi.com/exercises', options)
 	.catch(err => console.error(err));
     
 btnExerciseQuery.addEventListener('click', async () => {
-    idEjercicio = inputNumeroEjercicio.value;
+    idEjercicio = inputNumeroEjercicio.value - 1;
     ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
     ejNombre.innerText = ejercicioBuscado.name;
     ejMusculo.innerText = ejercicioBuscado.bodyPart;
@@ -37,6 +36,7 @@ btnExerciseQuery.addEventListener('click', async () => {
     ejZona.innerText = ejercicioBuscado.target;
     ejGif.src = ejercicioBuscado.gifUrl;
 })
+
 inputNumeroEjercicio.addEventListener('keydown',  (e) => {
         if (e.key === "Enter") {
           idEjercicio = inputNumeroEjercicio.value;
@@ -54,6 +54,10 @@ btnExerciseAbout.addEventListener('click', () => {
         disableInteraction: true,
         exitOnOverlayClick: false,
       }).start();
+})
+
+$('#darkmode-toggle').change(() => {
+  $('body').toggleClass("darkBC");
 })
 
 

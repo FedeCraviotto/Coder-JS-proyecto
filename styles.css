@@ -28,6 +28,19 @@ body {
     height: 100vh;
 }
 
+.exercise {
+    width: 300px;
+    margin: 0px auto;
+}
+
+.exercise p{
+    margin: 15px 0px;
+}
+.exercise span{
+    margin: 0px 5px;
+    color: #9bffb0;
+}
+
 .exercise-img {
     width: 290px;
     height: 290px;
@@ -229,9 +242,12 @@ p {
 }
 
 @media screen and (min-width:578px) {
+    .exercise {
+        width: 500px;
+    }
     .exercise-img {
-        width: 360px;
-        height: 360px;
+        width: auto;
+        height: auto;
     }
 }
 

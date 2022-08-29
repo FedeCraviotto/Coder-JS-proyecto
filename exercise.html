@@ -15,21 +15,27 @@
     
 
         <h1 class="title"><span> Buscador de Ejercicios</span></h1>
-        <h2 class="title" data-tooltip-class="introTT" data-intro="Podes buscar un ejercicio según su número de identificación y obtener datos útiles acerca de aquel" data-step="1" data-position="right">Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus entrenamientos</h2>
+        <h2 class="title"><span data-tooltip-class="introTT" data-intro="Podes buscar un ejercicio según su número de identificación y obtener datos útiles acerca de aquel" data-step="1" data-position="right">Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus entrenamientos</span></h2>
         <h2 class="title">¡Contamos con más de 1300 ejercicios para vos!</h2>
         <div class="interacciones-container">
             <ul class="interacciones">
                 <li><button class="btn btn-exercise-about" data-tooltip-class="introTT" data-intro="Para volver a recorrer las instrucciones del buscador navega mediante el menú punteado, o cierra y clickea aquí de nuevo cuando quieras!" data-step="7" data-position="right">Explicación</button></li>
                 <li><button class="btn btn-exercise-query" data-tooltip-class="introTT" data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="3" data-position="right"> Realizar consulta</button></li>
-                <li><button class="btn btn-exercise-back" data-tooltip-class="introTT" data-intro="Puede volver a tu cuaderno de entrenamiento cuando quieras" data-step="6" data-position="right"><a href="index.html">Volver</a></button></li>
+                <li>
+                    <a href="index.html">
+                        <button class="btn btn-exercise-back" data-tooltip-class="introTT" data-intro="Puede volver a tu cuaderno de entrenamiento cuando quieras" data-step="6" data-position="right">
+                            Volver
+                        </button>
+                    </a>
+                </li>
             </ul>
         </div>
         <div>
-            <label for="exercise-query">Ingresá un número entre el 1 y el 1327</label>
-            <input type="text" name="exercise-query" id="inputNumeroEjercicio" data-tooltip-class="introTT" data-intro="Primero ingresá un número de ejercicio. Deben ser 4 números, sin caracteres en el medio, puntos ni comas, entre el 0001 y el 1327" data-step="2" data-position="right">
+            <label for="exercise-query">Ingresá un número entre el 1 y el 1326</label>
+            <input type="text" name="exercise-query" id="inputNumeroEjercicio" data-tooltip-class="introTT" data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326" data-step="2" data-position="right">
         </div>
     <div class="exercise-container">
-        <div class="exercise" data-tooltip-class="introTT" data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés" data-step="4">
+        <div class="exercise" data-tooltip-class="introTT" data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés" data-step="4" data-position="bottom-middle-aligned">
             <p>Nombre de Ejercicio: <span id="nombreDelEjericio"></span></p>
             <p>Músculos que trabajan: <span id="musculoQueInterviene"></span></p>
             <p>Elementos requeridos: <span id="elementosAUtilizar"></span></p>
@@ -42,6 +48,7 @@
     </div>
    
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
     <script src="exercise.js"></script>
