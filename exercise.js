@@ -1,13 +1,15 @@
-const ejID = document.querySelector('#numeroDeEjercicio');
 const ejNombre = document.querySelector('#nombreDelEjericio');
 const ejMusculo = document.querySelector('#musculoQueInterviene');
 const ejElementos = document.querySelector('#elementosAUtilizar');
 const ejZona = document.querySelector('#zonaAEstimular');
-const ejGif = document.querySelector('#gifIndicaciones')
+const ejGif = document.querySelector('#gifIndicaciones');
 const btnExerciseQuery = document.querySelector('.btn-exercise-query');
 const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
 const btnExerciseAbout = document.querySelector('.btn-exercise-about');
+
+let idEjercicio;
 let arrayDeEjercicios;
+let ejercicioBuscado;
 
 
 const options = {
@@ -26,22 +28,27 @@ fetch('https://exercisedb.p.rapidapi.com/exercises', options)
     })
 	.catch(err => console.error(err));
     
-let idEjercicio;
-let ejercicioBuscado;
-btnExerciseQuery.addEventListener('click', () => {
+btnExerciseQuery.addEventListener('click', async () => {
     idEjercicio = inputNumeroEjercicio.value;
-    console.log(idEjercicio)
-    ejercicioBuscado = arrayDeEjercicios.filter((ejercicio) => ejercicio.id == idEjercicio);
-    console.log(ejercicioBuscado)
-    renderizarEjercicioDevuelto(ejercicioBuscado)
+    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+    ejNombre.innerText = ejercicioBuscado.name;
+    ejMusculo.innerText = ejercicioBuscado.bodyPart;
+    ejElementos.innerText = ejercicioBuscado.equipment;
+    ejZona.innerText = ejercicioBuscado.target;
+    ejGif.src = ejercicioBuscado.gifUrl;
 })
 inputNumeroEjercicio.addEventListener('keydown',  (e) => {
         if (e.key === "Enter") {
-            idEjercicio =  inputNumeroEjercicio.value;
-            ejercicioBuscado = arrayDeEjercicios.filter((ejercicio) => ejercicio.id == idEjercicio)
-            renderizarEjercicioDevuelto (ejercicioBuscado)
+          idEjercicio = inputNumeroEjercicio.value;
+          ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+          ejNombre.innerText = ejercicioBuscado.name;
+          ejMusculo.innerText = ejercicioBuscado.bodyPart;
+          ejElementos.innerText = ejercicioBuscado.equipment;
+          ejZona.innerText = ejercicioBuscado.target;
+          ejGif.src = ejercicioBuscado.gifUrl;
         }
 })
+
 btnExerciseAbout.addEventListener('click', () => {
     introJs().setOptions({
         disableInteraction: true,
@@ -49,16 +56,6 @@ btnExerciseAbout.addEventListener('click', () => {
       }).start();
 })
 
-
-function renderizarEjercicioDevuelto (objetoEjercicio) {
-    ejID.innerText = objetoEjercicio.id;
-    ejNombre.innerText = objetoEjercicio.name;
-    ejMusculo.innerText = objetoEjercicio.bodyPart;
-    ejElementos.innerText = objetoEjercicio.equipment;
-    ejZona.innerText = objetoEjercicio.target;
-    // ejGif.setAttribute('src', objetoEjercicio.gifUrl)
-
-};
 
 function filtrarInput(textbox, inputFilter, errMsg) {
     ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout"].forEach((event) => {
