@@ -1,4 +1,6 @@
 let rutina;
+let arrayDeEjercicios;
+
 //Sweet Alert
 Swal.fire({
     title: 'Bienvenido',
@@ -26,6 +28,31 @@ async function leerRutinaAXIOS () {
     }
 }
 
+// Fetch API ejercicios. Parámetros + Call
+const options = {
+	method: 'GET',
+	headers: {
+		'X-RapidAPI-Key': '16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95',
+		'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
+	}
+};
+fetch('https://exercisedb.p.rapidapi.com/exercises', options)
+	.then(response => response.json())
+	.then(response => {
+        console.log(response)
+        arrayDeEjercicios = response;
+    })
+	.catch(err => console.error(err));
+
+//DOM sin jQuery --> voy a tratar de pasar todo a DOM común, sin jQuery, que parece que tiene un par de funcionalidades obsoletas.
+const ejNombre = document.querySelector('#nombreDelEjericio');
+const ejMusculo = document.querySelector('#musculoQueInterviene');
+const ejElementos = document.querySelector('#elementosAUtilizar');
+const ejZona = document.querySelector('#zonaAEstimular');
+const ejGif = document.querySelector('#gifIndicaciones');
+const btnExerciseQuery = document.querySelector('.btn-exercise-query');
+const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
+
 // Variables
 let nombreDeSesionIngresado = ""; 
 let numeroDeSesionIngresada = 0;
@@ -40,6 +67,10 @@ let btnContinuar3;
 let btnContinuar4;
 let btnContinuar5;
 let btnContinuar6;
+let idEjercicio;
+let ejercicioBuscado;
+
+
 /*Btn Create Functions */
 function crearBtn1Continuar () {
     btnContinuar1 = document.createElement('button');
@@ -849,6 +880,40 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
         })
         rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
 }
+
+// Input number tester - Declaración  + Call
+function filtrarInput(textbox, inputFilter, errMsg) {
+    ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout"].forEach((event) => {
+      textbox.addEventListener(event, function(e) {
+        if (inputFilter(this.value)) {
+          // Accepted value
+          if (["keydown","mousedown","focusout"].indexOf(e.type) >= 0){
+            this.classList.remove("input-error");
+            this.setCustomValidity("");
+          }
+          this.oldValue = this.value;
+          this.oldSelectionStart = this.selectionStart;
+          this.oldSelectionEnd = this.selectionEnd;
+        } else if (this.hasOwnProperty("oldValue")) {
+          // Rejected value - restore the previous one
+          this.classList.add("input-error");
+          this.setCustomValidity(errMsg);
+          this.reportValidity();
+          this.value = this.oldValue;
+          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+        } else {
+          // Rejected value - nothing to restore
+          this.value = "";
+        }
+      });
+    });
+  }
+
+  filtrarInput(document.getElementById("inputNumeroEjercicio"), (value) => {
+    return /^\d*\.?\d*$/.test(value); // Permitir solo números
+  }, "Recordá ingresar números entre 0001 y 1327");
+
+
 /*FUNCIONES RENDER TABLA*/
 function crearTablas() {
     rutina.forEach((sesion, i) => {
@@ -964,3 +1029,27 @@ $('.btn-borrarRutina').click(() => {
 $('.btn-agregarSesion').click(() => {
     agregarSesion()
 });
+
+//EVENTOS Exercise API
+
+btnExerciseQuery.addEventListener('click', () => {
+    idEjercicio = inputNumeroEjercicio.value - 1;
+    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+    ejNombre.innerText = ejercicioBuscado.name;
+    ejMusculo.innerText = ejercicioBuscado.bodyPart;
+    ejElementos.innerText = ejercicioBuscado.equipment;
+    ejZona.innerText = ejercicioBuscado.target;
+    ejGif.src = ejercicioBuscado.gifUrl;
+})
+
+inputNumeroEjercicio.addEventListener('keydown',  (e) => {
+        if (e.key === "Enter") {
+          idEjercicio = inputNumeroEjercicio.value - 1;
+          ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+          ejNombre.innerText = ejercicioBuscado.name;
+          ejMusculo.innerText = ejercicioBuscado.bodyPart;
+          ejElementos.innerText = ejercicioBuscado.equipment;
+          ejZona.innerText = ejercicioBuscado.target;
+          ejGif.src = ejercicioBuscado.gifUrl;
+        }
+})

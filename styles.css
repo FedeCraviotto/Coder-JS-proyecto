@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
 
 :root {
-    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);    
+    background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
+    background-repeat: no-repeat;    
 }
 * {
     padding: 0px;
@@ -17,15 +18,26 @@
 body {
     background-repeat: no-repeat;
     width: 100%;
+
+}
+
+.introTT {
+    background-color: #242424;
+    line-height: 1.5;
+}
+
+.introjs-tooltip {
+    min-width: auto;
+    width: 170px;
 }
 
 .input-error{
     outline: 1px solid red;
   }
 
-.routine-container,
 .exercise-container {
     height: 100vh;
+    margin: 30px auto;
 }
 
 .exercise {
@@ -242,6 +254,9 @@ p {
 }
 
 @media screen and (min-width:578px) {
+    .introjs-tooltip {
+        width: 250px;
+    }
     .exercise {
         width: 500px;
     }
@@ -290,6 +305,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
+
 }
 
 .container-hidden {
@@ -355,7 +371,3 @@ input {
     background-color: #a0e8af;
 }
 
-.introTT {
-    background-color: #242424;
-    line-height: 1.5;
-}

@@ -14,20 +14,20 @@
     <label for="darkmode-toggle" id="darkmode-label" data-tooltip-class="introTT" data-intro="Modo oscuro" data-step="12" data-position="left"></label>
     
 
-        <h1 class="title"><span data-tooltip-class="introTT" data-intro="Bienvenido! Si tenés una rutina de entrenamiento esta aplicación te puede llegar a servir. Comencemos el recorrido" data-step="1" data-position="bottom-middle-aligned"> RutinApp</span></h1>
+        <h1 class="title"><span data-tooltip-class="introTT" data-intro="Bienvenido! Si tenés una rutina de entrenamiento esta aplicación te puede llegar a servir. Comencemos el recorrido" data-step="1"> RutinApp</span></h1>
         <h2 class="title">Seleccioná una opción</h2>
         <div class="interacciones-container" data-tooltip-class="introTT" data-intro="Panel de opciones, para todo lo que quieras hacer" data-step="2">
             <ul class="interacciones">
-                <li><button class="btn btn-about" data-tooltip-class="introTT" data-intro="Para volver a recorrer las instrucciones de la App navega mediante el menú punteado, o cierra y clickea aquí de nuevo cuando quieras!" data-step="14" data-position="right">Explicación</button></li>
-                <li><button class="btn btn-agregarSesion" data-tooltip-class="introTT" data-intro="Agrega una sesión de entrenamiento. Todos sus ejercicios, series de repeticiones, rangos de mínimos y máximos de repeticiones por cada serie, y pesos a levantar en cada una de ellas." data-step="3">+ Sesión</button></li>
-                <li><button class="btn btn-agregarEjercicio" data-tooltip-class="introTT" data-intro="Agrega un ejercicio a una sesión ya creada" data-step="4" data-position="right">+ Ejercicio</button></li>
+                <li><button class="btn btn-about" data-tooltip-class="introTT" data-intro="Para volver a recorrer las instrucciones de la App navega mediante el menú punteado, o cierra y clickea aquí de nuevo cuando quieras!" data-step="" data-position="right">Explicación</button></li>
                 <li>
-                    <a href="exercise.html">
-                    <button class="btn">
-                            Buscar
-                        </button>
+                    <a href="#anclaBuscador">
+                        <button class="btn" data-tooltip-class="introTT" data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="" data-position="right"> Descubrir Ej</button>
                     </a>
                 </li>
+            </ul>
+            <ul class="interacciones">
+                <li><button class="btn btn-agregarSesion" data-tooltip-class="introTT" data-intro="Agrega una sesión de entrenamiento. Todos sus ejercicios, series de repeticiones, rangos de mínimos y máximos de repeticiones por cada serie, y pesos a levantar en cada una de ellas." data-step="3">+ Sesión</button></li>
+                <li><button class="btn btn-agregarEjercicio" data-tooltip-class="introTT" data-intro="Agrega un ejercicio a una sesión ya creada" data-step="4" data-position="bottom-left-aligned">+ Ejercicio</button></li>
             </ul>
             <ul class="interacciones">
                 <li><button id="anotarRepeticionesDeTodaUnaSesion" class="btn btn-anotarRepsSesion" data-tooltip-class="introTT" data-intro="Anota las repeticiones hechas para cada serie, de cada ejercicio, y para una sola sesión. Generalmente se usa después de entrenar." data-step="8">Anotar Reps Sesion</button></li>
@@ -42,7 +42,7 @@
             <ul class="interacciones">
                 <li><button class="btn btn-eliminarEjercicio" data-tooltip-class="introTT" data-intro="Elimina un ejercicio agregado -tal vez- por equivocación o que ya no quieras seguir haciendo" data-step="5">- Ejercicio</button></li>
                 <li><button class="btn btn-eliminarSesion" data-tooltip-class="introTT" data-intro="Elimina toda una tabla de sesión" data-step="6">- Sesión</button></li>
-                <li><button class="btn btn-borrarRutina" data-tooltip-class="introTT" data-intro="Elimina todas las tablas. TODOS LOS DATOS SE PERDERÁN" data-step="7" data-position="left">Borrar rutina</button></li>
+                <li><button class="btn btn-borrarRutina" data-tooltip-class="introTT" data-intro="Elimina todas las tablas. TODOS LOS DATOS SE PERDERÁN" data-step="7" data-position="auto">Borrar rutina</button></li>
             </ul>
         </div>
         
@@ -55,6 +55,28 @@
         
     <div class="routine-container" data-tooltip-class="introTT" data-intro="Si ya tenías una rutina guardada, esta se cargará automáticamente. Sino, se cargará la tabla de la rutina de prueba -'Rutina desde JSON'- sobre la cual vas a poder implementar todas las funcionalidades de la App y hacer tus pruebas. Puedes borrarla y crear tu propia sesión desde cero." data-step="13" data-position="right">
 
+    </div>
+
+    <h1 class="title"><span> Buscador de Ejercicios</span></h1>
+    <h2 class="title"><span data-tooltip-class="introTT" data-intro="Podes buscar un ejercicio según su número de identificación y obtener datos útiles acerca de aquel" data-step="" data-position="right">Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus entrenamientos</span></h2>
+    <h2 class="title">¡Contamos con más de 1300 ejercicios para vos!</h2>
+
+    <div>
+        <button class="btn btn-exercise-query" id="anclaBuscador" data-tooltip-class="introTT" data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="" data-position="right"> Realizar consulta</button>
+        <label for="exercise-query">Ingresá un número entre el 1 y el 1326</label>
+        <input type="text" name="exercise-query" id="inputNumeroEjercicio" data-tooltip-class="introTT" data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326" data-step="" data-position="right">
+    </div>
+    <div class="exercise-container">
+        <div class="exercise" data-tooltip-class="introTT" data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés" data-step="" data-position="bottom-middle-aligned">
+            <p>Nombre de Ejercicio: <span id="nombreDelEjericio"></span></p>
+            <p>Músculos que trabajan: <span id="musculoQueInterviene"></span></p>
+            <p>Elementos requeridos: <span id="elementosAUtilizar"></span></p>
+            <p>Zona a estimular: <span id="zonaAEstimular"></span></p>
+            <p>Indicaciones:</p>
+            <div class="exercise-img" data-tooltip-class="introTT" data-intro="Mirá las indicaciones para ver cómo se hace, y ya estás preparad@ para incorporar este ejercicio a tu rutina de entrenamiento." data-step="" data-position="right">
+                <img src="img/imgDefault.jpg" alt="Gif del Ejercicio" id="gifIndicaciones">
+            </div>
+        </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
