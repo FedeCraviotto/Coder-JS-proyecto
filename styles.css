@@ -19,9 +19,21 @@ body {
     width: 100%;
 }
 
-.routine-container {
+.input-error{
+    outline: 1px solid red;
+  }
+
+.routine-container,
+.exercise-container {
     height: 100vh;
 }
+
+.exercise-img {
+    width: 290px;
+    height: 290px;
+    margin: 0px auto;
+}
+
 #aboutCuadro {
     margin: 0px auto;
     max-width: 860px;
@@ -216,6 +228,12 @@ p {
     width: 20px;
 }
 
+@media screen and (min-width:578px) {
+    .exercise-img {
+        width: 360px;
+        height: 360px;
+    }
+}
 
 @media screen and (min-width:976px){
     p {
