@@ -1,59 +1,63 @@
 let rutina;
 let arrayDeEjercicios;
-
 //Sweet Alert
 Swal.fire({
-    title: 'Bienvenido',
-    text: 'Tocá "Explicación" para más info sobre la App',
-    icon: 'info',
-    confirmButtonText: 'OK',
-  }).then(() => {
-    rutina = JSON.parse(localStorage.getItem('rutina')) || [];
-    rutina.length==0?leerRutinaAXIOS():crearTablas();
-  })
+  title: "Bienvenido",
+  text: 'Tocá "Explicación" para más info sobre la App',
+  icon: "info",
+  confirmButtonText: "OK",
+}).then(() => {
+  rutina = JSON.parse(localStorage.getItem("rutina")) || [];
+  rutina.length == 0 ? leerRutinaAXIOS() : crearTablas();
+});
 
-async function leerRutinaAXIOS () {
-    try {
-        const { data } = await axios('./data/rutina.json')
-        rutina = data;
-        crearTablas();
-        Swal.fire({
-            title: 'Rutina cargada desde JSON',
-            text: 'Se ve que no tenías nada guardado en tu navegador. Hemos creado una tabla de muestra',
-            icon: 'info',
-            confirmButtonText: 'OK',
-        });
-    } catch {
-        rutina = [];
-    }
+async function leerRutinaAXIOS() {
+  try {
+    const { data } = await axios("./data/rutina.json");
+    rutina = data;
+    crearTablas();
+    Swal.fire({
+      title: "Rutina cargada desde JSON",
+      text: "Se ve que no tenías nada guardado en tu navegador. Hemos creado una tabla de muestra",
+      icon: "info",
+      confirmButtonText: "OK",
+    });
+  } catch {
+    rutina = [];
+  }
 }
 
 // Fetch API ejercicios. Parámetros + Call
 const options = {
-	method: 'GET',
-	headers: {
-		'X-RapidAPI-Key': '16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95',
-		'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com'
-	}
+  method: "GET",
+  headers: {
+    "X-RapidAPI-Key": "16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95",
+    "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+  },
 };
-fetch('https://exercisedb.p.rapidapi.com/exercises', options)
-	.then(response => response.json())
-	.then(response => {
-        arrayDeEjercicios = response;
+
+const btnGetExercises = document.querySelector('#getExercises');
+btnGetExercises.addEventListener('click', () => {
+  fetch("https://exercisedb.p.rapidapi.com/exercises", options)
+    .then((response) => response.json())
+    .then((response) => {
+      arrayDeEjercicios = response;
     })
-	.catch(err => console.error(err));
+    .catch((err) => console.error(err));
+})
+
 
 //DOM sin jQuery --> voy a tratar de pasar todo a DOM común, sin jQuery, que parece que tiene un par de funcionalidades obsoletas.
-const ejNombre = document.querySelector('#nombreDelEjericio');
-const ejMusculo = document.querySelector('#musculoQueInterviene');
-const ejElementos = document.querySelector('#elementosAUtilizar');
-const ejZona = document.querySelector('#zonaAEstimular');
-const ejGif = document.querySelector('#gifIndicaciones');
-const btnExerciseQuery = document.querySelector('.btn-exercise-query');
-const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
-const btnTranslationQuery = document.querySelector('.btn-translation-query');
-const inputTranslationQuery = document.querySelector('#translation-query');
-const spanTranslationResult = document.querySelector('#translation-result');
+const ejNombre = document.querySelector("#nombreDelEjericio");
+const ejMusculo = document.querySelector("#musculoQueInterviene");
+const ejElementos = document.querySelector("#elementosAUtilizar");
+const ejZona = document.querySelector("#zonaAEstimular");
+const ejGif = document.querySelector("#gifIndicaciones");
+const btnExerciseQuery = document.querySelector(".btn-exercise-query");
+const inputNumeroEjercicio = document.querySelector("#inputNumeroEjercicio");
+const btnTranslationQuery = document.querySelector(".btn-translation-query");
+const inputTranslationQuery = document.querySelector("#translation-query");
+const spanTranslationResult = document.querySelector("#translation-result");
 let ejercicioBuscado;
 
 const btnAgregarSesion = document.querySelector(".btn-agregarSesion");
@@ -68,9 +72,9 @@ btnAgregarSesion.addEventListener("click", () => {
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
-      const cantidadDeEjercicios = parseInt(Swal.getPopup().querySelector(
-        "#cantidadDeEjercicios"
-      ).value);
+      const cantidadDeEjercicios = parseInt(
+        Swal.getPopup().querySelector("#cantidadDeEjercicios").value
+      );
       if (
         !nombreDeSesion ||
         !cantidadDeEjercicios ||
@@ -127,9 +131,9 @@ btnAgregarSesion.addEventListener("click", () => {
           showCancelButton: true,
           focusConfirm: false,
           preConfirm: () => {
-            const cantSeries = parseInt(Swal.getPopup().querySelector(
-              `#seriesEjercicio${nro}`
-            ).value);
+            const cantSeries = parseInt(
+              Swal.getPopup().querySelector(`#seriesEjercicio${nro}`).value
+            );
             for (let j = 0; j < cantSeries; j++) {
               nuevaSesion.ejercicios[i].seriesBase.push([]);
             }
@@ -328,7 +332,7 @@ btnAgregarEjercicio.addEventListener("click", () => {
 
 const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
 btnAnotarRepsSesion.addEventListener("click", () => {
-    Swal.fire({
+  Swal.fire({
     title:
       "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
@@ -343,124 +347,50 @@ btnAnotarRepsSesion.addEventListener("click", () => {
       );
       return indiceSesion;
     },
-  }).then( async (result) => {
-    let indiceSesion = result.value;
-    for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
-        for (let j = 0; j < rutina[indiceSesion].ejercicios[i].seriesBase.length; j++) {
-            await Swal.fire({
-                  title: `${rutina[indiceSesion].ejercicios[i].nombre} - Serie ${j + 1} - Reps Realizadas`,
-                  html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
-                  confirmButtonText: "Siguiente",
-                  showCancelButton: true,
-                  focusConfirm: false,
-                  preConfirm: () => {
-                    const cantReps = parseInt(Swal.getPopup().querySelector("#cantReps").value);
-                    rutina[indiceSesion].ejercicios[i].seriesRealizadas.push(cantReps);
-                  }
-            });
-        }
-    }
-  }).then(r => {
-    Swal.fire({
-        icon: "success",
-        title: "Terminaste",
-        text: "Series Anotadas con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
-      });
   })
-});
-
-const btnAnotarRepsUno = document.querySelector('.btn-anotarRepsx1');
-btnAnotarRepsUno.addEventListener("click", () => {
-    Swal.fire({
-    title:
-      "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
-    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
-    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
-    preConfirm: () => {
-      const nombreDeSesion =
-        Swal.getPopup().querySelector("#nombreDeSesion").value;
-      const nombreDeEjercicio =
-        Swal.getPopup().querySelector("#nombreDeEjercicio").value;
-      let indiceSesion = rutina.indexOf(
-        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
-      );
-      let indiceEjercicio = rutina[indiceSesion].ejercicios.indexOf(
-        rutina[indiceSesion].ejercicios.find((ejercicio) => ejercicio.nombre == nombreDeEjercicio)
-        );
-      return {indiceSesion, indiceEjercicio};
-    },
-  }).then( async (result) => {
-    let indiceSesion = result.value.indiceSesion;
-    let indiceEjercicio = result.value.indiceEjercicio;
-        for (let i = 0; i < rutina[indiceSesion].ejercicios[indiceEjercicio].seriesBase.length; i++) {
-            await Swal.fire({
-                  title: `${rutina[indiceSesion].ejercicios[indiceEjercicio].nombre} - Serie ${i+ 1} - Reps Realizadas`,
-                  html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
-                  confirmButtonText: "Siguiente",
-                  showCancelButton: true,
-                  focusConfirm: false,
-                  preConfirm: () => {
-                    const cantReps = parseInt(Swal.getPopup().querySelector("#cantReps").value);
-                    rutina[indiceSesion].ejercicios[indiceEjercicio].seriesRealizadas.push(cantReps);
-                  }
-            });
-    }
-  }).then(r => {
-    Swal.fire({
-        icon: "success",
-        title: "Terminaste",
-        text: "Series Anotadas con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
-      });
-  })
-});
-
-const btnProxSesion = document.querySelector('.btn-generarProximaSesion');
-btnProxSesion.addEventListener('click', () => {
-    Swal.fire({
-        title:
-          "Ingrese nombre de la sesión de la cual quieras generar próximos pesos y repeticiones",
-        html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
-        confirmButtonText: "Siguiente",
-        showCancelButton: true,
-        focusConfirm: false,
-        preConfirm: () => {
-          const nombreDeSesion =
-            Swal.getPopup().querySelector("#nombreDeSesion").value;
-          let indiceSesion = rutina.indexOf(
-            rutina.find((sesion) => sesion.nombre == nombreDeSesion)
-          );
-          return indiceSesion;
-        },
-      }).then( (result) => {
-        let indiceSesion = result.value;
-        equipararUltimosPesosConProximos(indiceSesion);
-        actualizarPesos(indiceSesion);
-        actualizarSeries(indiceSesion);
-        Swal.fire({
-            icon: "success",
-            title: "Terminaste",
-            text: "Series y pesos de la sesión indicada actualizados con éxito.",
+    .then(async (result) => {
+      let indiceSesion = result.value;
+      for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
+        for (
+          let j = 0;
+          j < rutina[indiceSesion].ejercicios[i].seriesBase.length;
+          j++
+        ) {
+          await Swal.fire({
+            title: `${rutina[indiceSesion].ejercicios[i].nombre} - Serie ${
+              j + 1
+            } - Reps Realizadas`,
+            html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+            confirmButtonText: "Siguiente",
+            showCancelButton: true,
+            focusConfirm: false,
             preConfirm: () => {
-                localStorage.setItem("rutina", JSON.stringify(rutina));
-                reemplazarSesiones();
+              const cantReps = parseInt(
+                Swal.getPopup().querySelector("#cantReps").value
+              );
+              rutina[indiceSesion].ejercicios[i].seriesRealizadas.push(
+                cantReps
+              );
             },
-            });
+          });
+        }
+      }
+    })
+    .then((r) => {
+      Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Series Anotadas con éxito.",
+        preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
     });
-})
+});
 
-const btnProxSesionUno = document.querySelector('.btn-generarProximaSesionx1');
-btnProxSesionUno.addEventListener('click', () => {
+const btnAnotarRepsUno = document.querySelector(".btn-anotarRepsx1");
+btnAnotarRepsUno.addEventListener("click", () => {
   Swal.fire({
     title:
       "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
@@ -478,232 +408,373 @@ btnProxSesionUno.addEventListener('click', () => {
         rutina.find((sesion) => sesion.nombre == nombreDeSesion)
       );
       let indiceEjercicio = rutina[indiceSesion].ejercicios.indexOf(
-        rutina[indiceSesion].ejercicios.find((ejercicio) => ejercicio.nombre == nombreDeEjercicio)
-        );
-      return {indiceSesion, indiceEjercicio};
+        rutina[indiceSesion].ejercicios.find(
+          (ejercicio) => ejercicio.nombre == nombreDeEjercicio
+        )
+      );
+      return { indiceSesion, indiceEjercicio };
     },
-  }).then( (result) => {
-    let indiceSesion = result.value.indiceSesion;
-    let indiceEjercicio = result.value.indiceEjercicio;
-    equipararUltimosPesosConProximosUnicoEjercicio(indiceSesion, indiceEjercicio)
-    actualizarPesosUnicoEjercicio(indiceSesion, indiceEjercicio)
-    actualizarSeriesUnicoEjercicio(indiceSesion, indiceEjercicio)
-    Swal.fire({
+  })
+    .then(async (result) => {
+      let indiceSesion = result.value.indiceSesion;
+      let indiceEjercicio = result.value.indiceEjercicio;
+      for (
+        let i = 0;
+        i < rutina[indiceSesion].ejercicios[indiceEjercicio].seriesBase.length;
+        i++
+      ) {
+        await Swal.fire({
+          title: `${
+            rutina[indiceSesion].ejercicios[indiceEjercicio].nombre
+          } - Serie ${i + 1} - Reps Realizadas`,
+          html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+          confirmButtonText: "Siguiente",
+          showCancelButton: true,
+          focusConfirm: false,
+          preConfirm: () => {
+            const cantReps = parseInt(
+              Swal.getPopup().querySelector("#cantReps").value
+            );
+            rutina[indiceSesion].ejercicios[
+              indiceEjercicio
+            ].seriesRealizadas.push(cantReps);
+          },
+        });
+      }
+    })
+    .then((r) => {
+      Swal.fire({
         icon: "success",
         title: "Terminaste",
-        text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+        text: "Series Anotadas con éxito.",
         preConfirm: () => {
-            localStorage.setItem("rutina", JSON.stringify(rutina));
-            reemplazarSesiones();
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
         },
-        });
-  })
-})
+      });
+    });
+});
 
-const btnEliminarSesion = document.querySelector('.btn-eliminarSesion');
-btnEliminarSesion.addEventListener('click', () => {
+const btnProxSesion = document.querySelector(".btn-generarProximaSesion");
+btnProxSesion.addEventListener("click", () => {
   Swal.fire({
-    title:'Ingrese el nombre de la sesión que quiere borrar',
-    html:`<input class="swal2-input" type="text" id="nombreDeSesion" placeholder="Nombre de sesión"></input>`,
-    confirmButtonText: 'Siguiente',
+    title:
+      "Ingrese nombre de la sesión de la cual quieras generar próximos pesos y repeticiones",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+    confirmButtonText: "Siguiente",
     showCancelButton: true,
     focusConfirm: false,
     preConfirm: () => {
-      const nombreDeSesion = Swal.getPopup().querySelector('#nombreDeSesion').value;
-      let indiceSesion = rutina.indexOf(rutina.find(sesion => {sesion.nombre == nombreDeSesion}))
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
       return indiceSesion;
-    }
-  }).then(result => {
-    let indiceSesion = result.value
+    },
+  }).then((result) => {
+    let indiceSesion = result.value;
+    equipararUltimosPesosConProximos(indiceSesion);
+    actualizarPesos(indiceSesion);
+    actualizarSeries(indiceSesion);
+    Swal.fire({
+      icon: "success",
+      title: "Terminaste",
+      text: "Series y pesos de la sesión indicada actualizados con éxito.",
+      preConfirm: () => {
+        localStorage.setItem("rutina", JSON.stringify(rutina));
+        reemplazarSesiones();
+      },
+    });
+  });
+});
+
+const btnProxSesionUno = document.querySelector(".btn-generarProximaSesionx1");
+btnProxSesionUno.addEventListener("click", () => {
+  Swal.fire({
+    title:
+      "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      const nombreDeEjercicio =
+        Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
+      let indiceEjercicio = rutina[indiceSesion].ejercicios.indexOf(
+        rutina[indiceSesion].ejercicios.find(
+          (ejercicio) => ejercicio.nombre == nombreDeEjercicio
+        )
+      );
+      return { indiceSesion, indiceEjercicio };
+    },
+  }).then((result) => {
+    let indiceSesion = result.value.indiceSesion;
+    let indiceEjercicio = result.value.indiceEjercicio;
+    equipararUltimosPesosConProximosUnicoEjercicio(
+      indiceSesion,
+      indiceEjercicio
+    );
+    actualizarPesosUnicoEjercicio(indiceSesion, indiceEjercicio);
+    actualizarSeriesUnicoEjercicio(indiceSesion, indiceEjercicio);
+    Swal.fire({
+      icon: "success",
+      title: "Terminaste",
+      text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+      preConfirm: () => {
+        localStorage.setItem("rutina", JSON.stringify(rutina));
+        reemplazarSesiones();
+      },
+    });
+  });
+});
+
+const btnEliminarSesion = document.querySelector(".btn-eliminarSesion");
+btnEliminarSesion.addEventListener("click", () => {
+  Swal.fire({
+    title: "Ingrese el nombre de la sesión que quiere borrar",
+    html: `<input class="swal2-input" type="text" id="nombreDeSesion" placeholder="Nombre de sesión"></input>`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => {
+          sesion.nombre == nombreDeSesion;
+        })
+      );
+      return indiceSesion;
+    },
+  }).then((result) => {
+    let indiceSesion = result.value;
     rutina.splice(indiceSesion, 1);
     Swal.fire({
       icon: "success",
       title: "Terminaste",
       text: "Series y pesos del ejercicio indicado actualizados con éxito.",
       preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
+        localStorage.setItem("rutina", JSON.stringify(rutina));
+        reemplazarSesiones();
       },
-      });
+    });
   });
 });
 
-const btnEliminarEjercicio = document.querySelector('.btn-eliminarEjercicio');
-btnEliminarEjercicio.addEventListener('click', () => {
+const btnEliminarEjercicio = document.querySelector(".btn-eliminarEjercicio");
+btnEliminarEjercicio.addEventListener("click", () => {
   Swal.fire({
-    title:'Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar',
-    html:`<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
+    title:
+      "Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar",
+    html: `<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
     <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
-    confirmButtonText: 'Siguiente',
+    confirmButtonText: "Siguiente",
     showCancelButton: true,
     focusConfirm: false,
     preConfirm: () => {
-      const nombreDeSesion = Swal.getPopup().querySelector('#nombreDeSesion').value;
-      const nombreDeEjercicio = Swal.getPopup().querySelector('#nombreDeEjercicio').value;
-      let indiceDeSesion = rutina.indexOf(rutina.find(sesion => sesion.nombre == nombreDeSesion));
-      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(rutina[indiceDeSesion].ejercicios.find(ejercicio => ejercicio.nombre == nombreDeEjercicio));
-      return {indiceDeSesion, indiceDeEjercicio};
-    }
-  }).then(result => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      const nombreDeEjercicio =
+        Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+      let indiceDeSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
+      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+        rutina[indiceDeSesion].ejercicios.find(
+          (ejercicio) => ejercicio.nombre == nombreDeEjercicio
+        )
+      );
+      return { indiceDeSesion, indiceDeEjercicio };
+    },
+  }).then((result) => {
     let indiceDeSesion = result.value.indiceDeSesion;
     let indiceDeEjercicio = result.value.indiceDeEjercicio;
     rutina[indiceDeSesion].ejercicios.splice(indiceDeEjercicio, 1);
     Swal.fire({
-      title:'Listo',
-      icon: 'success',
-      text: 'Ejercicio eliminado exitosamente',
+      title: "Listo",
+      icon: "success",
+      text: "Ejercicio eliminado exitosamente",
       preConfirm: () => {
-        localStorage.setItem('rutina', JSON.stringify(rutina));
+        localStorage.setItem("rutina", JSON.stringify(rutina));
         reemplazarSesiones();
-      }
-    })
-  })
-})
+      },
+    });
+  });
+});
 
-const btnBorrarRutina = document.querySelector('.btn-borrarRutina');
-btnBorrarRutina.addEventListener('click', () => {
+const btnBorrarRutina = document.querySelector(".btn-borrarRutina");
+btnBorrarRutina.addEventListener("click", () => {
   Swal.fire({
-    title: 'Estás segur@?',
+    title: "Estás segur@?",
     text: "Una vez que elmines la rutina completa no podrás revertir este paso",
-    icon: 'warning',
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Si, eliminar la rutina'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Si, eliminar la rutina",
   }).then((result) => {
     if (result.isConfirmed) {
       rutina = [];
-      localStorage.removeItem('rutina');
+      localStorage.removeItem("rutina");
       borrarTablas();
-      Swal.fire(
-        'Atención',
-        'Has eliminado la rutina completa',
-        'info'
-      )
+      Swal.fire("Atención", "Has eliminado la rutina completa", "info");
     }
-  })
-})
+  });
+});
 
 /*FUNCIONES CALCULOS*/
 function equipararUltimosPesosConProximos(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        ejercicio.ultimosPesos = ejercicio.proximosPesos;
-    })
+  rutina[num].ejercicios.forEach((ejercicio) => {
+    ejercicio.ultimosPesos = ejercicio.proximosPesos;
+  });
 }
 function actualizarPesos(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        let nuevosPesos = [];
-        ejercicio.seriesRealizadas.forEach((serie, i) =>{
-            serie>=ejercicio.seriesBase[i][1]?nuevosPesos.push(ejercicio.ultimosPesos[i] + 5):nuevosPesos.push(ejercicio.ultimosPesos[i])  
-        })
-        ejercicio.proximosPesos = nuevosPesos;
-    })
+  rutina[num].ejercicios.forEach((ejercicio) => {
+    let nuevosPesos = [];
+    ejercicio.seriesRealizadas.forEach((serie, i) => {
+      serie >= ejercicio.seriesBase[i][1]
+        ? nuevosPesos.push(ejercicio.ultimosPesos[i] + 5)
+        : nuevosPesos.push(ejercicio.ultimosPesos[i]);
+    });
+    ejercicio.proximosPesos = nuevosPesos;
+  });
 }
 function actualizarSeries(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        let nuevasSeries = [];
-        ejercicio.seriesRealizadas.forEach((serie, i) => {
-            if (serie>=ejercicio.seriesBase[i][1]) {
-                nuevasSeries.push(ejercicio.seriesBase[i]);
-            } else {
-                let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie, ejercicio.seriesBase[i][1]);
-                nuevasSeries.push(nuevoRangoDeSeries);
-            }
-        })
-        ejercicio.proximasSeries = nuevasSeries;
-    })
+  rutina[num].ejercicios.forEach((ejercicio) => {
+    let nuevasSeries = [];
+    ejercicio.seriesRealizadas.forEach((serie, i) => {
+      if (serie >= ejercicio.seriesBase[i][1]) {
+        nuevasSeries.push(ejercicio.seriesBase[i]);
+      } else {
+        let nuevoRangoDeSeries = [];
+        nuevoRangoDeSeries.push(serie, ejercicio.seriesBase[i][1]);
+        nuevasSeries.push(nuevoRangoDeSeries);
+      }
+    });
+    ejercicio.proximasSeries = nuevasSeries;
+  });
 }
 
 function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
-    rutina[sesion].ejercicios[ejercicio].ultimosPesos =rutina[sesion].ejercicios[ejercicio].proximosPesos;
+  rutina[sesion].ejercicios[ejercicio].ultimosPesos =
+    rutina[sesion].ejercicios[ejercicio].proximosPesos;
 }
 function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
-    let nuevosPesos = [];
-    rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) =>{
-        serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]?nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5): nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i])
-        })
-        rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
+  let nuevosPesos = [];
+  rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
+    serie >= rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]
+      ? nuevosPesos.push(
+          rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5
+        )
+      : nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i]);
+  });
+  rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
 }
 function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
-    let nuevasSeries = [];
-    rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
-            if (serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
-                nuevasSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i]);
-            } else {
-                let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie, rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
-                nuevasSeries.push(nuevoRangoDeSeries);
-            }
-        })
-        rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
+  let nuevasSeries = [];
+  rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
+    if (serie >= rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
+      nuevasSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i]);
+    } else {
+      let nuevoRangoDeSeries = [];
+      nuevoRangoDeSeries.push(
+        serie,
+        rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]
+      );
+      nuevasSeries.push(nuevoRangoDeSeries);
+    }
+  });
+  rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
 }
 
 // Input number tester - Declaración  + Call
 function filtrarInput(textbox, inputFilter, errMsg) {
-    ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop", "focusout"].forEach((event) => {
-      textbox.addEventListener(event, function(e) {
-        if (inputFilter(this.value)) {
-          // Accepted value
-          if (["keydown","mousedown","focusout"].indexOf(e.type) >= 0){
-            this.classList.remove("input-error");
-            this.setCustomValidity("");
-          }
-          this.oldValue = this.value;
-          this.oldSelectionStart = this.selectionStart;
-          this.oldSelectionEnd = this.selectionEnd;
-        } else if (this.hasOwnProperty("oldValue")) {
-          // Rejected value - restore the previous one
-          this.classList.add("input-error");
-          this.setCustomValidity(errMsg);
-          this.reportValidity();
-          this.value = this.oldValue;
-          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
-        } else {
-          // Rejected value - nothing to restore
-          this.value = "";
+  [
+    "input",
+    "keydown",
+    "keyup",
+    "mousedown",
+    "mouseup",
+    "select",
+    "contextmenu",
+    "drop",
+    "focusout",
+  ].forEach((event) => {
+    textbox.addEventListener(event, function (e) {
+      if (inputFilter(this.value)) {
+        // Accepted value
+        if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+          this.classList.remove("input-error");
+          this.setCustomValidity("");
         }
-      });
+        this.oldValue = this.value;
+        this.oldSelectionStart = this.selectionStart;
+        this.oldSelectionEnd = this.selectionEnd;
+      } else if (this.hasOwnProperty("oldValue")) {
+        // Rejected value - restore the previous one
+        this.classList.add("input-error");
+        this.setCustomValidity(errMsg);
+        this.reportValidity();
+        this.value = this.oldValue;
+        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+      } else {
+        // Rejected value - nothing to restore
+        this.value = "";
+      }
     });
-  }
+  });
+}
 
-  filtrarInput(document.getElementById("inputNumeroEjercicio"), (value) => {
+filtrarInput(
+  document.getElementById("inputNumeroEjercicio"),
+  (value) => {
     return /^\d*\.?\d*$/.test(value); // Permitir solo números
-  }, "Recordá ingresar números entre 1 y 1326");
-
+  },
+  "Recordá ingresar números entre 1 y 1326"
+);
 
 // Translate API function & request setup
-async function requestTranslation () {
-    try {
-        let mensajeATraducir = inputTranslationQuery.value;
-        const encodedParams = new URLSearchParams();
-        encodedParams.append("q", mensajeATraducir);
-        encodedParams.append("target", "es");
-        encodedParams.append("source", "en");
-        const translateOptions = {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/x-www-form-urlencoded',
-                'Accept-Encoding': 'application/gzip',
-                'X-RapidAPI-Key': '16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95',
-                'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
-            },
-            body: encodedParams
-        };
+async function requestTranslation() {
+  try {
+    let mensajeATraducir = inputTranslationQuery.value;
+    const encodedParams = new URLSearchParams();
+    encodedParams.append("q", mensajeATraducir);
+    encodedParams.append("target", "es");
+    encodedParams.append("source", "en");
+    const translateOptions = {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "Accept-Encoding": "application/gzip",
+        "X-RapidAPI-Key": "16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95",
+        "X-RapidAPI-Host": "google-translate1.p.rapidapi.com",
+      },
+      body: encodedParams,
+    };
 
-        const traduccionObj = await fetch('https://google-translate1.p.rapidapi.com/language/translate/v2', translateOptions);
-        const data = await traduccionObj.json()
-        let traduccion = data.data.translations[0].translatedText;
-        spanTranslationResult.innerText = `"${traduccion}"`;
-    } catch {
-        (err => console.error(err));
-    } 
+    const traduccionObj = await fetch(
+      "https://google-translate1.p.rapidapi.com/language/translate/v2",
+      translateOptions
+    );
+    const data = await traduccionObj.json();
+    let traduccion = data.data.translations[0].translatedText;
+    spanTranslationResult.innerText = `"${traduccion}"`;
+  } catch {
+    (err) => console.error(err);
+  }
 }
 
 /*FUNCIONES RENDER TABLA*/
 function crearTablas() {
-    rutina.forEach((sesion, i) => {
-    const tablaDeSesion = document.createElement('table')
+  rutina.forEach((sesion, i) => {
+    const tablaDeSesion = document.createElement("table");
     tablaDeSesion.innerHTML = `
     <caption>${sesion.nombre}</caption>
         <tr>
@@ -715,95 +786,97 @@ function crearTablas() {
             <th>Proximas Series</th>
             <th>Proximos Pesos</th>
         </tr>
-            `;  
-        sesion.ejercicios.forEach((ejercicio, indice) => {
-            let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
-            let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
-            let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ")
-            let seriesBaseTD = document.createElement('td')
-            let seriesBaseUL = document.createElement('ul')
-            ejercicio.seriesBase.forEach((serie, i) => {
-            let seriesBaseLI = document.createElement('li')
-            seriesBaseLI.innerText = serie.join(" - ");
-            seriesBaseUL.append(seriesBaseLI);
-            })
-            seriesBaseTD.append(seriesBaseUL)
-            let proximasSeriesTD = document.createElement('td')
-            let proximasSeriesUL = document.createElement('ul')
-            ejercicio.proximasSeries.forEach((serie, i) => {
-            let proximasSeriesLI = document.createElement('li')
-            proximasSeriesLI.innerText = serie.join(" - ");
-            proximasSeriesUL.append(proximasSeriesLI);
-            })
-            proximasSeriesTD.append(proximasSeriesUL)
-            const nuevoEjercicio = document.createElement('tr')
-            nuevoEjercicio.innerHTML = `
+            `;
+    sesion.ejercicios.forEach((ejercicio, indice) => {
+      let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
+      let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
+      let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ");
+      let seriesBaseTD = document.createElement("td");
+      let seriesBaseUL = document.createElement("ul");
+      ejercicio.seriesBase.forEach((serie, i) => {
+        let seriesBaseLI = document.createElement("li");
+        seriesBaseLI.innerText = serie.join(" - ");
+        seriesBaseUL.append(seriesBaseLI);
+      });
+      seriesBaseTD.append(seriesBaseUL);
+      let proximasSeriesTD = document.createElement("td");
+      let proximasSeriesUL = document.createElement("ul");
+      ejercicio.proximasSeries.forEach((serie, i) => {
+        let proximasSeriesLI = document.createElement("li");
+        proximasSeriesLI.innerText = serie.join(" - ");
+        proximasSeriesUL.append(proximasSeriesLI);
+      });
+      proximasSeriesTD.append(proximasSeriesUL);
+      const nuevoEjercicio = document.createElement("tr");
+      nuevoEjercicio.innerHTML = `
             <td>${ejercicio.nombre}</td>
             <td>${ejercicio.seriesBase.length}</td>
             <td>${ultimosPesosUnidos}</td>
             <td>${seriesRealizadasUnidas}</td>
-            <td>${proximosPesosUnidos}</td>`
-            nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
-            nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
-            tablaDeSesion.append(nuevoEjercicio)  
-        })
-        $('.routine-container').append(tablaDeSesion);
+            <td>${proximosPesosUnidos}</td>`;
+      nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
+      nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
+      tablaDeSesion.append(nuevoEjercicio);
     });
-};
+    $(".routine-container").append(tablaDeSesion);
+  });
+}
 // CALLBACK - //Borra visualmente, y renderiza de nuevo todas las tablas.
 function reemplazarSesiones() {
-    borrarTablas()
-    crearTablas()
+  borrarTablas();
+  crearTablas();
 }
 //Borra del array. Actualiza storage. No renderiza // NO BUTTON - CALLBACK  de borrarRutina() //Solamente borra visualmente las tablas.
 function borrarTablas() {
-    const todasLasTablas = document.querySelectorAll('table');
-    todasLasTablas.forEach((table) => {
-        table.remove()
-    });
+  const todasLasTablas = document.querySelectorAll("table");
+  todasLasTablas.forEach((table) => {
+    table.remove();
+  });
 }
 //EVENTOS - Panel Principal
-const btnAbout = document.querySelector('.btn-about')
-btnAbout.addEventListener('click', () => {
-  introJs().setOptions({
+const btnAbout = document.querySelector(".btn-about");
+btnAbout.addEventListener("click", () => {
+  introJs()
+    .setOptions({
       disableInteraction: true,
       exitOnOverlayClick: false,
-    }).start();
-})
+    })
+    .start();
+});
 //Darkmode
-const btnDarkMode = document.querySelector('#darkmode-toggle');
-btnDarkMode.addEventListener('change', () => {
-  document.querySelector('body').classList.toggle("darkBC");
-})
+const btnDarkMode = document.querySelector("#darkmode-toggle");
+btnDarkMode.addEventListener("change", () => {
+  document.querySelector("body").classList.toggle("darkBC");
+});
 //EVENTOS Exercise API
-btnExerciseQuery.addEventListener('click', () => {
+btnExerciseQuery.addEventListener("click", () => {
   idEjercicio = inputNumeroEjercicio.value - 1;
-  ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+  ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
   ejNombre.innerText = ejercicioBuscado.name;
   ejMusculo.innerText = ejercicioBuscado.bodyPart;
   ejElementos.innerText = ejercicioBuscado.equipment;
   ejZona.innerText = ejercicioBuscado.target;
   ejGif.src = ejercicioBuscado.gifUrl;
-})
+});
 
-inputNumeroEjercicio.addEventListener('keydown',  (e) => {
-      if (e.key === "Enter") {
-        idEjercicio = inputNumeroEjercicio.value - 1;
-        ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
-        ejNombre.innerText = ejercicioBuscado.name;
-        ejMusculo.innerText = ejercicioBuscado.bodyPart;
-        ejElementos.innerText = ejercicioBuscado.equipment;
-        ejZona.innerText = ejercicioBuscado.target;
-        ejGif.src = ejercicioBuscado.gifUrl;
-      }
-})
+inputNumeroEjercicio.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    idEjercicio = inputNumeroEjercicio.value - 1;
+    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
+    ejNombre.innerText = ejercicioBuscado.name;
+    ejMusculo.innerText = ejercicioBuscado.bodyPart;
+    ejElementos.innerText = ejercicioBuscado.equipment;
+    ejZona.innerText = ejercicioBuscado.target;
+    ejGif.src = ejercicioBuscado.gifUrl;
+  }
+});
 
 //EVENTOS Translate API
-btnTranslationQuery.addEventListener('click', () => {
+btnTranslationQuery.addEventListener("click", () => {
   requestTranslation();
-})
-inputTranslationQuery.addEventListener('keydown',  (e) => {
+});
+inputTranslationQuery.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-      requestTranslation();
+    requestTranslation();
   }
-})
+});
