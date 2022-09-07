@@ -1,1 +1,0 @@
-let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(rutina[indiceDeSesion].ejercicios.find(ejercicio => { ejercicio.nombre == nombreDeEjercicio}));

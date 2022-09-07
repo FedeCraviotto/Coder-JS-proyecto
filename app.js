@@ -43,9 +43,11 @@ btnGetExercises.addEventListener('click', () => {
     .then((response) => {
       arrayDeEjercicios = response;
     })
-    .catch((err) => console.error(err));
+    .catch( async (err) => { // Si la API no responde por exceso de callQuota, ante ese reject pedir los ejercicios al json local.
+      const { data } = await axios("./data/exerciseList.json");
+      arrayDeEjercicios = data;
+    });
 })
-
 
 //DOM sin jQuery --> voy a tratar de pasar todo a DOM común, sin jQuery, que parece que tiene un par de funcionalidades obsoletas.
 const ejNombre = document.querySelector("#nombreDelEjericio");
