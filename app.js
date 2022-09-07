@@ -39,7 +39,6 @@ const options = {
 fetch('https://exercisedb.p.rapidapi.com/exercises', options)
 	.then(response => response.json())
 	.then(response => {
-        console.log(response)
         arrayDeEjercicios = response;
     })
 	.catch(err => console.error(err));
@@ -55,780 +54,536 @@ const inputNumeroEjercicio = document.querySelector('#inputNumeroEjercicio');
 const btnTranslationQuery = document.querySelector('.btn-translation-query');
 const inputTranslationQuery = document.querySelector('#translation-query');
 const spanTranslationResult = document.querySelector('#translation-result');
-
-// Variables
-let nombreDeSesionIngresado = ""; 
-let numeroDeSesionIngresada = 0;
-let nombreDeEjercicioIngresado = "";
-let numeroDeEjercicioIngresado = 0;
-let cantidadEjercicios;
-let nuevaSesion;
-let nuevoEjercicio;
-let btnContinuar1;
-let btnContinuar2;
-let btnContinuar3;
-let btnContinuar4;
-let btnContinuar5;
-let btnContinuar6;
-let idEjercicio;
 let ejercicioBuscado;
 
-
-/*Btn Create Functions */
-function crearBtn1Continuar () {
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.textContent='Continuar';
-}
-function crearBtn2Continuar () {
-    btnContinuar2 = document.createElement('button');
-    btnContinuar2.textContent='Continuar';
-}
-function crearBtn3Continuar () {
-    btnContinuar3 = document.createElement('button');
-    btnContinuar3.textContent='Continuar';
-}
-function crearBtn4Continuar () {
-    btnContinuar4 = document.createElement('button');
-    btnContinuar4.textContent='Continuar';
-}
-function crearBtn5Continuar () {
-    btnContinuar5 = document.createElement('button');
-    btnContinuar5.textContent='Continuar';
-}
-
-function agregarBotonClose () {
-    let botonClose = document.createElement('button');
-    botonClose.setAttribute('class', 'btn close');
-    botonClose.textContent = 'X';
-    $('.modal').append(botonClose);
-    $('.close').click(() => { 
-        setTimeout(function(){ //Sube el modal
-            $('.modal').addClass('modal-close');}, 100)
-        setTimeout(function(){ //Pantalla gris
-            $('.modal-container').toggleClass('container-hidden');}, 400)
-            nuevaSesion = undefined;
-            $('.modal').html("")
-    }) 
-}
-// Funciones Core
-function agregarSesion() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    let nuevoParrafo2 = document.createElement('p');
-    let nuevoInput2 = document.createElement('input');
-    nuevoParrafo1.textContent = 'Ingrese el nombre de sesion';
-    nuevoInput1.setAttribute('id',`input-nombreSesion`);
-    nuevoParrafo2.textContent = 'Ingrese la cantidad de ejercicios para esta sesion';
-    nuevoInput2.setAttribute('id',`input-cantidadDeEjercicios`)
-    agregarBotonClose();
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, nuevoParrafo2, nuevoInput2, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 600)
-    btnContinuar1.addEventListener('click', () => { // Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesion');
-        console.log(nombreSesionPorInput.value);
-        nuevaSesion ={
-            nombre:nombreSesionPorInput.value,
-            ejercicios: []
-        };
-        let cantidadEjerciciosPorInput = document.getElementById('input-cantidadDeEjercicios');
-        cantidadEjercicios = parseInt(cantidadEjerciciosPorInput.value);
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose()
-        for (let i=1; i<=cantidadEjercicios; i++) {
-        let nuevoParrafo = document.createElement('p');
-        let nuevoInput = document.createElement('input');
-        nuevoInput.setAttribute('id',`inputNombreEjercicio${i}`)
-        nuevoParrafo.textContent = `Ingrese el nombre para el ejercicio ${i}`
-        $('.modal').append(nuevoParrafo, nuevoInput)
-        } 
-        crearBtn2Continuar()
-        $('.modal').append(btnContinuar2);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300);
-    btnContinuar2.addEventListener('click', () => { // Continuar
-        for (let i=1; i<=cantidadEjercicios; i++) {
-        const inputValue = document.getElementById(`inputNombreEjercicio${i}`)            
-        nuevaSesion.ejercicios.push(
-            {
-                nombre:inputValue.value,
-                seriesBase:[],
-                seriesRealizadas:[],
-                ultimosPesos:[],
-                proximosPesos: [],
-                proximasSeries:[]
+const btnAgregarSesion = document.querySelector(".btn-agregarSesion");
+btnAgregarSesion.addEventListener("click", () => {
+  Swal.fire({
+    title: "Ingrese nombre de sesión y cantidad de ejercicios",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+        <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      const cantidadDeEjercicios = parseInt(Swal.getPopup().querySelector(
+        "#cantidadDeEjercicios"
+      ).value);
+      if (
+        !nombreDeSesion ||
+        !cantidadDeEjercicios ||
+        cantidadDeEjercicios > 8 ||
+        cantidadDeEjercicios <= 0
+      ) {
+        Swal.showValidationMessage(
+          `Recuerda ingresar un nombre de sesión, y que la cantidad de ejercicios debe ser mínimo 1 y máximo 8`
+        );
+      }
+      let ejercicios = [];
+      for (let i = 0; i < cantidadDeEjercicios; i++) {
+        ejercicios.push({
+          nombre: "",
+          proximasSeries: [],
+          proximosPesos: [],
+          seriesBase: [],
+          seriesRealizadas: [],
+          ultimosPesos: [],
+        });
+      }
+      let nuevaSesion = { nombre: nombreDeSesion, ejercicios: ejercicios };
+      return nuevaSesion;
+    },
+  })
+    .then(async (result) => {
+      let nuevaSesion = result.value;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        await Swal.fire({
+          title: `Ingrese nombre para el ejercicio N° ${i + 1}`,
+          html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
+          confirmButtonText: "Siguiente",
+          showCancelButton: true,
+          focusConfirm: false,
+          preConfirm: () => {
+            let nombreDeEjercicio =
+              Swal.getPopup().querySelector(`#ejercicio`).value;
+            return nombreDeEjercicio;
+          },
+        }).then((result) => {
+          nuevaSesion.ejercicios[i].nombre = result.value;
+        });
+      }
+      return nuevaSesion;
+    })
+    .then(async (result) => {
+      let nuevaSesion = result;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        let nro = i + 1;
+        await Swal.fire({
+          title: `Ingrese cantidad de series para el ejercicio N° ${nro}`,
+          html: `<input type="text" id="seriesEjercicio${nro}" class="swal2-input" placeholder="Cant Series">`,
+          confirmButtonText: "Siguiente",
+          showCancelButton: true,
+          focusConfirm: false,
+          preConfirm: () => {
+            const cantSeries = parseInt(Swal.getPopup().querySelector(
+              `#seriesEjercicio${nro}`
+            ).value);
+            for (let j = 0; j < cantSeries; j++) {
+              nuevaSesion.ejercicios[i].seriesBase.push([]);
             }
+          },
+        });
+      }
+      return nuevaSesion;
+    })
+    .then(async (result) => {
+      let nuevaSesion = result;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
+          await Swal.fire({
+            title: `Ingresá el mínimo y el máximo de repeticiones para la serie N° ${
+              j + 1
+            } del ejercicio ${nuevaSesion.ejercicios[i].nombre}`,
+            html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
+                            <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
+            confirmButtonText: "Siguiente",
+            showCancelButton: true,
+            focusConfirm: false,
+            preConfirm: () => {
+              const minReps = parseInt(
+                Swal.getPopup().querySelector(`#minReps`).value
+              );
+              const maxReps = parseInt(
+                Swal.getPopup().querySelector(`#maxReps`).value
+              );
+              nuevaSesion.ejercicios[i].seriesBase[j].push(minReps);
+              nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
+            },
+          });
+        }
+      }
+      return nuevaSesion;
+    })
+    .then(async (result) => {
+      let nuevaSesion = result;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
+          await Swal.fire({
+            title: `Ingresá el peso (kg) a levantar para la serie N° ${
+              j + 1
+            } del ejercicio ${nuevaSesion.ejercicios[i].nombre}`,
+            html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
+            confirmButtonText: "Siguiente",
+            showCancelButton: true,
+            focusConfirm: false,
+            preConfirm: () => {
+              const peso = parseInt(
+                Swal.getPopup().querySelector(`#peso`).value
+              );
+              return peso;
+            },
+          }).then((result) => {
+            nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
+          });
+        }
+      }
+      return nuevaSesion;
+    })
+    .then((result) => {
+      Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Rutina creada con éxito.",
+        preConfirm: () => {
+          rutina.push(result);
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
+    });
+});
+
+const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
+btnAgregarEjercicio.addEventListener("click", () => {
+  Swal.fire({
+    title: `Ingresá el nombre del ejercicio a agregar`,
+    html: `<input type="text" id="nombre" class="swal2-input" placeholder="Nombre del ejercicio">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombre = Swal.getPopup().querySelector(`#nombre`).value;
+      let nuevoEjercicio = {
+        nombre: nombre,
+        seriesBase: [],
+        seriesRealizadas: [],
+        ultimosPesos: [],
+        proximosPesos: [],
+        proximasSeries: [],
+      };
+      return nuevoEjercicio;
+    },
+  })
+    .then(async (result) => {
+      let nuevoEjercicio = result.value;
+      await Swal.fire({
+        title: `Ingrese cantidad de series para el ejercicio ${nuevoEjercicio.nombre}`,
+        html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Ingresa cantidad de series">`,
+        confirmButtonText: "Siguiente",
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+          const cantSeries = parseInt(
+            Swal.getPopup().querySelector(`#seriesEjercicio`).value
+          );
+          for (let i = 0; i < cantSeries; i++) {
+            nuevoEjercicio.seriesBase.push([]);
+          }
+        },
+      });
+      return nuevoEjercicio;
+    })
+    .then(async (result) => {
+      let nuevoEjercicio = result;
+      for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
+        await Swal.fire({
+          title: `Ingresá el mínimo y el máximo de repeticiones para la serie ${
+            i + 1
+          } `,
+          html: `<input type="number" id="minReps" class="swal2-input" placeholder="Min">
+            <input type="number" id="maxReps" class="swal2-input" placeholder="Max">`,
+          confirmButtonText: "Siguiente",
+          showCancelButton: true,
+          focusConfirm: false,
+          preConfirm: () => {
+            const minReps = parseInt(
+              Swal.getPopup().querySelector(`#minReps`).value
             );
-        }      
-    $('.modal').html("") //Blanqueo el modal
-    agregarBotonClose()
-    for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-        let nuevoParrafo = document.createElement('p');
-        let nuevoInput = document.createElement('input');
-        nuevoInput.setAttribute('id',`inputCantidadDeSeriesEjercicio${i+1}`)
-        nuevoParrafo.textContent = `Ingrese cantidad de series para el ejercicio ${i+1}`
-        $('.modal').append(nuevoParrafo, nuevoInput)
-        }
-        crearBtn3Continuar()
-        $('.modal').append(btnContinuar3);  
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300)
-            btnContinuar3.addEventListener('click', () => { // Continuar
-                for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-                    const inputValue = parseInt(document.getElementById(`inputCantidadDeSeriesEjercicio${i+1}`).value)        
-                    for (let j=1; j<=inputValue; j++) {
-                        nuevaSesion.ejercicios[i].seriesBase.push([]);
-                    }
-                }
-        $('.modal').html("") //Blanqueo el modal
-        agregarBotonClose()
-        for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-            for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                let nuevoParrafoMin = document.createElement('p');
-                let nuevoInputMin = document.createElement('input');
-                let nuevoParrafoMax = document.createElement('p');
-                let nuevoInputMax = document.createElement('input');
-                nuevoInputMin.setAttribute('id',`inputEj${i+1}Serie${j+1}Min`)
-                nuevoParrafoMin.textContent = `${nuevaSesion.ejercicios[i].nombre} - Serie ${j+1} Reps Min.`
-                nuevoInputMax.setAttribute('id',`inputEj${i+1}Serie${j+1}Max`)
-                nuevoParrafoMax.textContent = `${nuevaSesion.ejercicios[i].nombre} - Serie ${j+1} Reps Max.`
-                $('.modal').append(nuevoParrafoMin, nuevoInputMin, nuevoParrafoMax, nuevoInputMax)                
-            }
-        }
-        crearBtn4Continuar()
-        $('.modal').append(btnContinuar4);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar4.addEventListener('click', () => { // Continuar 
-            for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-                for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                    let inputValueMin = parseInt(document.getElementById
-                        (`inputEj${i+1}Serie${j+1}Min`).value);
-                        let inputValueMax = parseInt(document.getElementById
-                            (`inputEj${i+1}Serie${j+1}Max`).value);      
-                            nuevaSesion.ejercicios[i].seriesBase[j].push(inputValueMin);
-                            nuevaSesion.ejercicios[i].seriesBase[j].push(inputValueMax);
-                }
-            }
-        $('.modal').html("") //Blanqueo el modal
-        agregarBotonClose()
-        for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-            for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                let nuevoParrafo = document.createElement('p');
-                let nuevoInput = document.createElement('input');
-                nuevoInput.setAttribute('id',`inputPesoSerie${j+1}Ejercicio${i+1}`)
-                nuevoParrafo.textContent = `${nuevaSesion.ejercicios[i].nombre} -Serie ${j+1} - Peso a levantar (en kg)`
-                $('.modal').append(nuevoParrafo, nuevoInput)
-            }
-        }
-        crearBtn5Continuar()
-        $('.modal').append(btnContinuar5);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ // Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300)
-            btnContinuar5.addEventListener('click', () => { // Continuar 
-                    for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-                        for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                            let inputValue = parseInt(document.getElementById
-                (`inputPesoSerie${j+1}Ejercicio${i+1}`).value)       
-                nuevaSesion.ejercicios[i].proximosPesos.push(inputValue);
-            }
-        }
-        $('.modal').html(""); //blanqueo el modal
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Sesión creada con éxito'
-        btnContinuar6 = document.createElement('button');
-        btnContinuar6.textContent='Finalizar';
-        $('.modal').append(ultimoParrafo, btnContinuar6);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300)
-            btnContinuar6.addEventListener('click', () => { // Continuar 
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');
-                    setTimeout(function(){
-                        $('.modal-container').toggleClass('container-hidden');
-                    }, 300)
-                }, 300)
-                
-                rutina.push(nuevaSesion);
-                console.log(rutina)
-                localStorage.setItem('rutina', JSON.stringify(rutina));
-                reemplazarSesiones();
-                $('.modal').html("")
-            })
-        })
-        })
-        })
-    })
-    })
-}
-function agregarEjercicio() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion en el cual vas a agregar el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 600) 
-    btnContinuar1.addEventListener('click', () => { // Continuar
-        let nombreSesionPorInput = nuevoInput1.value;
-        nombreDeSesionIngresado = nombreSesionPorInput;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose()
-        let nuevoParrafoNombreEj = document.createElement('p');
-        let nuevoInputNombreEj = document.createElement('input');
-        nuevoInputNombreEj.setAttribute('id','inputNombreEjercicio')
-        nuevoParrafoNombreEj.textContent = `Ingrese el nombre para el ejercicio`
-        crearBtn2Continuar()
-        $('.modal').append(nuevoParrafoNombreEj, nuevoInputNombreEj, btnContinuar2)
-    setTimeout(function(){ //Sube el modal
-        $('.modal').toggleClass('modal-close');})
-    setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar2.addEventListener('click', () => { // Continuar
-            const inputValue = nuevoInputNombreEj.value            
-            nuevoEjercicio ={
-            nombre:inputValue,
-            seriesBase:[],
-            seriesRealizadas:[],
-            ultimosPesos:[],
-            proximosPesos: [],
-            proximasSeries:[]
-        }
-        console.log(nuevoEjercicio)
-        $('.modal').html(""); //Blanqueo el modal
-        agregarBotonClose();
-        let nuevoParrafo = document.createElement('p');
-        let nuevoInput = document.createElement('input');
-        nuevoInput.setAttribute('id','inputQSeries')
-        nuevoParrafo.textContent = `Ingrese cantidad de series para el ejercicio`
-        crearBtn3Continuar() 
-        $('.modal').append(nuevoParrafo, nuevoInput, btnContinuar3);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300)
-        btnContinuar3.addEventListener('click', () => { // Continuar 
-        let inputValue = parseInt(document.getElementById('inputQSeries').value)
-        console.log(inputValue);       
-        for (let i=1; i<=inputValue; i++) {
-            nuevoEjercicio.seriesBase.push([]);    
-        }
-        $('.modal').html("") //Blanqueo el modal
-        agregarBotonClose()
-    for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-        let nuevoParrafoMin = document.createElement('p');
-        let nuevoInputMin = document.createElement('input');
-        let nuevoParrafoMax = document.createElement('p');
-        let nuevoInputMax = document.createElement('input');
-        nuevoInputMin.setAttribute('id',`inputSerie${i+1}Min`)
-        nuevoParrafoMin.textContent = `Serie ${i+1} Reps Min.`
-        nuevoInputMax.setAttribute('id',`inputSerie${i+1}Max`)
-        nuevoParrafoMax.textContent = `Serie ${i+1} Reps Max.`
-        $('.modal').append(nuevoParrafoMin, nuevoInputMin, nuevoParrafoMax, nuevoInputMax)
-    }
-    crearBtn4Continuar()
-    $('.modal').append(btnContinuar4);
-    setTimeout(function(){ //Sube el modal
-        $('.modal').toggleClass('modal-close');})
-    setTimeout(function(){ //Baja el modal
-        $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar4.addEventListener('click', () => { // Toca en Continuar 
-        for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-            let inputValueMin = parseInt(document.getElementById
-            (`inputSerie${i+1}Min`).value);
-            let inputValueMax = parseInt(document.getElementById
-                (`inputSerie${i+1}Max`).value);      
-                nuevoEjercicio.seriesBase[i].push(inputValueMin);
-                nuevoEjercicio.seriesBase[i].push(inputValueMax);
-        }
-        $('.modal').html("") //Blanqueo el modal
-        agregarBotonClose()
-                        
-    for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-        let nuevoParrafo = document.createElement('p');
-        let nuevoInput = document.createElement('input');
-        nuevoInput.setAttribute('id',`inputPesoSerie${i+1}`)
-        nuevoParrafo.textContent = `Serie ${i+1} - Peso a levantar (en kg)`
-        $('.modal').append(nuevoParrafo, nuevoInput)
-        }
-        crearBtn5Continuar()
-        $('.modal').append(btnContinuar5);
-        setTimeout(function(){//Sube el modal
-            $('.modal').toggleClass('modal-close');})
-            setTimeout(function(){ //Baja el modal
-                $('.modal').toggleClass('modal-close');}, 300)
-                btnContinuar5.addEventListener('click', () => { // Toca en Continuar 
-                    for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-                        let inputValue = parseInt(document.getElementById
-                            (`inputPesoSerie${i+1}`).value)       
-                            nuevoEjercicio.proximosPesos.push(inputValue);
-                        }
-                    
-                //blanqueo el modal
-                $('.modal').html("")
-                let ultimoParrafo = document.createElement('p');
-                ultimoParrafo.textContent = 'Ejercicio creado con éxito'
-                // $('.modal').append(ultimoParrafo);
-                btnContinuar6 = document.createElement('button');
-                btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-                btnContinuar6.textContent='Finalizar';
-                $('.modal').append(ultimoParrafo, btnContinuar6);
-                //Sube el modal
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');})
-                //Baja el modal
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');}, 300)
-                    // Toca en Continuar 
-                    btnContinuar6.addEventListener('click', () => {
-                        setTimeout(function(){
-                            $('.modal').toggleClass('modal-close');
-                            setTimeout(function(){
-                                $('.modal-container').toggleClass('container-hidden');
-                            }, 300)
-                        }, 300)
-                        
-                        
-                        rutina[numeroDeSesionIngresada].ejercicios.push(nuevoEjercicio);
-                        console.log(rutina)
-                        localStorage.setItem('rutina', JSON.stringify(rutina));
-                        reemplazarSesiones();
-                        $('.modal').html("");
-                    })
-                })
-            })
-        })
-    })
-})
-}
-function anotarRepeticionesDeTodaUnaSesion() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion en el cual vas a agregar el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    //Pantalla gris
-    setTimeout(function(){
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => {
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose()
-        rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-            ejercicio.seriesBase.forEach((serie, j) => {
-            let parrafoReps = document.createElement('p');
-            let inputReps = document.createElement('input');
-            inputReps.setAttribute('id',`inputRepsSerie${j}Ej${i}`)
-            parrafoReps.textContent = `${ejercicio.nombre} - Serie ${j+1} - Reps Realizadas`
-            $('.modal').append(parrafoReps, inputReps)
-            })
+            const maxReps = parseInt(
+              Swal.getPopup().querySelector(`#maxReps`).value
+            );
+            nuevoEjercicio.seriesBase[i].push(minReps);
+            nuevoEjercicio.seriesBase[i].push(maxReps);
+          },
         });
-        // Creo el boton y lo agrego
-        crearBtn2Continuar()
-        $('.modal').append(btnContinuar2);
-        //Sube el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');}, 300);
-        // Toca en Continuar 
-        btnContinuar2.addEventListener('click', () => {
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                let repeticionesHechas = []
-                ejercicio.seriesBase.forEach((serie, j) => {
-                    const inputSerieRealizada = parseInt(document.getElementById(`inputRepsSerie${j}Ej${i}`).value)
-                    repeticionesHechas.push(inputSerieRealizada);
-                })
-                ejercicio.seriesRealizadas = repeticionesHechas;
-        })
-        $('.modal').html("") //blanqueo el modal
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Series Anotadas con éxito'
-        btnContinuar3 = document.createElement('button');
-        btnContinuar3.textContent='Finalizar';
-        $('.modal').append(ultimoParrafo, btnContinuar3);
-        //Sube el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');}, 300)
-            // Toca en Continuar 
-            btnContinuar3.addEventListener('click', () => {
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');
-                    setTimeout(function(){
-                        $('.modal-container').toggleClass('container-hidden');
-                    }, 300)
-                }, 300)
-                console.log(rutina)
-                localStorage.setItem('rutina', JSON.stringify(rutina));
-                reemplazarSesiones();
-                $('.modal').html("");
-            })
-        })
+      }
+      return nuevoEjercicio;
     })
-}
-function anotarRepsSoloUno() {
-    let nuevoParrafo1 = document.createElement('p'); //Creo todo
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1) //Append
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => { //Click en Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose() //Creo todo
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio del cual quiere anotar las repeticiones realizadas`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        agregarBotonClose()
-        crearBtn2Continuar()
-        $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar2);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar2.addEventListener('click', () => { // Click continuar
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
-            })
-            console.log(numeroDeEjercicioIngresado)
-            $('.modal').html(""); //Creo los inputs y los agrego
-            agregarBotonClose()
-            rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesBase.forEach((serie, i) => {
-                let parrafoReps = document.createElement('p');
-                let inputReps = document.createElement('input');
-                inputReps.setAttribute('id',`inputRepsSerie${i+1}`)
-                parrafoReps.textContent = `Serie ${i+1} - Reps Realizadas`
-                $('.modal').append(parrafoReps, inputReps)
-            });
-            crearBtn3Continuar()
-            $('.modal').append(btnContinuar3);
-            setTimeout(function(){ //Sube el modal
-                $('.modal').toggleClass('modal-close');})
-            
-            setTimeout(function(){ //Baja el modal
-                $('.modal').toggleClass('modal-close');}, 300);
-            btnContinuar3.addEventListener('click', () => { // Click continuar
-                let repeticionesHechas = []
-                rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesBase.forEach((serie, i) => {
-                    const inputSerieRealizada = parseInt(document.getElementById(`inputRepsSerie${i+1}`).value)
-                    repeticionesHechas.push(inputSerieRealizada);
-                })
-                rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesRealizadas = repeticionesHechas;
-                $('.modal').html("") //blanqueo el modal
-                let ultimoParrafo = document.createElement('p');
-                ultimoParrafo.textContent = 'Series Anotadas con éxito'
-                btnContinuar4 = document.createElement('button');
-                btnContinuar4.textContent='Finalizar';
-                $('.modal').append(ultimoParrafo, btnContinuar4);
-                setTimeout(function(){ //Sube el modal
-                    $('.modal').toggleClass('modal-close');})
-                setTimeout(function(){ //Baja el modal
-                    $('.modal').toggleClass('modal-close');}, 300)
-                    btnContinuar4.addEventListener('click', () => { // Continuar
-                        setTimeout(function(){
-                            $('.modal').toggleClass('modal-close');
-                            setTimeout(function(){
-                                $('.modal-container').toggleClass('container-hidden');
-                            }, 300)
-                        }, 300)
-                        localStorage.setItem('rutina', JSON.stringify(rutina));
-                        reemplazarSesiones();
-                        $('.modal').html("")
-                })
-            })
-        })
+    .then(async (result) => {
+      let nuevoEjercicio = result;
+      for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
+        await Swal.fire({
+          title: `Ingresá el peso (kg) a levantar para la serie ${i + 1}`,
+          html: `<input type="number" id="peso" class="swal2-input" placeholder="Peso en kg">`,
+          confirmButtonText: "Siguiente",
+          showCancelButton: true,
+          focusConfirm: false,
+          preConfirm: () => {
+            const peso = parseInt(Swal.getPopup().querySelector(`#peso`).value);
+            return peso;
+          },
+        }).then((result) => {
+          nuevoEjercicio.proximosPesos.push(result.value);
+        });
+      }
+      return nuevoEjercicio;
     })
-}
-function generarProximaSesionUnicoEjercicio() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => { // Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose()
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio del cual quieras generar los próximos pesos y repeticiones`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        agregarBotonClose()
-        crearBtn2Continuar()
-        $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar2)
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar2.addEventListener('click', () => { //Continuar
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
-            })
-            console.log(numeroDeEjercicioIngresado)
-            $('.modal').html(""); //Blanqueo
-            let ultimoParrafo = document.createElement('p');
-            ultimoParrafo.textContent = 'Próxima sesión del ejercicio generada con éxito'
-            btnContinuar3 = document.createElement('button');
-            btnContinuar3.textContent='Finalizar';
-            $('.modal').append(ultimoParrafo, btnContinuar3);
-            //Sube el modal
-            setTimeout(function(){
-                $('.modal').toggleClass('modal-close');})
-            //Baja el modal
-            setTimeout(function(){
-                $('.modal').toggleClass('modal-close');}, 300)
-                // Toca en Continuar 
-                btnContinuar3.addEventListener('click', () => {
-                    setTimeout(function(){
-                        $('.modal').toggleClass('modal-close');
-                        setTimeout(function(){
-                            $('.modal-container').toggleClass('container-hidden');
-                        }, 300)
-                    }, 300)
-                equipararUltimosPesosConProximosUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                actualizarPesosUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                actualizarSeriesUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                localStorage.setItem('rutina', JSON.stringify(rutina))
-                reemplazarSesiones()
-                $('.modal').html("")
-            })
-        })
+    .then(async (result) => {
+      let nuevoEjercicio = result;
+      let indiceSesion;
+      await Swal.fire({
+        title:
+          "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
+        html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+        confirmButtonText: "Siguiente",
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+          const nombreDeSesion =
+            Swal.getPopup().querySelector("#nombreDeSesion").value;
+          let indiceSesion = rutina.indexOf(
+            rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+          );
+          return indiceSesion;
+        },
+      }).then((result) => {
+        indiceSesion = result.value;
+      });
+      rutina[indiceSesion].ejercicios.push(nuevoEjercicio);
     })
-}
-function generarProximaSesionCompleta() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion completa. Se generarán todos los datos para la próxima semana`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => { // Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Próxima sesión generada con éxito'
-        btnContinuar2 = document.createElement('button');
-        btnContinuar2.textContent='Finalizar';
-        $('.modal').append(ultimoParrafo, btnContinuar2);
-        //Sube el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            $('.modal').toggleClass('modal-close');}, 300)
-        // Toca en Continuar 
-        btnContinuar2.addEventListener('click', () => {
-            setTimeout(function(){
-                $('.modal').toggleClass('modal-close');
-                setTimeout(function(){
-                    $('.modal-container').toggleClass('container-hidden');
-                }, 300);
-            }, 300);
+    .then((result) => {
+      Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Ejercicio agregado con éxito.",
+        preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
+    });
+});
 
-            equipararUltimosPesosConProximos(numeroDeSesionIngresada);
-            actualizarPesos(numeroDeSesionIngresada);
-            actualizarSeries(numeroDeSesionIngresada);
-            localStorage.setItem('rutina', JSON.stringify(rutina));
-            reemplazarSesiones();
-            $('.modal').html("");
-        });
-    });
-};
-function eliminarEjercicio() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio a eliminar`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => { //Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            sesion.nombre==nombreDeSesionIngresado?numeroDeSesionIngresada = i:""
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        agregarBotonClose()
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio a eliminar`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        crearBtn2Continuar()
-        $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar2)
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300);
-        btnContinuar2.addEventListener('click', () => { // Continuar
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                ejercicio.nombre==nombreDeEjercicioIngresado?numeroDeEjercicioIngresado = i:""
-            })
-            console.log(numeroDeEjercicioIngresado)
-            $('.modal').html(""); //Blanqueo
-            let ultimoParrafo = document.createElement('p');
-            ultimoParrafo.textContent = 'Ejercicio eliminado con éxito'            
-            btnContinuar3 = document.createElement('button');
-            btnContinuar3.textContent='Finalizar';
-            $('.modal').append(ultimoParrafo, btnContinuar3);
-            //Sube el modal
-            setTimeout(function(){
-                $('.modal').toggleClass('modal-close');})
-            //Baja el modal
-            setTimeout(function(){
-                $('.modal').toggleClass('modal-close');}, 300)
-                // Toca en Continuar 
-            btnContinuar3.addEventListener('click', () => {
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');
-                    setTimeout(function(){
-                        $('.modal-container').toggleClass('container-hidden');
-                    }, 300);
-                }, 300);
-                rutina[numeroDeSesionIngresada].ejercicios.splice(numeroDeEjercicioIngresado, 1);
-                localStorage.setItem('rutina', JSON.stringify(rutina));
-                reemplazarSesiones();
-                $('.modal').html("");
+const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
+btnAnotarRepsSesion.addEventListener("click", () => {
+    Swal.fire({
+    title:
+      "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
+      return indiceSesion;
+    },
+  }).then( async (result) => {
+    let indiceSesion = result.value;
+    for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
+        for (let j = 0; j < rutina[indiceSesion].ejercicios[i].seriesBase.length; j++) {
+            await Swal.fire({
+                  title: `${rutina[indiceSesion].ejercicios[i].nombre} - Serie ${j + 1} - Reps Realizadas`,
+                  html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+                  confirmButtonText: "Siguiente",
+                  showCancelButton: true,
+                  focusConfirm: false,
+                  preConfirm: () => {
+                    const cantReps = parseInt(Swal.getPopup().querySelector("#cantReps").value);
+                    rutina[indiceSesion].ejercicios[i].seriesRealizadas.push(cantReps);
+                  }
             });
-        });
+        }
+    }
+  }).then(r => {
+    Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Series Anotadas con éxito.",
+        preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
+  })
+});
+
+const btnAnotarRepsUno = document.querySelector('.btn-anotarRepsx1');
+btnAnotarRepsUno.addEventListener("click", () => {
+    Swal.fire({
+    title:
+      "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      const nombreDeEjercicio =
+        Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
+      let indiceEjercicio = rutina[indiceSesion].ejercicios.indexOf(
+        rutina[indiceSesion].ejercicios.find((ejercicio) => ejercicio.nombre == nombreDeEjercicio)
+        );
+      return {indiceSesion, indiceEjercicio};
+    },
+  }).then( async (result) => {
+    let indiceSesion = result.value.indiceSesion;
+    let indiceEjercicio = result.value.indiceEjercicio;
+        for (let i = 0; i < rutina[indiceSesion].ejercicios[indiceEjercicio].seriesBase.length; i++) {
+            await Swal.fire({
+                  title: `${rutina[indiceSesion].ejercicios[indiceEjercicio].nombre} - Serie ${i+ 1} - Reps Realizadas`,
+                  html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+                  confirmButtonText: "Siguiente",
+                  showCancelButton: true,
+                  focusConfirm: false,
+                  preConfirm: () => {
+                    const cantReps = parseInt(Swal.getPopup().querySelector("#cantReps").value);
+                    rutina[indiceSesion].ejercicios[indiceEjercicio].seriesRealizadas.push(cantReps);
+                  }
+            });
+    }
+  }).then(r => {
+    Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Series Anotadas con éxito.",
+        preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
+  })
+});
+
+const btnProxSesion = document.querySelector('.btn-generarProximaSesion');
+btnProxSesion.addEventListener('click', () => {
+    Swal.fire({
+        title:
+          "Ingrese nombre de la sesión de la cual quieras generar próximos pesos y repeticiones",
+        html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+        confirmButtonText: "Siguiente",
+        showCancelButton: true,
+        focusConfirm: false,
+        preConfirm: () => {
+          const nombreDeSesion =
+            Swal.getPopup().querySelector("#nombreDeSesion").value;
+          let indiceSesion = rutina.indexOf(
+            rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+          );
+          return indiceSesion;
+        },
+      }).then( (result) => {
+        let indiceSesion = result.value;
+        equipararUltimosPesosConProximos(indiceSesion);
+        actualizarPesos(indiceSesion);
+        actualizarSeries(indiceSesion);
+        Swal.fire({
+            icon: "success",
+            title: "Terminaste",
+            text: "Series y pesos de la sesión indicada actualizados con éxito.",
+            preConfirm: () => {
+                localStorage.setItem("rutina", JSON.stringify(rutina));
+                reemplazarSesiones();
+            },
+            });
     });
-};
-function eliminarSesion() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a eliminar`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    crearBtn1Continuar()
-    $('.modal').append(nuevoParrafo1, nuevoInput1, btnContinuar1)
-    setTimeout(function(){ //Pantalla gris
-        $('.modal-container').toggleClass('container-hidden');}, 300)
-    setTimeout(function(){ //Baja el modal
-        $('.modal').removeClass('modal-close');}, 300)
-    btnContinuar1.addEventListener('click', () => { //Continuar
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
-        })
-        console.log(numeroDeSesionIngresada)
-        $('.modal').html(""); //Blanqueo
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Serie eliminada con éxito'
-        btnContinuar2 = document.createElement('button');
-        btnContinuar2.textContent='Finalizar';
-        $('.modal').append(ultimoParrafo, btnContinuar2);
-        setTimeout(function(){ //Sube el modal
-            $('.modal').toggleClass('modal-close');})
-        setTimeout(function(){ //Baja el modal
-            $('.modal').toggleClass('modal-close');}, 300)
-            btnContinuar2.addEventListener('click', () => { // Continuar 
-                setTimeout(function(){
-                    $('.modal').toggleClass('modal-close');
-                    setTimeout(function(){
-                        $('.modal-container').toggleClass('container-hidden');
-                    }, 300)
-                }, 300)
-            rutina.splice(numeroDeSesionIngresada, 1);
-            localStorage.setItem('rutina', JSON.stringify(rutina));
+})
+
+const btnProxSesionUno = document.querySelector('.btn-generarProximaSesionx1');
+btnProxSesionUno.addEventListener('click', () => {
+  Swal.fire({
+    title:
+      "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
+    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion =
+        Swal.getPopup().querySelector("#nombreDeSesion").value;
+      const nombreDeEjercicio =
+        Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+      let indiceSesion = rutina.indexOf(
+        rutina.find((sesion) => sesion.nombre == nombreDeSesion)
+      );
+      let indiceEjercicio = rutina[indiceSesion].ejercicios.indexOf(
+        rutina[indiceSesion].ejercicios.find((ejercicio) => ejercicio.nombre == nombreDeEjercicio)
+        );
+      return {indiceSesion, indiceEjercicio};
+    },
+  }).then( (result) => {
+    let indiceSesion = result.value.indiceSesion;
+    let indiceEjercicio = result.value.indiceEjercicio;
+    equipararUltimosPesosConProximosUnicoEjercicio(indiceSesion, indiceEjercicio)
+    actualizarPesosUnicoEjercicio(indiceSesion, indiceEjercicio)
+    actualizarSeriesUnicoEjercicio(indiceSesion, indiceEjercicio)
+    Swal.fire({
+        icon: "success",
+        title: "Terminaste",
+        text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+        preConfirm: () => {
+            localStorage.setItem("rutina", JSON.stringify(rutina));
             reemplazarSesiones();
-            $('.modal').html("")
-        })
+        },
+        });
+  })
+})
+
+const btnEliminarSesion = document.querySelector('.btn-eliminarSesion');
+btnEliminarSesion.addEventListener('click', () => {
+  Swal.fire({
+    title:'Ingrese el nombre de la sesión que quiere borrar',
+    html:`<input class="swal2-input" type="text" id="nombreDeSesion" placeholder="Nombre de sesión"></input>`,
+    confirmButtonText: 'Siguiente',
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion = Swal.getPopup().querySelector('#nombreDeSesion').value;
+      let indiceSesion = rutina.indexOf(rutina.find(sesion => {sesion.nombre == nombreDeSesion}))
+      return indiceSesion;
+    }
+  }).then(result => {
+    let indiceSesion = result.value
+    rutina.splice(indiceSesion, 1);
+    Swal.fire({
+      icon: "success",
+      title: "Terminaste",
+      text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+      preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+      },
+      });
+  });
+});
+
+const btnEliminarEjercicio = document.querySelector('.btn-eliminarEjercicio');
+btnEliminarEjercicio.addEventListener('click', () => {
+  Swal.fire({
+    title:'Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar',
+    html:`<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
+    <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
+    confirmButtonText: 'Siguiente',
+    showCancelButton: true,
+    focusConfirm: false,
+    preConfirm: () => {
+      const nombreDeSesion = Swal.getPopup().querySelector('#nombreDeSesion').value;
+      const nombreDeEjercicio = Swal.getPopup().querySelector('#nombreDeEjercicio').value;
+      let indiceDeSesion = rutina.indexOf(rutina.find(sesion => sesion.nombre == nombreDeSesion));
+      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(rutina[indiceDeSesion].ejercicios.find(ejercicio => ejercicio.nombre == nombreDeEjercicio));
+      return {indiceDeSesion, indiceDeEjercicio};
+    }
+  }).then(result => {
+    let indiceDeSesion = result.value.indiceDeSesion;
+    let indiceDeEjercicio = result.value.indiceDeEjercicio;
+    rutina[indiceDeSesion].ejercicios.splice(indiceDeEjercicio, 1);
+    Swal.fire({
+      title:'Listo',
+      icon: 'success',
+      text: 'Ejercicio eliminado exitosamente',
+      preConfirm: () => {
+        localStorage.setItem('rutina', JSON.stringify(rutina));
+        reemplazarSesiones();
+      }
     })
-}
+  })
+})
+
+const btnBorrarRutina = document.querySelector('.btn-borrarRutina');
+btnBorrarRutina.addEventListener('click', () => {
+  Swal.fire({
+    title: 'Estás segur@?',
+    text: "Una vez que elmines la rutina completa no podrás revertir este paso",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Si, eliminar la rutina'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      rutina = [];
+      localStorage.removeItem('rutina');
+      borrarTablas();
+      Swal.fire(
+        'Atención',
+        'Has eliminado la rutina completa',
+        'info'
+      )
+    }
+  })
+})
+
 /*FUNCIONES CALCULOS*/
 function equipararUltimosPesosConProximos(num) {
     rutina[num].ejercicios.forEach((ejercicio) => {
@@ -1007,92 +762,48 @@ function borrarTablas() {
         table.remove()
     });
 }
-function borrarRutina() {
-    rutina = [];
-    localStorage.removeItem('rutina');
-    borrarTablas();            
-};
-
-//Darkmode
-$('#darkmode-toggle').change(() => {
-    $('body').toggleClass("darkBC");
-})
 //EVENTOS - Panel Principal
-$('.btn-about').click(() => {
-    introJs().setOptions({
-        disableInteraction: true,
-        exitOnOverlayClick: false,
-      }).start();
+const btnAbout = document.querySelector('.btn-about')
+btnAbout.addEventListener('click', () => {
+  introJs().setOptions({
+      disableInteraction: true,
+      exitOnOverlayClick: false,
+    }).start();
 })
-
-$('.btn-anotarRepsSesion').click(() => {
-        anotarRepeticionesDeTodaUnaSesion();
+//Darkmode
+const btnDarkMode = document.querySelector('#darkmode-toggle');
+btnDarkMode.addEventListener('change', () => {
+  document.querySelector('body').classList.toggle("darkBC");
 })
-
-$('.btn-generarProximaSesion').click(() => {
-    generarProximaSesionCompleta();
-})
-
-$('.btn-generarProximaSesionx1').click(() => {
-    generarProximaSesionUnicoEjercicio();
-})
-
-$('.btn-agregarEjercicio').click(() => {
-    agregarEjercicio();
-});
-
-$('.btn-anotarRepsx1').click(() => {
-    anotarRepsSoloUno();
-})
-
-$('.btn-eliminarEjercicio').click(() => {
-    eliminarEjercicio();
-})
-
-$('.btn-eliminarSesion').click(() => {
-    eliminarSesion();
-})
-
-$('.btn-borrarRutina').click(() => {
-    borrarRutina();
-})
-
-$('.btn-agregarSesion').click(() => {
-    agregarSesion()
-});
-
 //EVENTOS Exercise API
-
 btnExerciseQuery.addEventListener('click', () => {
-    idEjercicio = inputNumeroEjercicio.value - 1;
-    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
-    ejNombre.innerText = ejercicioBuscado.name;
-    ejMusculo.innerText = ejercicioBuscado.bodyPart;
-    ejElementos.innerText = ejercicioBuscado.equipment;
-    ejZona.innerText = ejercicioBuscado.target;
-    ejGif.src = ejercicioBuscado.gifUrl;
+  idEjercicio = inputNumeroEjercicio.value - 1;
+  ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+  ejNombre.innerText = ejercicioBuscado.name;
+  ejMusculo.innerText = ejercicioBuscado.bodyPart;
+  ejElementos.innerText = ejercicioBuscado.equipment;
+  ejZona.innerText = ejercicioBuscado.target;
+  ejGif.src = ejercicioBuscado.gifUrl;
 })
 
 inputNumeroEjercicio.addEventListener('keydown',  (e) => {
-        if (e.key === "Enter") {
-          idEjercicio = inputNumeroEjercicio.value - 1;
-          ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
-          ejNombre.innerText = ejercicioBuscado.name;
-          ejMusculo.innerText = ejercicioBuscado.bodyPart;
-          ejElementos.innerText = ejercicioBuscado.equipment;
-          ejZona.innerText = ejercicioBuscado.target;
-          ejGif.src = ejercicioBuscado.gifUrl;
-        }
+      if (e.key === "Enter") {
+        idEjercicio = inputNumeroEjercicio.value - 1;
+        ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)]
+        ejNombre.innerText = ejercicioBuscado.name;
+        ejMusculo.innerText = ejercicioBuscado.bodyPart;
+        ejElementos.innerText = ejercicioBuscado.equipment;
+        ejZona.innerText = ejercicioBuscado.target;
+        ejGif.src = ejercicioBuscado.gifUrl;
+      }
 })
 
 //EVENTOS Translate API
 btnTranslationQuery.addEventListener('click', () => {
-    requestTranslation();
+  requestTranslation();
 })
-
 inputTranslationQuery.addEventListener('keydown',  (e) => {
-    if (e.key === "Enter") {
-        requestTranslation();
-    }
+  if (e.key === "Enter") {
+      requestTranslation();
+  }
 })
-

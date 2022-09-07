@@ -102,7 +102,10 @@ input:focus {
 }
 
 .translation-title {
+    display: inline;
     font-size: 20px;
+    width: fit-content;
+    margin: 0px auto;
 }
 
 .underlined {
