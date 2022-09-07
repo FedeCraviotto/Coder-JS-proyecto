@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
-
 :root {
     background-image: linear-gradient(to right, #243949 0%, #517fa4 100%);
     background-repeat: no-repeat;    
@@ -9,42 +8,32 @@
     margin: 0px;
     box-sizing: border-box;
     text-align: center;
-
-    /* color: #aa4465; */
     color:#F5F9E9;
     font-family: 'Montserrat', sans-serif;
 }
-
 body {
     background-repeat: no-repeat;
     width: 100%;
-
 }
-
 .introTT {
     background-color: #242424;
     line-height: 1.5;
 }
-
 .introjs-tooltip {
     min-width: auto;
     width: 170px;
 }
-
 .input-error{
     outline: 1px solid red;
   }
-
 .exercise-container {
     height: 100vh;
     margin: 30px auto;
 }
-
 .exercise {
     width: 300px;
     margin: 0px auto;
 }
-
 .exercise p{
     margin: 15px 0px;
 }
@@ -52,43 +41,22 @@ body {
     margin: 0px 5px;
     color: #9bffb0;
 }
-
 .exercise-img {
     width: 290px;
     height: 290px;
     margin: 0px auto;
 }
-
-#aboutCuadro {
-    margin: 0px auto;
-    max-width: 860px;
-    line-height: 1.5;
-    list-style-type: disc;;
-    padding: 25px;
-}
-
-#aboutCuadro li {
-    margin: 10px 0px;
-    text-align: justify;
-}
-
-
-.hidden {
-    display: none;
-}
-
-input {
+.custom-input {
     color: #101612;
     background-color: #b7cddf;
     border: none;
     width: 200px;
     font-size: 18px;
+    padding: 4px;
 }
-
-input:focus {
+.custom-input:focus {
     outline: none;
 }
-
 .exercise-container input {
     color: #101612;
     background-color: #b7cddf;
@@ -96,22 +64,18 @@ input:focus {
     width: 200px;
     font-size: 18px;
 }
-
 .exercise-element {
     margin: 10px auto;
 }
-
 .translation-title {
     display: inline;
     font-size: 20px;
     width: fit-content;
     margin: 0px auto;
 }
-
 .underlined {
     text-decoration: underline;
 }
-
 .title {
     margin: 15px;
 }
@@ -120,32 +84,23 @@ input:focus {
     flex-wrap: wrap;
     justify-content: center;
 }
-
-
-
 .interacciones {
     display: flex;
     margin: 0px 15px;
 }
-
 .interacciones li {
     padding: 12px;
 }
-
 caption {
     font-size: 10px;
 }
-
 th {
     font-size: 8px;
 }
-
 td {
     font-size: 10px;
 }
-
-
-button {
+.btn {
     font-size: 14px;
     padding: 10px;
     border-radius: 20px;
@@ -156,37 +111,22 @@ button {
     display: block;
     margin: 10px auto;
 }
-
-
-
-
 .btn:hover {
     color: #36453B;;
     background-color: #a0e8af;
 }
-
 ul {
     list-style: none;
 }
-
-.menu-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
 img {
     width: 50%;
 }
-
 table {
     text-align: left;
     border-collapse: collapse;
     margin: 20px auto 20px auto;
     border-spacing: 0;
 }
-
 th, td {
     background-color: #101612;
     border-top: 0.5px solid #a4a3a3;
@@ -195,33 +135,19 @@ th, td {
     width: 42px;
     height: 44px;
 }
-
 a {
     text-decoration: none;
 }
-
 h1 span{
     font-size: 20px;
 }
-
 h2 {
     font-size: 16px;
 }
 
-
-.modal-textos p {
-    width: 470px;
-    margin: 10px auto;
-}
 label {
     margin: 15px auto;
 }
-
-
-p {
-    font-size: 10px;
-}
-
 
 #darkmode-label {
     width: 40px;
@@ -250,32 +176,26 @@ p {
     box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
     transition: 0.3s;
 }
-
 #darkmode-toggle {
     width: 0;
     height: 0;
     visibility: hidden;
 }
-
 .darkBC {
     background-color: #242424;
 }
-
 #darkmode-toggle:checked + #darkmode-label{
     background: #242424;
 }
-
 #darkmode-toggle:checked + #darkmode-label::after{
     left: 37px;
     transform: translateX(-100%);
     background: linear-gradient(180deg, #777, #3a3a3a);
 }
-
 /*El after tiene un tamaño fijo, cuando sale, y cuando llega. Lo que hace esto es manipular su tamaño DURANTE la transición de un lado al otro.*/
 #darkmode-label:active::after {
     width: 20px;
 }
-
 @media screen and (min-width:578px) {
     .introjs-tooltip {
         width: 250px;
@@ -288,7 +208,6 @@ p {
         height: auto;
     }
 }
-
 @media screen and (min-width:976px){
     p {
         font-size: 14px;
@@ -315,82 +234,3 @@ p {
         margin: 40px auto 100px auto;
     }
 }
-
-.modal-container {
-    flex-wrap: wrap;
-    position: fixed;
-    z-index: 10;
-    width: 100%;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-}
-
-.container-hidden {
-    opacity: 0;
-    visibility: hidden; 
-}
-
-
-
-.modal {
-    /* max-width: 1200px;
-    max-height: 800px;*/
-    width: 90%;
-    max-height: 600px;
-
-    background-color: rgba(24, 19, 19, 0.9);
-    text-align: center;
-    position: relative;
-    transition: transform 400ms;
-    transform: translateY(0%);
-    z-index: 20;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px 45px;
-    border-radius: 20px;
-}
-
-.modal button { 
-    position: absolute;
-    right: 20px;
-    bottom: 15px;
-}
-
-.modal p {
-    margin: 10px 0px;
-}
-
-/*comment*/
-.modal-close {
-    transition: transform 500ms;
-    transform: translateY(-500%);
-}
-
-input {
-    padding: 4px;
-}
-
-.close {
-    position: absolute;
-    top:5px;
-    right: 12px;
-    display: inline-block;
-    width: 32px;
-    height: 20px;
-    line-height: 0;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #36453B;;
-    background-color: #a0e8af;
-}
-

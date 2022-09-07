@@ -1,16 +1,32 @@
+// Variables
 let rutina;
 let arrayDeEjercicios;
-//Sweet Alert
+const ejNombre = document.querySelector("#nombreDelEjericio");
+const ejMusculo = document.querySelector("#musculoQueInterviene");
+const ejElementos = document.querySelector("#elementosAUtilizar");
+const ejZona = document.querySelector("#zonaAEstimular");
+const ejGif = document.querySelector("#gifIndicaciones");
+const btnExerciseQuery = document.querySelector(".btn-exercise-query");
+const inputNumeroEjercicio = document.querySelector("#inputNumeroEjercicio");
+const btnTranslationQuery = document.querySelector(".btn-translation-query");
+const inputTranslationQuery = document.querySelector("#translation-query");
+const spanTranslationResult = document.querySelector("#translation-result");
+let ejercicioBuscado;
+
+const error = () => {
+  Swal.fire('Has salido de la aplicación');
+}
+//Sweet Alert - welcome
 Swal.fire({
   title: "Bienvenido",
   text: 'Tocá "Explicación" para más info sobre la App',
   icon: "info",
   confirmButtonText: "OK",
-}).then(() => {
+}).then(() => { // load localStorage. If empty, load default routine sample.
   rutina = JSON.parse(localStorage.getItem("rutina")) || [];
   rutina.length == 0 ? leerRutinaAXIOS() : crearTablas();
 });
-
+// Load default routine (if no localStorage)
 async function leerRutinaAXIOS() {
   try {
     const { data } = await axios("./data/rutina.json");
@@ -26,8 +42,7 @@ async function leerRutinaAXIOS() {
     rutina = [];
   }
 }
-
-// Fetch API ejercicios. Parámetros + Call
+// Fetch API ejercicios. Parámetros del request
 const options = {
   method: "GET",
   headers: {
@@ -35,7 +50,8 @@ const options = {
     "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
   },
 };
-
+//EVENTOS
+// Fetch API ejercicios. Btn
 const btnGetExercises = document.querySelector('#getExercises');
 btnGetExercises.addEventListener('click', () => {
   fetch("https://exercisedb.p.rapidapi.com/exercises", options)
@@ -48,20 +64,52 @@ btnGetExercises.addEventListener('click', () => {
       arrayDeEjercicios = data;
     });
 })
-
-//DOM sin jQuery --> voy a tratar de pasar todo a DOM común, sin jQuery, que parece que tiene un par de funcionalidades obsoletas.
-const ejNombre = document.querySelector("#nombreDelEjericio");
-const ejMusculo = document.querySelector("#musculoQueInterviene");
-const ejElementos = document.querySelector("#elementosAUtilizar");
-const ejZona = document.querySelector("#zonaAEstimular");
-const ejGif = document.querySelector("#gifIndicaciones");
-const btnExerciseQuery = document.querySelector(".btn-exercise-query");
-const inputNumeroEjercicio = document.querySelector("#inputNumeroEjercicio");
-const btnTranslationQuery = document.querySelector(".btn-translation-query");
-const inputTranslationQuery = document.querySelector("#translation-query");
-const spanTranslationResult = document.querySelector("#translation-result");
-let ejercicioBuscado;
-
+//Intro.js
+const btnAbout = document.querySelector(".btn-about");
+btnAbout.addEventListener("click", () => {
+  introJs()
+    .setOptions({
+      disableInteraction: true,
+      exitOnOverlayClick: false,
+    })
+    .start();
+});
+//Darkmode
+const btnDarkMode = document.querySelector("#darkmode-toggle");
+btnDarkMode.addEventListener("change", () => {
+  document.querySelector("body").classList.toggle("darkBC");
+});
+//EVENTOS Exercise API
+btnExerciseQuery.addEventListener("click", () => {
+  idEjercicio = inputNumeroEjercicio.value - 1;
+  ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
+  ejNombre.innerText = ejercicioBuscado.name;
+  ejMusculo.innerText = ejercicioBuscado.bodyPart;
+  ejElementos.innerText = ejercicioBuscado.equipment;
+  ejZona.innerText = ejercicioBuscado.target;
+  ejGif.src = ejercicioBuscado.gifUrl;
+});
+inputNumeroEjercicio.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    idEjercicio = inputNumeroEjercicio.value - 1;
+    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
+    ejNombre.innerText = ejercicioBuscado.name;
+    ejMusculo.innerText = ejercicioBuscado.bodyPart;
+    ejElementos.innerText = ejercicioBuscado.equipment;
+    ejZona.innerText = ejercicioBuscado.target;
+    ejGif.src = ejercicioBuscado.gifUrl;
+  }
+});
+//Translate API
+btnTranslationQuery.addEventListener("click", () => {
+  requestTranslation();
+});
+inputTranslationQuery.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    requestTranslation();
+  }
+});
+// Funcionalidades principales
 const btnAgregarSesion = document.querySelector(".btn-agregarSesion");
 btnAgregarSesion.addEventListener("click", () => {
   Swal.fire({
@@ -69,7 +117,8 @@ btnAgregarSesion.addEventListener("click", () => {
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
         <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
     confirmButtonText: "Siguiente",
-    showCancelButton: true,
+    showDenyButton: true,
+    denyButtonText: 'Cancelar',
     focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
@@ -80,27 +129,29 @@ btnAgregarSesion.addEventListener("click", () => {
       if (
         !nombreDeSesion ||
         !cantidadDeEjercicios ||
+        isNaN(cantidadDeEjercicios) ||
         cantidadDeEjercicios > 8 ||
         cantidadDeEjercicios <= 0
       ) {
         Swal.showValidationMessage(
-          `Recuerda ingresar un nombre de sesión, y que la cantidad de ejercicios debe ser mínimo 1 y máximo 8`
+          `Recuerda ingresar un nombre de sesión, y que la cantidad de ejercicios debe ser un número entre 1 y 8`
         );
+      } else {
+        let ejercicios = [];
+        for (let i = 0; i < cantidadDeEjercicios; i++) {
+          ejercicios.push({
+            nombre: "",
+            proximasSeries: [],
+            proximosPesos: [],
+            seriesBase: [],
+            seriesRealizadas: [],
+            ultimosPesos: [],
+          });
+        }
+        let nuevaSesion = { nombre: nombreDeSesion, ejercicios: ejercicios };
+        return nuevaSesion;
       }
-      let ejercicios = [];
-      for (let i = 0; i < cantidadDeEjercicios; i++) {
-        ejercicios.push({
-          nombre: "",
-          proximasSeries: [],
-          proximosPesos: [],
-          seriesBase: [],
-          seriesRealizadas: [],
-          ultimosPesos: [],
-        });
-      }
-      let nuevaSesion = { nombre: nombreDeSesion, ejercicios: ejercicios };
-      return nuevaSesion;
-    },
+    }
   })
     .then(async (result) => {
       let nuevaSesion = result.value;
@@ -109,15 +160,26 @@ btnAgregarSesion.addEventListener("click", () => {
           title: `Ingrese nombre para el ejercicio N° ${i + 1}`,
           html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
           confirmButtonText: "Siguiente",
-          showCancelButton: true,
+          showDenyButton: true,
+          denyButtonText: 'Cancelar',
           focusConfirm: false,
           preConfirm: () => {
             let nombreDeEjercicio =
               Swal.getPopup().querySelector(`#ejercicio`).value;
-            return nombreDeEjercicio;
+              if (
+                !nombreDeEjercicio ||
+                nombreDeEjercicio.length > 18 ||
+                nombreDeEjercicio.length <= 0
+              ) {
+                Swal.showValidationMessage(
+                  `Debes ingresar un nombre para el ejercicio de hasta 18 caracteres`
+                );
+              } else {
+                return nombreDeEjercicio;
+              }
           },
         }).then((result) => {
-          nuevaSesion.ejercicios[i].nombre = result.value;
+            nuevaSesion.ejercicios[i].nombre = result.value;
         });
       }
       return nuevaSesion;
@@ -130,14 +192,26 @@ btnAgregarSesion.addEventListener("click", () => {
           title: `Ingrese cantidad de series para el ejercicio N° ${nro}`,
           html: `<input type="text" id="seriesEjercicio${nro}" class="swal2-input" placeholder="Cant Series">`,
           confirmButtonText: "Siguiente",
-          showCancelButton: true,
+          showDenyButton: true,
+          denyButtonText: 'Cancelar',
           focusConfirm: false,
           preConfirm: () => {
             const cantSeries = parseInt(
               Swal.getPopup().querySelector(`#seriesEjercicio${nro}`).value
             );
-            for (let j = 0; j < cantSeries; j++) {
-              nuevaSesion.ejercicios[i].seriesBase.push([]);
+            if (
+              !cantSeries ||
+              isNaN(cantSeries) ||
+              cantSeries > 6 ||
+              cantSeries <= 0
+            ) {
+              Swal.showValidationMessage(
+                `Debes ingresar la cantidad de series. Entre 1 y 6`
+              );
+            } else {
+              for (let j = 0; j < cantSeries; j++) {
+                nuevaSesion.ejercicios[i].seriesBase.push([]);
+              }
             }
           },
         });
@@ -155,7 +229,8 @@ btnAgregarSesion.addEventListener("click", () => {
             html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
                             <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
             confirmButtonText: "Siguiente",
-            showCancelButton: true,
+            showDenyButton: true,
+            denyButtonText: 'Cancelar',
             focusConfirm: false,
             preConfirm: () => {
               const minReps = parseInt(
@@ -164,12 +239,35 @@ btnAgregarSesion.addEventListener("click", () => {
               const maxReps = parseInt(
                 Swal.getPopup().querySelector(`#maxReps`).value
               );
-              nuevaSesion.ejercicios[i].seriesBase[j].push(minReps);
-              nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
+              if (
+                !minReps ||
+                !maxReps ||
+                isNaN(minReps) ||
+                isNaN(maxReps)
+              ) {
+                Swal.showValidationMessage(
+                  `Debes ingresar repeticiones mínimas y máximas. Recuerda ingresar solo números`
+                );
+              } else if (
+                minReps <= 0
+              ) {
+                Swal.showValidationMessage(
+                "Debes ingresar como cantidad de repeticiones mínimas 1"
+                );
+              } else if (
+                maxReps <= minReps
+              ) {
+                Swal.showValidationMessage(
+                "El máximo no puede ser igual o menor al mínimo"
+                );
+              } else {
+                nuevaSesion.ejercicios[i].seriesBase[j].push(minReps);
+                nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
+              }
             },
           });
-        }
-      }
+        };
+      };
       return nuevaSesion;
     })
     .then(async (result) => {
@@ -180,15 +278,27 @@ btnAgregarSesion.addEventListener("click", () => {
             title: `Ingresá el peso (kg) a levantar para la serie N° ${
               j + 1
             } del ejercicio ${nuevaSesion.ejercicios[i].nombre}`,
+            text: 'Ten en cuenta que los pesos subirán de a 5 kg a medida que vayas progresando en tu entrenamiento',
             html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
             confirmButtonText: "Siguiente",
-            showCancelButton: true,
+            showDenyButton: true,
+            denyButtonText: 'Cancelar',
             focusConfirm: false,
             preConfirm: () => {
               const peso = parseInt(
                 Swal.getPopup().querySelector(`#peso`).value
               );
-              return peso;
+              if (
+                !peso ||
+                isNaN(peso) ||
+                peso <= 0
+              ) {
+                Swal.showValidationMessage(
+                  `Debes ingresar un peso válido. Mayor a 1(kg)`
+                );
+              } else {
+                return peso;
+              }
             },
           }).then((result) => {
             nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
@@ -200,7 +310,7 @@ btnAgregarSesion.addEventListener("click", () => {
     .then((result) => {
       Swal.fire({
         icon: "success",
-        title: "Terminaste",
+        title: "Listo",
         text: "Rutina creada con éxito.",
         preConfirm: () => {
           rutina.push(result);
@@ -208,9 +318,8 @@ btnAgregarSesion.addEventListener("click", () => {
           reemplazarSesiones();
         },
       });
-    });
+    })
 });
-
 const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
 btnAgregarEjercicio.addEventListener("click", () => {
   Swal.fire({
@@ -331,7 +440,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
       });
     });
 });
-
 const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
 btnAnotarRepsSesion.addEventListener("click", () => {
   Swal.fire({
@@ -390,7 +498,6 @@ btnAnotarRepsSesion.addEventListener("click", () => {
       });
     });
 });
-
 const btnAnotarRepsUno = document.querySelector(".btn-anotarRepsx1");
 btnAnotarRepsUno.addEventListener("click", () => {
   Swal.fire({
@@ -456,7 +563,6 @@ btnAnotarRepsUno.addEventListener("click", () => {
       });
     });
 });
-
 const btnProxSesion = document.querySelector(".btn-generarProximaSesion");
 btnProxSesion.addEventListener("click", () => {
   Swal.fire({
@@ -490,7 +596,6 @@ btnProxSesion.addEventListener("click", () => {
     });
   });
 });
-
 const btnProxSesionUno = document.querySelector(".btn-generarProximaSesionx1");
 btnProxSesionUno.addEventListener("click", () => {
   Swal.fire({
@@ -536,7 +641,6 @@ btnProxSesionUno.addEventListener("click", () => {
     });
   });
 });
-
 const btnEliminarSesion = document.querySelector(".btn-eliminarSesion");
 btnEliminarSesion.addEventListener("click", () => {
   Swal.fire({
@@ -569,7 +673,6 @@ btnEliminarSesion.addEventListener("click", () => {
     });
   });
 });
-
 const btnEliminarEjercicio = document.querySelector(".btn-eliminarEjercicio");
 btnEliminarEjercicio.addEventListener("click", () => {
   Swal.fire({
@@ -610,7 +713,6 @@ btnEliminarEjercicio.addEventListener("click", () => {
     });
   });
 });
-
 const btnBorrarRutina = document.querySelector(".btn-borrarRutina");
 btnBorrarRutina.addEventListener("click", () => {
   Swal.fire({
@@ -630,8 +732,7 @@ btnBorrarRutina.addEventListener("click", () => {
     }
   });
 });
-
-/*FUNCIONES CALCULOS*/
+/*FUNCIONES CALCULOS start*/
 function equipararUltimosPesosConProximos(num) {
   rutina[num].ejercicios.forEach((ejercicio) => {
     ejercicio.ultimosPesos = ejercicio.proximosPesos;
@@ -663,7 +764,6 @@ function actualizarSeries(num) {
     ejercicio.proximasSeries = nuevasSeries;
   });
 }
-
 function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
   rutina[sesion].ejercicios[ejercicio].ultimosPesos =
     rutina[sesion].ejercicios[ejercicio].proximosPesos;
@@ -695,8 +795,7 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
   });
   rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
 }
-
-// Input number tester - Declaración  + Call
+// Input number tester - function
 function filtrarInput(textbox, inputFilter, errMsg) {
   [
     "input",
@@ -733,7 +832,7 @@ function filtrarInput(textbox, inputFilter, errMsg) {
     });
   });
 }
-
+// Input number tester - call
 filtrarInput(
   document.getElementById("inputNumeroEjercicio"),
   (value) => {
@@ -741,7 +840,6 @@ filtrarInput(
   },
   "Recordá ingresar números entre 1 y 1326"
 );
-
 // Translate API function & request setup
 async function requestTranslation() {
   try {
@@ -760,7 +858,6 @@ async function requestTranslation() {
       },
       body: encodedParams,
     };
-
     const traduccionObj = await fetch(
       "https://google-translate1.p.rapidapi.com/language/translate/v2",
       translateOptions
@@ -772,8 +869,7 @@ async function requestTranslation() {
     (err) => console.error(err);
   }
 }
-
-/*FUNCIONES RENDER TABLA*/
+/*Table render functions*/
 function crearTablas() {
   rutina.forEach((sesion, i) => {
     const tablaDeSesion = document.createElement("table");
@@ -820,65 +916,18 @@ function crearTablas() {
       nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
       tablaDeSesion.append(nuevoEjercicio);
     });
-    $(".routine-container").append(tablaDeSesion);
+    document.querySelector(".routine-container").append(tablaDeSesion);
   });
 }
-// CALLBACK - //Borra visualmente, y renderiza de nuevo todas las tablas.
+// Refresh visual de las tablas
 function reemplazarSesiones() {
   borrarTablas();
   crearTablas();
 }
-//Borra del array. Actualiza storage. No renderiza // NO BUTTON - CALLBACK  de borrarRutina() //Solamente borra visualmente las tablas.
+//Borra del array. Actualiza storage. Además borra visualmente
 function borrarTablas() {
   const todasLasTablas = document.querySelectorAll("table");
   todasLasTablas.forEach((table) => {
     table.remove();
   });
 }
-//EVENTOS - Panel Principal
-const btnAbout = document.querySelector(".btn-about");
-btnAbout.addEventListener("click", () => {
-  introJs()
-    .setOptions({
-      disableInteraction: true,
-      exitOnOverlayClick: false,
-    })
-    .start();
-});
-//Darkmode
-const btnDarkMode = document.querySelector("#darkmode-toggle");
-btnDarkMode.addEventListener("change", () => {
-  document.querySelector("body").classList.toggle("darkBC");
-});
-//EVENTOS Exercise API
-btnExerciseQuery.addEventListener("click", () => {
-  idEjercicio = inputNumeroEjercicio.value - 1;
-  ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
-  ejNombre.innerText = ejercicioBuscado.name;
-  ejMusculo.innerText = ejercicioBuscado.bodyPart;
-  ejElementos.innerText = ejercicioBuscado.equipment;
-  ejZona.innerText = ejercicioBuscado.target;
-  ejGif.src = ejercicioBuscado.gifUrl;
-});
-
-inputNumeroEjercicio.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    idEjercicio = inputNumeroEjercicio.value - 1;
-    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
-    ejNombre.innerText = ejercicioBuscado.name;
-    ejMusculo.innerText = ejercicioBuscado.bodyPart;
-    ejElementos.innerText = ejercicioBuscado.equipment;
-    ejZona.innerText = ejercicioBuscado.target;
-    ejGif.src = ejercicioBuscado.gifUrl;
-  }
-});
-
-//EVENTOS Translate API
-btnTranslationQuery.addEventListener("click", () => {
-  requestTranslation();
-});
-inputTranslationQuery.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    requestTranslation();
-  }
-});
