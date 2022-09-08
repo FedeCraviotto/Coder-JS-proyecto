@@ -451,6 +451,9 @@ btnAnotarRepsSesion.addEventListener("click", () => {
     },
   })
     .then(async (result) => {
+      if (result.value===undefined) {
+        return new Error('ERROR')
+      }
       let indiceSesion = result.value;
       for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
         for (
@@ -458,12 +461,14 @@ btnAnotarRepsSesion.addEventListener("click", () => {
           j < rutina[indiceSesion].ejercicios[i].seriesBase.length;
           j++
         ) {
+          let breakSign = true;
           await Swal.fire({
             title: `${rutina[indiceSesion].ejercicios[i].nombre} - Serie ${
               j + 1
             } - Reps Realizadas`,
             html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
             confirmButtonText: "Siguiente",
+            showCancelButton: true,
             focusConfirm: false,
             preConfirm: () => {
               const cantReps = parseInt(
@@ -473,11 +478,22 @@ btnAnotarRepsSesion.addEventListener("click", () => {
                 cantReps
               );
             },
+          }).then(result => {
+            if (result.value===undefined) {
+              breakSign =false;
+            }
           });
+          if (breakSign==false){
+            return new Error('ERROR')
+          };
         }
       }
+      return 4;
     })
     .then((result) => {
+      if (result!==4) {
+        return new Error('ERROR')
+      }
       Swal.fire({
         icon: "success",
         title: "Terminaste",
