@@ -30,6 +30,16 @@ body {
     height: 100vh;
     margin: 30px auto;
 }
+.swal2-popup {
+    color: #2778c4!important;
+}
+.swal2-confirm {
+    background-color:#807da5!important;
+}
+.input-custom__text {
+    color: black;
+    font-size: 16px;
+}
 .exercise {
     width: 300px;
     margin: 0px auto;
