@@ -114,8 +114,6 @@ btnAgregarSesion.addEventListener("click", () => {
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
         <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
     confirmButtonText: "Siguiente",
-    showDenyButton: true,
-    denyButtonText: 'Cancelar',
     focusConfirm: false,
     showClass: {
       popup: 'animate__animated animate__fadeIn'
@@ -139,6 +137,10 @@ btnAgregarSesion.addEventListener("click", () => {
         Swal.showValidationMessage(
           `Recuerda ingresar un nombre de sesión, y que la cantidad de ejercicios debe ser un número entre 1 y 8`
         );
+      } if (rutina.find(s => s.nombre == nombreDeSesion)) {
+        Swal.showValidationMessage(
+          `Ya existe una sesión con ese nombre! Elige otro...`
+        );
       } else {
         let ejercicios = [];
         for (let i = 0; i < cantidadDeEjercicios; i++) {
@@ -157,15 +159,12 @@ btnAgregarSesion.addEventListener("click", () => {
     }
   })
     .then(async (result) => {
-      console.log(result)
       let nuevaSesion = result.value;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
-          title: `Ingrese nombre para el ejercicio N° ${i + 1}`,
+          title: `Nombre para el ejercicio N° ${i + 1}`,
           html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
           confirmButtonText: "Siguiente",
-          showDenyButton: true,
-          denyButtonText: 'Cancelar',
           focusConfirm: false,
           preConfirm: () => {
             let nombreDeEjercicio =
@@ -191,17 +190,14 @@ btnAgregarSesion.addEventListener("click", () => {
     .then(async (result) => {
       let nuevaSesion = result;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
-        let nro = i + 1;
         await Swal.fire({
-          title: `Ingrese cantidad de series para el ejercicio N° ${nro}`,
-          html: `<input type="text" id="seriesEjercicio${nro}" class="swal2-input" placeholder="Cant Series">`,
+          title: `${nuevaSesion.ejercicios[i].nombre} - Cantidad de series`,
+          html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Cant Series">`,
           confirmButtonText: "Siguiente",
-          showDenyButton: true,
-          denyButtonText: 'Cancelar',
           focusConfirm: false,
           preConfirm: () => {
             const cantSeries = parseInt(
-              Swal.getPopup().querySelector(`#seriesEjercicio${nro}`).value
+              Swal.getPopup().querySelector(`#seriesEjercicio`).value
             );
             if (
               !cantSeries ||
@@ -227,14 +223,12 @@ btnAgregarSesion.addEventListener("click", () => {
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
           await Swal.fire({
-            title: `Ingresá el mínimo y el máximo de repeticiones para la serie N° ${
+            title: `Serie N° ${
               j + 1
-            } del ejercicio ${nuevaSesion.ejercicios[i].nombre}`,
+            } - ${nuevaSesion.ejercicios[i].nombre} - Repeticiones min y max`,
             html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
                             <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
             confirmButtonText: "Siguiente",
-            showDenyButton: true,
-            denyButtonText: 'Cancelar',
             focusConfirm: false,
             preConfirm: () => {
               const minReps = parseInt(
@@ -279,14 +273,12 @@ btnAgregarSesion.addEventListener("click", () => {
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
           await Swal.fire({
-            title: `Ingresá el peso (kg) a levantar para la serie N° ${
+            title: `${nuevaSesion.ejercicios[i].nombre} - Serie N° ${
               j + 1
-            } del ejercicio ${nuevaSesion.ejercicios[i].nombre}`,
+            } peso a levantar`,
             text: 'Ten en cuenta que los pesos subirán de a 5 kg a medida que vayas progresando en tu entrenamiento',
             html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
             confirmButtonText: "Siguiente",
-            showDenyButton: true,
-            denyButtonText: 'Cancelar',
             focusConfirm: false,
             preConfirm: () => {
               const peso = parseInt(
@@ -330,7 +322,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
     title: `Ingresá el nombre del ejercicio a agregar`,
     html: `<input type="text" id="nombre" class="swal2-input" placeholder="Nombre del ejercicio">`,
     confirmButtonText: "Siguiente",
-    showCancelButton: true,
     focusConfirm: false,
     preConfirm: () => {
       const nombre = Swal.getPopup().querySelector(`#nombre`).value;
@@ -351,7 +342,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
         title: `Ingrese cantidad de series para el ejercicio ${nuevoEjercicio.nombre}`,
         html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Ingresa cantidad de series">`,
         confirmButtonText: "Siguiente",
-        showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
           const cantSeries = parseInt(
@@ -374,7 +364,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
           html: `<input type="number" id="minReps" class="swal2-input" placeholder="Min">
             <input type="number" id="maxReps" class="swal2-input" placeholder="Max">`,
           confirmButtonText: "Siguiente",
-          showCancelButton: true,
           focusConfirm: false,
           preConfirm: () => {
             const minReps = parseInt(
@@ -397,7 +386,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
           title: `Ingresá el peso (kg) a levantar para la serie ${i + 1}`,
           html: `<input type="number" id="peso" class="swal2-input" placeholder="Peso en kg">`,
           confirmButtonText: "Siguiente",
-          showCancelButton: true,
           focusConfirm: false,
           preConfirm: () => {
             const peso = parseInt(Swal.getPopup().querySelector(`#peso`).value);
@@ -417,7 +405,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
           "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
         html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
         confirmButtonText: "Siguiente",
-        showCancelButton: true,
         focusConfirm: false,
         preConfirm: () => {
           const nombreDeSesion =
@@ -447,9 +434,10 @@ btnAgregarEjercicio.addEventListener("click", () => {
 const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
 btnAnotarRepsSesion.addEventListener("click", () => {
   Swal.fire({
-    title:
-      "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
-    html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+    titleText:
+      "Ingrese nombre de la sesión",
+    html: `<p class="input-custom__text">Para anotar las repeticiones realizadas en todos los ejercicios de esa sesión</p>
+    <input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
     confirmButtonText: "Siguiente",
     showCancelButton: true,
     focusConfirm: false,
@@ -476,7 +464,6 @@ btnAnotarRepsSesion.addEventListener("click", () => {
             } - Reps Realizadas`,
             html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
             confirmButtonText: "Siguiente",
-            showCancelButton: true,
             focusConfirm: false,
             preConfirm: () => {
               const cantReps = parseInt(
@@ -490,7 +477,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
         }
       }
     })
-    .then((r) => {
+    .then((result) => {
       Swal.fire({
         icon: "success",
         title: "Terminaste",
@@ -529,6 +516,9 @@ btnAnotarRepsUno.addEventListener("click", () => {
     },
   })
     .then(async (result) => {
+      if (result.value===undefined) {
+        return new Error('ERROR')
+      }
       let indiceSesion = result.value.indiceSesion;
       let indiceEjercicio = result.value.indiceEjercicio;
       for (
@@ -536,6 +526,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
         i < rutina[indiceSesion].ejercicios[indiceEjercicio].seriesBase.length;
         i++
       ) {
+        let breakSign = true;
         await Swal.fire({
           title: `${
             rutina[indiceSesion].ejercicios[indiceEjercicio].nombre
@@ -552,10 +543,21 @@ btnAnotarRepsUno.addEventListener("click", () => {
               indiceEjercicio
             ].seriesRealizadas.push(cantReps);
           },
+        }).then(result => {
+          if (result.value===undefined) {
+            breakSign =false;
+          }
         });
+        if (breakSign==false){
+          return new Error('ERROR')
+        }
       }
+      return 4;
     })
-    .then((r) => {
+    .then((result) => {
+      if (result!==4) {
+        return new Error('ERROR')
+      }
       Swal.fire({
         icon: "success",
         title: "Terminaste",
@@ -585,6 +587,9 @@ btnProxSesion.addEventListener("click", () => {
       return indiceSesion;
     },
   }).then((result) => {
+    if (result.value===undefined) {
+      return new Error('ERROR')
+    }
     let indiceSesion = result.value;
     equipararUltimosPesosConProximos(indiceSesion);
     actualizarPesos(indiceSesion);
@@ -626,6 +631,9 @@ btnProxSesionUno.addEventListener("click", () => {
       return { indiceSesion, indiceEjercicio };
     },
   }).then((result) => {
+    if (result.value===undefined) {
+      return new Error('ERROR')
+    }
     let indiceSesion = result.value.indiceSesion;
     let indiceEjercicio = result.value.indiceEjercicio;
     equipararUltimosPesosConProximosUnicoEjercicio(
@@ -658,14 +666,18 @@ btnEliminarSesion.addEventListener("click", () => {
         Swal.getPopup().querySelector("#nombreDeSesion").value;
       let indiceSesion = rutina.indexOf(
         rutina.find((sesion) => {
-          sesion.nombre == nombreDeSesion;
+          return sesion.nombre == nombreDeSesion;
         })
-      );
+        );
       return indiceSesion;
     },
   }).then((result) => {
     let indiceSesion = result.value;
-    rutina.splice(indiceSesion, 1);
+    if (indiceSesion=== undefined) {
+      return new Error('ERROR')
+    } else { 
+      rutina.splice(indiceSesion, 1);
+    }
     Swal.fire({
       icon: "success",
       title: "Terminaste",
@@ -703,6 +715,9 @@ btnEliminarEjercicio.addEventListener("click", () => {
       return { indiceDeSesion, indiceDeEjercicio };
     },
   }).then((result) => {
+    if (result.value===undefined) {
+      return new Error('ERROR')
+    }
     let indiceDeSesion = result.value.indiceDeSesion;
     let indiceDeEjercicio = result.value.indiceDeEjercicio;
     rutina[indiceDeSesion].ejercicios.splice(indiceDeEjercicio, 1);
@@ -723,8 +738,8 @@ btnBorrarRutina.addEventListener("click", () => {
     title: "Estás segur@?",
     text: "Una vez que elmines la rutina completa no podrás revertir este paso",
     icon: "warning",
-    showCancelButton: true,
     confirmButtonColor: "#3085d6",
+    showCancelButton: true,
     cancelButtonColor: "#d33",
     confirmButtonText: "Si, eliminar la rutina",
   }).then((result) => {
