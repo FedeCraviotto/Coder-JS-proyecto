@@ -114,6 +114,7 @@ btnAgregarSesion.addEventListener("click", () => {
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
         <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
     confirmButtonText: "Siguiente",
+    showCancelButton: true,
     focusConfirm: false,
     showClass: {
       popup: 'animate__animated animate__fadeIn'
@@ -159,12 +160,17 @@ btnAgregarSesion.addEventListener("click", () => {
     }
   })
     .then(async (result) => {
+      if (result.value===undefined) {
+        return new Error('ERROR')
+      }
       let nuevaSesion = result.value;
+      let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
           title: `Nombre para el ejercicio N° ${i + 1}`,
           html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
           confirmButtonText: "Siguiente",
+          showCancelButton: true,
           focusConfirm: false,
           preConfirm: () => {
             let nombreDeEjercicio =
@@ -182,13 +188,28 @@ btnAgregarSesion.addEventListener("click", () => {
               }
           },
         }).then((result) => {
+          if (result.value===undefined) {
+            breakSign =false;
+          } else {
             nuevaSesion.ejercicios[i].nombre = result.value;
+          }
         });
+        if (breakSign === false) {
+          break
+        }
       }
-      return nuevaSesion;
+      if (breakSign === false) {
+        return new Error('ERROR');
+      } else {
+        return nuevaSesion;
+      }
     })
     .then(async (result) => {
+      if (result===undefined) {
+        return new Error('ERROR')
+      }
       let nuevaSesion = result;
+      let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
           title: `${nuevaSesion.ejercicios[i].nombre} - Cantidad de series`,
@@ -214,12 +235,27 @@ btnAgregarSesion.addEventListener("click", () => {
               }
             }
           },
+        }).then(result => {
+          if (result.value===undefined) {
+            breakSign =false;
+          }
         });
+        if (breakSign === false) {
+          break
+        }
       }
+      if (breakSign === false) {
+        return new Error('ERROR');
+      } else {
       return nuevaSesion;
+      }
     })
     .then(async (result) => {
+      if (result===undefined) {
+        return new Error('ERROR')
+      }
       let nuevaSesion = result;
+      let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
           await Swal.fire({
@@ -263,12 +299,30 @@ btnAgregarSesion.addEventListener("click", () => {
                 nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
               }
             },
+          }).then(result => {
+            if (result.value!==true) {
+              breakSign = false;
+            }
           });
+          if (breakSign === false) {
+            break
+          };
+        };
+        if (breakSign === false) {
+          break
         };
       };
+      if (breakSign === false) {
+        return new Error('ERROR');
+      } else {
       return nuevaSesion;
+      }
     })
     .then(async (result) => {
+      if (result===undefined) {
+        return new Error('ERROR')
+      }
+      let breakSign = true;
       let nuevaSesion = result;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
@@ -297,13 +351,30 @@ btnAgregarSesion.addEventListener("click", () => {
               }
             },
           }).then((result) => {
-            nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
+            if (result.value===undefined) {
+              breakSign = false;
+            } else {
+              nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
+            }
           });
+          if (breakSign === false) {
+            break
+          };
         }
+        if (breakSign === false) {
+          break
+        };
       }
+      if (breakSign === false) {
+        return 4
+      } else {
       return nuevaSesion;
+      }
     })
     .then((result) => {
+      if (result===4) {
+        return new Error('ERROR')
+      }
       Swal.fire({
         icon: "success",
         title: "Listo",
