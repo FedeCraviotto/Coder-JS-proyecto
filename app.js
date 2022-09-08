@@ -13,9 +13,6 @@ const inputTranslationQuery = document.querySelector("#translation-query");
 const spanTranslationResult = document.querySelector("#translation-result");
 let ejercicioBuscado;
 
-const error = () => {
-  Swal.fire('Has salido de la aplicación');
-}
 //Sweet Alert - welcome
 Swal.fire({
   title: "Bienvenido",
@@ -120,6 +117,12 @@ btnAgregarSesion.addEventListener("click", () => {
     showDenyButton: true,
     denyButtonText: 'Cancelar',
     focusConfirm: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeIn'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOut'
+    },
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -154,6 +157,7 @@ btnAgregarSesion.addEventListener("click", () => {
     }
   })
     .then(async (result) => {
+      console.log(result)
       let nuevaSesion = result.value;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
