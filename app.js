@@ -161,9 +161,11 @@ btnAgregarSesion.addEventListener("click", () => {
   })
     .then(async (result) => {
       if (result.value===undefined) {
-        return new Error('ERROR')
+        let nuevaSesion = undefined;
+        return 
       }
       let nuevaSesion = result.value;
+      console.log(nuevaSesion)
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
@@ -199,21 +201,23 @@ btnAgregarSesion.addEventListener("click", () => {
         }
       }
       if (breakSign === false) {
-        return new Error('ERROR');
+        return;
       } else {
         return nuevaSesion;
       }
     })
     .then(async (result) => {
       if (result===undefined) {
-        return new Error('ERROR')
+        return;
       }
       let nuevaSesion = result;
+      console.log(nuevaSesion)
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
           title: `${nuevaSesion.ejercicios[i].nombre} - Cantidad de series`,
           html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Cant Series">`,
+          showCancelButton: true,
           confirmButtonText: "Siguiente",
           focusConfirm: false,
           preConfirm: () => {
@@ -241,18 +245,20 @@ btnAgregarSesion.addEventListener("click", () => {
           }
         });
         if (breakSign === false) {
-          break
+          nuevaSesion = undefined;
+          break;
         }
       }
       if (breakSign === false) {
-        return new Error('ERROR');
+        return;
       } else {
       return nuevaSesion;
       }
     })
     .then(async (result) => {
+      console.log(result)
       if (result===undefined) {
-        return new Error('ERROR')
+        return;
       }
       let nuevaSesion = result;
       let breakSign = true
@@ -265,6 +271,7 @@ btnAgregarSesion.addEventListener("click", () => {
             html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
                             <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
             confirmButtonText: "Siguiente",
+            showCancelButton: true,
             focusConfirm: false,
             preConfirm: () => {
               const minReps = parseInt(
@@ -301,26 +308,29 @@ btnAgregarSesion.addEventListener("click", () => {
             },
           }).then(result => {
             if (result.value!==true) {
+              nuevaSesion = undefined;
               breakSign = false;
             }
           });
           if (breakSign === false) {
+            nuevaSesion = undefined;
             break
           };
         };
         if (breakSign === false) {
+          nuevaSesion = undefined;
           break
         };
       };
       if (breakSign === false) {
-        return new Error('ERROR');
+        return;
       } else {
       return nuevaSesion;
       }
     })
     .then(async (result) => {
       if (result===undefined) {
-        return new Error('ERROR')
+        return;
       }
       let breakSign = true;
       let nuevaSesion = result;
@@ -333,6 +343,7 @@ btnAgregarSesion.addEventListener("click", () => {
             text: 'Ten en cuenta que los pesos subirán de a 5 kg a medida que vayas progresando en tu entrenamiento',
             html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
             confirmButtonText: "Siguiente",
+            showCancelButton: true,
             focusConfirm: false,
             preConfirm: () => {
               const peso = parseInt(
@@ -351,7 +362,9 @@ btnAgregarSesion.addEventListener("click", () => {
               }
             },
           }).then((result) => {
+            console.log(result)
             if (result.value===undefined) {
+              nuevaSesion = undefined;
               breakSign = false;
             } else {
               nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
@@ -365,26 +378,27 @@ btnAgregarSesion.addEventListener("click", () => {
           break
         };
       }
-      if (breakSign === false) {
-        return 4
+      if (breakSign === false || nuevaSesion === undefined) {
+        return;
       } else {
       return nuevaSesion;
       }
     })
     .then((result) => {
-      if (result===4) {
-        return new Error('ERROR')
+      console.log(result)
+      if (result===undefined) {
+        return;
       }
-      Swal.fire({
-        icon: "success",
-        title: "Listo",
-        text: "Rutina creada con éxito.",
-        preConfirm: () => {
-          rutina.push(result);
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
-      });
+        Swal.fire({
+          icon: "success",
+          title: "Listo",
+          text: "Rutina creada con éxito.",
+          preConfirm: () => {
+            rutina.push(result);
+            localStorage.setItem("rutina", JSON.stringify(rutina));
+            reemplazarSesiones();
+          },
+        });
     })
 });
 const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
