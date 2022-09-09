@@ -23,6 +23,15 @@ body {
     min-width: auto;
     width: 170px;
 }
+.introjs-tooltiptext {
+    color: #f3ffce;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+}
+.introjs-tooltipReferenceLayer {
+    background-color:#2778c425;
+    visibility: visible;
+}
 .input-error{
     outline: 1px solid red;
   }
@@ -30,7 +39,8 @@ body {
     height: 100vh;
     margin: 30px auto;
 }
-.swal2-popup {
+.swal2-popup,
+.swal2-icon-content {
     color: #2778c4!important;
 }
 .swal2-confirm {
@@ -78,10 +88,14 @@ body {
     margin: 10px auto;
 }
 .translation-title {
-    display: inline;
+    /* display: inline; */
     font-size: 20px;
     width: fit-content;
-    margin: 0px auto;
+    margin: 10px auto;
+}
+#translation-result {
+    font-size: 20px;
+    color: yellow;
 }
 .underlined {
     text-decoration: underline;
@@ -124,6 +138,10 @@ td {
 .btn:hover {
     color: #36453B;;
     background-color: #a0e8af;
+}
+.btn--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 ul {
     list-style: none;

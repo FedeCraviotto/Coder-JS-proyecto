@@ -50,13 +50,13 @@
                     data-intro="Anota las repeticiones hechas para cada serie, de cada ejercicio, y para una sola sesión. Generalmente se usa después de entrenar."
                     data-step="8">Anotar Reps Sesion</button></li>
             <li><button class="btn btn-anotarRepsx1" data-tooltip-class="introTT"
-                    data-intro="Anota las repeticiones realizadas de un ejercicio en particular. Util si ejecutaste un ejercicio que no estaba planeado. Luego de agregarlo con '+Ejercicio', con esta opción vas a poder anotar las repeticiones hechas de ese ejercicio en particular."
+                    data-intro="Anota las repeticiones realizadas de un ejercicio en particular. Util si ejecutaste un ejercicio que no estaba planeado. Luego de agregarlo con '+Ejercicio', con esta opción vas a poder anotar las repeticiones hechas de ese ejercicio en particular, sin anotar -ni sobreescribir- las repeticiones hechas ya anotadas de los demás ejercicios de la sesión."
                     data-step="9" data-position="left">Anotar Reps x1</button></li>
 
         </ul>
         <ul class="interacciones">
             <li><button class="btn btn-generarProximaSesion" data-tooltip-class="introTT"
-                    data-intro="Genera los nuevos datos para la próxima sesión: las próximas series y los próximos pesos a levantar. Ten en cuenta que si superas el máximo de series el peso se incrementará en 5; sino, se mantendrá."
+                    data-intro="Genera los nuevos datos para la próxima sesión: las próximas series y los próximos pesos a levantar. Ten en cuenta que si superas el máximo de series el peso se incrementará en 5; sino, se mantendrá. Esta funcionalidad se utiliza luego de tener anotadas las repeticiones realizadas de los ejercicios de TODA una sesión."
                     data-step="10" data-position="right">Próxima sesión</button></li>
             <li><button class="btn btn-generarProximaSesionx1" data-tooltip-class="introTT"
                     data-intro="Genera los datos para la nueva serie, pero para 1 solo ejercicio en particular. Se suele usar en combinación con '+Ejercicio' y 'Anotar Reps x1', como paso siguiente y solo si ya generaste los datos para la próxima sesión de toda una sesión completa. Su función es generar los nuevos datos de un ejercicio, sin sobreescribir los nuevos datos del resto."
@@ -92,7 +92,7 @@
             data-tooltip-class="introTT"
             data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326"
             data-step="14" data-position="right">
-        <button class="btn btn-exercise-query exercise-element" id="anclaBuscador" data-tooltip-class="introTT"
+        <button class="btn btn-exercise-query exercise-element btn--disabled" id="anclaBuscador" data-tooltip-class="introTT"
             data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="15"
             data-position="right"> Realizar consulta</button>
     </div>
