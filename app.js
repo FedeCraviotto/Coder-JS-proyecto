@@ -12,7 +12,36 @@ const btnTranslationQuery = document.querySelector(".btn-translation-query");
 const inputTranslationQuery = document.querySelector("#translation-query");
 const spanTranslationResult = document.querySelector("#translation-result");
 let ejercicioBuscado;
-//Sweet Alert - welcome
+// Swal2 Settings
+document.documentElement.style.setProperty('--animate-duration', '.8s');
+const progressPopup = Swal.mixin({
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    backdrop: false,
+    allowOutsideClick: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeIn'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOut'
+    }
+})
+const endPopup = Swal.mixin({
+  icon: "success",
+  title: "Listo",
+  showClass: {
+    popup: 'animate__animated animate__fadeIn'
+  },
+  hideClass: {
+    popup: 'animate__animated animate__fadeOut'
+  },
+  preConfirm: () => {
+    localStorage.setItem("rutina", JSON.stringify(rutina));
+    reemplazarSesiones();
+  }
+})
+//Swal2 - welcome
 Swal.fire({
   title: "Bienvenido",
   text: 'Tocá "Explicación" para más info sobre la App',
@@ -36,9 +65,9 @@ async function leerRutinaAXIOS() {
     });
   } catch {
     rutina = [];
-  }
-}
-// Fetch API ejercicios. Parámetros del request
+  };
+};
+// Fetch API exercises. API HTTP Request settings
 const options = {
   method: "GET",
   headers: {
@@ -46,8 +75,8 @@ const options = {
     "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
   },
 };
-//EVENTOS
-// Fetch API ejercicios. Btn
+//EVENTS
+// Fetch API Exercise(in Btn because request Quota Limits RapidAPI)
 const btnGetExercises = document.querySelector('#getExercises');
 btnGetExercises.addEventListener('click', () => {
   fetch("https://exercisedb.p.rapidapi.com/exercises", options)
@@ -55,7 +84,7 @@ btnGetExercises.addEventListener('click', () => {
     .then((response) => {
       arrayDeEjercicios = response;
     })
-    .catch( async (err) => { // Si la API no responde por exceso de callQuota, ante ese reject pedir los ejercicios al json local.
+    .catch( async (err) => { // if callQuota exceded, ask for exercises in local JSON
       const { data } = await axios("./data/exerciseList.json");
       arrayDeEjercicios = data;
     });
@@ -75,7 +104,7 @@ const btnDarkMode = document.querySelector("#darkmode-toggle");
 btnDarkMode.addEventListener("change", () => {
   document.querySelector("body").classList.toggle("darkBC");
 });
-//EVENTOS Exercise API
+//Exercise API
 btnExerciseQuery.addEventListener("click", () => {
   idEjercicio = inputNumeroEjercicio.value - 1;
   ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
@@ -94,7 +123,7 @@ inputNumeroEjercicio.addEventListener("keydown", (e) => {
     ejElementos.innerText = ejercicioBuscado.equipment;
     ejZona.innerText = ejercicioBuscado.target;
     ejGif.src = ejercicioBuscado.gifUrl;
-  }
+  };
 });
 //Translate API
 btnTranslationQuery.addEventListener("click", () => {
@@ -105,22 +134,13 @@ inputTranslationQuery.addEventListener("keydown", (e) => {
     requestTranslation();
   }
 });
-// Funcionalidades principales
+// Core functions
 const btnAgregarSesion = document.querySelector(".btn-agregarSesion");
 btnAgregarSesion.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title: "Ingrese nombre de sesión y cantidad de ejercicios",
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
         <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
-    showClass: {
-      popup: 'animate__animated animate__fadeIn'
-    },
-    hideClass: {
-      popup: 'animate__animated animate__fadeOut'
-    },
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -152,26 +172,23 @@ btnAgregarSesion.addEventListener("click", () => {
             seriesRealizadas: [],
             ultimosPesos: [],
           });
-        }
+        };
         let nuevaSesion = { nombre: nombreDeSesion, ejercicios: ejercicios };
         return nuevaSesion;
-      }
+      };
     }
   })
     .then(async (result) => {
       if (result.value===undefined) {
         let nuevaSesion = undefined;
-        return 
-      }
+        return;
+      };
       let nuevaSesion = result.value;
-      let breakSign = true
+      let breakSign = true;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
-        await Swal.fire({
+        await progressPopup.fire({
           title: `Nombre para el ejercicio N° ${i + 1}`,
           html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
-          confirmButtonText: "Siguiente",
-          showCancelButton: true,
-          focusConfirm: false,
           preConfirm: () => {
             let nombreDeEjercicio =
               Swal.getPopup().querySelector(`#ejercicio`).value;
@@ -211,12 +228,9 @@ btnAgregarSesion.addEventListener("click", () => {
       let nuevaSesion = result;
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
-        await Swal.fire({
+        await progressPopup.fire({
           title: `${nuevaSesion.ejercicios[i].nombre} - Cantidad de series`,
           html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Cant Series">`,
-          showCancelButton: true,
-          confirmButtonText: "Siguiente",
-          focusConfirm: false,
           preConfirm: () => {
             const cantSeries = parseInt(
               Swal.getPopup().querySelector(`#seriesEjercicio`).value
@@ -260,15 +274,12 @@ btnAgregarSesion.addEventListener("click", () => {
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-          await Swal.fire({
+          await progressPopup.fire({
             title: `Serie N° ${
               j + 1
             } - ${nuevaSesion.ejercicios[i].nombre} - Repeticiones min y max`,
             html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
                             <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
-            confirmButtonText: "Siguiente",
-            showCancelButton: true,
-            focusConfirm: false,
             preConfirm: () => {
               const minReps = parseInt(
                 Swal.getPopup().querySelector(`#minReps`).value
@@ -332,15 +343,12 @@ btnAgregarSesion.addEventListener("click", () => {
       let nuevaSesion = result;
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-          await Swal.fire({
+          await progressPopup.fire({
             title: `${nuevaSesion.ejercicios[i].nombre} - Serie N° ${
               j + 1
             } peso a levantar`,
             text: 'Ten en cuenta que los pesos subirán de a 5 kg a medida que vayas progresando en tu entrenamiento',
             html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
-            confirmButtonText: "Siguiente",
-            showCancelButton: true,
-            focusConfirm: false,
             preConfirm: () => {
               const peso = parseInt(
                 Swal.getPopup().querySelector(`#peso`).value
@@ -384,25 +392,16 @@ btnAgregarSesion.addEventListener("click", () => {
         return;
       }
       rutina.push(result);
-      Swal.fire({
-        icon: "success",
-        title: "Listo",
-        text: "Rutina creada con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
+      endPopup.fire({
+        text: "Rutina creada con éxito."
       });
     })
 });
 const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
 btnAgregarEjercicio.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title: `Ingresá el nombre del ejercicio a agregar`,
     html: `<input type="text" id="nombre" class="swal2-input" placeholder="Nombre del ejercicio">`,
-    showCancelButton: true,
-    confirmButtonText: "Siguiente",
-    focusConfirm: false,
     preConfirm: () => {
       const nombre = Swal.getPopup().querySelector(`#nombre`).value;
       let nuevoEjercicio = {
@@ -422,12 +421,9 @@ btnAgregarEjercicio.addEventListener("click", () => {
       }
       let cantSeries;
       let nuevoEjercicio = result.value;
-      await Swal.fire({
+      await progressPopup.fire({
         title: `Ingrese cantidad de series para el ejercicio ${nuevoEjercicio.nombre}`,
         html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Ingresa cantidad de series">`,
-        confirmButtonText: "Siguiente",
-        showCancelButton: true,
-        focusConfirm: false,
         preConfirm: () => {
           cantSeries = parseInt(
             Swal.getPopup().querySelector(`#seriesEjercicio`).value
@@ -448,19 +444,16 @@ btnAgregarEjercicio.addEventListener("click", () => {
     .then(async (result) => {
       if (result===undefined){
         return
-      }
+      };
       let nuevoEjercicio = result;
       let breakSign = true;
       for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
-        await Swal.fire({
+        await progressPopup.fire({
           title: `Ingresá el mínimo y el máximo de repeticiones para la serie ${
             i + 1
           } `,
           html: `<input type="number" id="minReps" class="swal2-input" placeholder="Min">
             <input type="number" id="maxReps" class="swal2-input" placeholder="Max">`,
-          confirmButtonText: "Siguiente",
-          showCancelButton: true,
-          focusConfirm: false,
           preConfirm: () => {
             const minReps = parseInt(
               Swal.getPopup().querySelector(`#minReps`).value
@@ -474,7 +467,7 @@ btnAgregarEjercicio.addEventListener("click", () => {
         }).then(result => {
           if (result.value===undefined) {
             breakSign =false;
-          }
+          };
         });
         if (breakSign==false){
           nuevoEjercicio = undefined;
@@ -486,16 +479,13 @@ btnAgregarEjercicio.addEventListener("click", () => {
     .then(async (result) => {
       if (result===undefined){
         return
-      }
+      };
       let breakSign = true;
       let nuevoEjercicio = result;
       for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
-        await Swal.fire({
+        await progressPopup.fire({
           title: `Ingresá el peso (kg) a levantar para la serie ${i + 1}`,
           html: `<input type="number" id="peso" class="swal2-input" placeholder="Peso en kg">`,
-          confirmButtonText: "Siguiente",
-          showCancelButton: true,
-          focusConfirm: false,
           preConfirm: () => {
             const peso = parseInt(Swal.getPopup().querySelector(`#peso`).value);
             return peso;
@@ -505,7 +495,7 @@ btnAgregarEjercicio.addEventListener("click", () => {
             breakSign =false;
           } else {
             nuevoEjercicio.proximosPesos.push(result.value);
-          }
+          };
         });
         if (breakSign==false){
           nuevoEjercicio = undefined;
@@ -517,16 +507,13 @@ btnAgregarEjercicio.addEventListener("click", () => {
     .then(async (result) => {
       if (result===undefined){
         return
-      }
+      };
       let nuevoEjercicio = result;
       let indiceSesion;
-      await Swal.fire({
+      await progressPopup.fire({
         title:
           "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
         html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
-        confirmButtonText: "Siguiente",
-        showCancelButton: true,
-        focusConfirm: false,
         preConfirm: () => {
           const nombreDeSesion =
             Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -537,43 +524,34 @@ btnAgregarEjercicio.addEventListener("click", () => {
         },
       }).then((result) => {
         if (result.value===undefined){
-          return
+          return;
         } else {
           indiceSesion = result.value;
           rutina[indiceSesion].ejercicios.push(nuevoEjercicio);
-        }
+        };
       });
       if (indiceSesion==undefined) {
         return;
       } else {
-        return 4
-      }
+        return 4;
+      };
     })
     .then((result) => {
       if (result!==4){
-        return
+        return;
       }
-      Swal.fire({
-        icon: "success",
-        title: "Terminaste",
+      endPopup.fire({
         text: "Ejercicio agregado con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
       });
     });
 });
 const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
 btnAnotarRepsSesion.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     titleText:
       "Ingrese nombre de la sesión",
     html: `<p class="input-custom__text">Para anotar las repeticiones realizadas en todos los ejercicios de esa sesión</p>
     <input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -586,7 +564,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
     .then(async (result) => {
       if (result.value===undefined) {
         return;
-      }
+      };
       let indiceSesion = result.value;
       let arrayDeSeries = [];
       for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
@@ -597,14 +575,11 @@ btnAnotarRepsSesion.addEventListener("click", () => {
           j++
         ) {
           let breakSign = true;
-          await Swal.fire({
+          await progressPopup.fire({
             title: `${rutina[indiceSesion].ejercicios[i].nombre} - Serie ${
               j + 1
             } - Reps Realizadas`,
             html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
-            confirmButtonText: "Siguiente",
-            showCancelButton: true,
-            focusConfirm: false,
             preConfirm: () => {
               const cantReps = parseInt(
                 Swal.getPopup().querySelector("#cantReps").value
@@ -617,14 +592,14 @@ btnAnotarRepsSesion.addEventListener("click", () => {
           }).then(result => {
             if (result.value===undefined) {
               breakSign =false;
-            }
+            };
           });
           if (breakSign==false){
             return;
           };
-        }
+        };
         arrayDeSeries.push(arrayDeReps);
-      }
+      };
       for (let i = 0; i<rutina[indiceSesion].ejercicios.length; i++) {
 rutina[indiceSesion].ejercicios[i].seriesRealizadas = arrayDeSeries[i];
       }
@@ -633,28 +608,19 @@ rutina[indiceSesion].ejercicios[i].seriesRealizadas = arrayDeSeries[i];
     .then((result) => {
       if (result!==4) {
         return;
-      }
-      Swal.fire({
-        icon: "success",
-        title: "Terminaste",
-        text: "Series Anotadas con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
+      };
+      endPopup.fire({
+        text: "Series Anotadas con éxito."
       });
     });
 });
 const btnAnotarRepsUno = document.querySelector(".btn-anotarRepsx1");
 btnAnotarRepsUno.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title:
       "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
     <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -674,7 +640,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
     .then(async (result) => {
       if (result.value===undefined) {
         return;
-      }
+      };
       let grupoDeSeries = [];
       let indiceSesion = result.value.indiceSesion;
       let indiceEjercicio = result.value.indiceEjercicio;
@@ -684,14 +650,11 @@ btnAnotarRepsUno.addEventListener("click", () => {
         i++
       ) {
         let breakSign = true;
-        await Swal.fire({
+        await progressPopup.fire({
           title: `${
             rutina[indiceSesion].ejercicios[indiceEjercicio].nombre
           } - Serie ${i + 1} - Reps Realizadas`,
           html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
-          confirmButtonText: "Siguiente",
-          showCancelButton: true,
-          focusConfirm: false,
           preConfirm: () => {
             const cantReps = parseInt(
               Swal.getPopup().querySelector("#cantReps").value
@@ -701,12 +664,12 @@ btnAnotarRepsUno.addEventListener("click", () => {
         }).then(result => {
           if (result.value===undefined) {
             breakSign =false;
-          } 
+          };
         });
         if (breakSign==false){
           return;
-        }
-      }
+        };
+      };
       rutina[indiceSesion].ejercicios[
         indiceEjercicio
       ].seriesRealizadas= grupoDeSeries;
@@ -715,27 +678,18 @@ btnAnotarRepsUno.addEventListener("click", () => {
     .then((result) => {
       if (result!==4) {
         return;
-      }
-      Swal.fire({
-        icon: "success",
-        title: "Terminaste",
+      };
+      endPopup.fire({
         text: "Series Anotadas con éxito.",
-        preConfirm: () => {
-          localStorage.setItem("rutina", JSON.stringify(rutina));
-          reemplazarSesiones();
-        },
       });
     });
 });
 const btnProxSesion = document.querySelector(".btn-generarProximaSesion");
 btnProxSesion.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title:
       "Ingrese nombre de la sesión de la cual quieras generar próximos pesos y repeticiones",
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -747,32 +701,23 @@ btnProxSesion.addEventListener("click", () => {
   }).then((result) => {
     if (result.value===undefined) {
       return;
-    }
+    };
     let indiceSesion = result.value;
     equipararUltimosPesosConProximos(indiceSesion);
     actualizarPesos(indiceSesion);
     actualizarSeries(indiceSesion);
-    Swal.fire({
-      icon: "success",
-      title: "Terminaste",
-      text: "Series y pesos de la sesión indicada actualizados con éxito.",
-      preConfirm: () => {
-        localStorage.setItem("rutina", JSON.stringify(rutina));
-        reemplazarSesiones();
-      },
+    endPopup.fire({
+      text: "Series y pesos de la sesión indicada actualizados con éxito."
     });
   });
 });
 const btnProxSesionUno = document.querySelector(".btn-generarProximaSesionx1");
 btnProxSesionUno.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title:
       "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
     html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
     <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -787,11 +732,11 @@ btnProxSesionUno.addEventListener("click", () => {
         )
       );
       return { indiceSesion, indiceEjercicio };
-    },
+    }
   }).then((result) => {
     if (result.value===undefined) {
       return;
-    }
+    };
     let indiceSesion = result.value.indiceSesion;
     let indiceEjercicio = result.value.indiceEjercicio;
     equipararUltimosPesosConProximosUnicoEjercicio(
@@ -800,25 +745,16 @@ btnProxSesionUno.addEventListener("click", () => {
     );
     actualizarPesosUnicoEjercicio(indiceSesion, indiceEjercicio);
     actualizarSeriesUnicoEjercicio(indiceSesion, indiceEjercicio);
-    Swal.fire({
-      icon: "success",
-      title: "Terminaste",
-      text: "Series y pesos del ejercicio indicado actualizados con éxito.",
-      preConfirm: () => {
-        localStorage.setItem("rutina", JSON.stringify(rutina));
-        reemplazarSesiones();
-      },
+    endPopup.fire({
+      text: "Series y pesos del ejercicio indicado actualizados con éxito."
     });
   });
 });
 const btnEliminarSesion = document.querySelector(".btn-eliminarSesion");
 btnEliminarSesion.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title: "Ingrese el nombre de la sesión que quiere borrar",
     html: `<input class="swal2-input" type="text" id="nombreDeSesion" placeholder="Nombre de sesión"></input>`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -835,28 +771,19 @@ btnEliminarSesion.addEventListener("click", () => {
       return;
     } else { 
       rutina.splice(indiceSesion, 1);
-    }
-    Swal.fire({
-      icon: "success",
-      title: "Terminaste",
-      text: "Series y pesos del ejercicio indicado actualizados con éxito.",
-      preConfirm: () => {
-        localStorage.setItem("rutina", JSON.stringify(rutina));
-        reemplazarSesiones();
-      },
+    };
+    endPopup.fire({
+      text: "Series y pesos del ejercicio indicado actualizados con éxito."
     });
   });
 });
 const btnEliminarEjercicio = document.querySelector(".btn-eliminarEjercicio");
 btnEliminarEjercicio.addEventListener("click", () => {
-  Swal.fire({
+  progressPopup.fire({
     title:
       "Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar",
     html: `<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
     <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
     preConfirm: () => {
       const nombreDeSesion =
         Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -875,18 +802,12 @@ btnEliminarEjercicio.addEventListener("click", () => {
   }).then((result) => {
     if (result.value===undefined) {
       return;
-    }
+    };
     let indiceDeSesion = result.value.indiceDeSesion;
     let indiceDeEjercicio = result.value.indiceDeEjercicio;
     rutina[indiceDeSesion].ejercicios.splice(indiceDeEjercicio, 1);
-    Swal.fire({
-      title: "Listo",
-      icon: "success",
-      text: "Ejercicio eliminado exitosamente",
-      preConfirm: () => {
-        localStorage.setItem("rutina", JSON.stringify(rutina));
-        reemplazarSesiones();
-      },
+    endPopup.fire({
+      text: "Ejercicio eliminado exitosamente"
     });
   });
 });
@@ -900,21 +821,30 @@ btnBorrarRutina.addEventListener("click", () => {
     showCancelButton: true,
     cancelButtonColor: "#d33",
     confirmButtonText: "Si, eliminar la rutina",
+    focusConfirm: false,
+    backdrop: false,
+    allowOutsideClick: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeIn'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOut'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       rutina = [];
       localStorage.removeItem("rutina");
       borrarTablas();
       Swal.fire("Atención", "Has eliminado la rutina completa", "info");
-    }
+    };
   });
 });
-/*FUNCIONES CALCULOS start*/
+/*Calc Functions start*/
 function equipararUltimosPesosConProximos(num) {
   rutina[num].ejercicios.forEach((ejercicio) => {
     ejercicio.ultimosPesos = ejercicio.proximosPesos;
   });
-}
+};
 function actualizarPesos(num) {
   rutina[num].ejercicios.forEach((ejercicio) => {
     let nuevosPesos = [];
@@ -925,7 +855,7 @@ function actualizarPesos(num) {
     });
     ejercicio.proximosPesos = nuevosPesos;
   });
-}
+};
 function actualizarSeries(num) {
   rutina[num].ejercicios.forEach((ejercicio) => {
     let nuevasSeries = [];
@@ -940,11 +870,11 @@ function actualizarSeries(num) {
     });
     ejercicio.proximasSeries = nuevasSeries;
   });
-}
+};
 function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
   rutina[sesion].ejercicios[ejercicio].ultimosPesos =
     rutina[sesion].ejercicios[ejercicio].proximosPesos;
-}
+};
 function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
   let nuevosPesos = [];
   rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
@@ -955,7 +885,7 @@ function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
       : nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i]);
   });
   rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
-}
+};
 function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
   let nuevasSeries = [];
   rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
@@ -968,10 +898,11 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
         rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]
       );
       nuevasSeries.push(nuevoRangoDeSeries);
-    }
+    };
   });
   rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
-}
+};
+/*Calc Functions end*/
 // Input number tester - function
 function filtrarInput(textbox, inputFilter, errMsg) {
   [
@@ -1005,7 +936,7 @@ function filtrarInput(textbox, inputFilter, errMsg) {
       } else {
         // Rejected value - nothing to restore
         this.value = "";
-      }
+      };
     });
   });
 }
@@ -1013,7 +944,7 @@ function filtrarInput(textbox, inputFilter, errMsg) {
 filtrarInput(
   document.getElementById("inputNumeroEjercicio"),
   (value) => {
-    return /^\d*\.?\d*$/.test(value); // Permitir solo números
+    return /^\d*\.?\d*$/.test(value); // Allow only numbers
   },
   "Recordá ingresar números entre 1 y 1326"
 );
@@ -1044,9 +975,22 @@ async function requestTranslation() {
     spanTranslationResult.innerText = `"${traduccion}"`;
   } catch {
     (err) => console.error(err);
-  }
-}
-/*Table render functions*/
+  };
+};
+//Table render functions
+// Tables, visual refresh
+function reemplazarSesiones() {
+  borrarTablas();
+  crearTablas();
+};
+//Tables delete
+function borrarTablas() {
+  const todasLasTablas = document.querySelectorAll("table");
+  todasLasTablas.forEach((table) => {
+    table.remove();
+  });
+};
+//Table create
 function crearTablas() {
   rutina.forEach((sesion, i) => {
     const tablaDeSesion = document.createElement("table");
@@ -1095,48 +1039,4 @@ function crearTablas() {
     });
     document.querySelector(".routine-container").append(tablaDeSesion);
   });
-}
-// Refresh visual de las tablas
-function reemplazarSesiones() {
-  borrarTablas();
-  crearTablas();
-}
-//Borra del array. Actualiza storage. Además borra visualmente
-function borrarTablas() {
-  const todasLasTablas = document.querySelectorAll("table");
-  todasLasTablas.forEach((table) => {
-    table.remove();
-  });
-}
-// Nuevas funciones para reducir código
-const progressPopup = Swal.mixin({
-    confirmButtonText: "Siguiente",
-    showCancelButton: true,
-    focusConfirm: false,
-    showClass: {
-      popup: 'animate__animated animate__fadeIn'
-    },
-    hideClass: {
-      popup: 'animate__animated animate__fadeOut'
-    }
-})
-
-// progressPopup.fire({
-//   html: '',
-//   title: '',
-//   preConfirm : () => {}
-// })
-
-const endPopup = Swal.mixin({
-  icon: "success",
-  title: "Listo",
-  preConfirm: () => {
-    localStorage.setItem("rutina", JSON.stringify(rutina));
-    reemplazarSesiones();
-  }
-})
-
-// endPopup.fire({
-//   text: '',
-//   preConfirm : () => {}
-// })
+};
