@@ -12,7 +12,6 @@ const btnTranslationQuery = document.querySelector(".btn-translation-query");
 const inputTranslationQuery = document.querySelector("#translation-query");
 const spanTranslationResult = document.querySelector("#translation-result");
 let ejercicioBuscado;
-
 //Sweet Alert - welcome
 Swal.fire({
   title: "Bienvenido",
@@ -165,7 +164,6 @@ btnAgregarSesion.addEventListener("click", () => {
         return 
       }
       let nuevaSesion = result.value;
-      console.log(nuevaSesion)
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
@@ -211,7 +209,6 @@ btnAgregarSesion.addEventListener("click", () => {
         return;
       }
       let nuevaSesion = result;
-      console.log(nuevaSesion)
       let breakSign = true
       for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
         await Swal.fire({
@@ -256,7 +253,6 @@ btnAgregarSesion.addEventListener("click", () => {
       }
     })
     .then(async (result) => {
-      console.log(result)
       if (result===undefined) {
         return;
       }
@@ -362,7 +358,6 @@ btnAgregarSesion.addEventListener("click", () => {
               }
             },
           }).then((result) => {
-            console.log(result)
             if (result.value===undefined) {
               nuevaSesion = undefined;
               breakSign = false;
@@ -385,20 +380,19 @@ btnAgregarSesion.addEventListener("click", () => {
       }
     })
     .then((result) => {
-      console.log(result)
       if (result===undefined) {
         return;
       }
-        Swal.fire({
-          icon: "success",
-          title: "Listo",
-          text: "Rutina creada con éxito.",
-          preConfirm: () => {
-            rutina.push(result);
-            localStorage.setItem("rutina", JSON.stringify(rutina));
-            reemplazarSesiones();
-          },
-        });
+      rutina.push(result);
+      Swal.fire({
+        icon: "success",
+        title: "Listo",
+        text: "Rutina creada con éxito.",
+        preConfirm: () => {
+          localStorage.setItem("rutina", JSON.stringify(rutina));
+          reemplazarSesiones();
+        },
+      });
     })
 });
 const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
@@ -444,7 +438,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
           nuevoEjercicio = undefined;
           return;
         } else {
-          console.log(cantSeries)
           for (let i = 0; i < cantSeries; i++) {
             nuevoEjercicio.seriesBase.push([]);
           }
@@ -453,7 +446,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
       return nuevoEjercicio;
     })
     .then(async (result) => {
-      console.log(result)
       if (result===undefined){
         return
       }
@@ -523,7 +515,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
       return nuevoEjercicio;
     })
     .then(async (result) => {
-      console.log(result)
       if (result===undefined){
         return
       }
@@ -545,7 +536,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
           return indiceSesion;
         },
       }).then((result) => {
-        console.log(result)
         if (result.value===undefined){
           return
         } else {
@@ -560,7 +550,6 @@ btnAgregarEjercicio.addEventListener("click", () => {
       }
     })
     .then((result) => {
-      console.log(result)
       if (result!==4){
         return
       }
@@ -596,10 +585,12 @@ btnAnotarRepsSesion.addEventListener("click", () => {
   })
     .then(async (result) => {
       if (result.value===undefined) {
-        return new Error('ERROR')
+        return;
       }
       let indiceSesion = result.value;
+      let arrayDeSeries = [];
       for (let i = 0; i < rutina[indiceSesion].ejercicios.length; i++) {
+        let arrayDeReps = [];
         for (
           let j = 0;
           j < rutina[indiceSesion].ejercicios[i].seriesBase.length;
@@ -618,9 +609,10 @@ btnAnotarRepsSesion.addEventListener("click", () => {
               const cantReps = parseInt(
                 Swal.getPopup().querySelector("#cantReps").value
               );
-              rutina[indiceSesion].ejercicios[i].seriesRealizadas.push(
-                cantReps
-              );
+              arrayDeReps.push(cantReps);
+              // rutina[indiceSesion].ejercicios[i].seriesRealizadas.push(
+              //   cantReps
+              // );
             },
           }).then(result => {
             if (result.value===undefined) {
@@ -628,15 +620,19 @@ btnAnotarRepsSesion.addEventListener("click", () => {
             }
           });
           if (breakSign==false){
-            return new Error('ERROR')
+            return;
           };
         }
+        arrayDeSeries.push(arrayDeReps);
+      }
+      for (let i = 0; i<rutina[indiceSesion].ejercicios.length; i++) {
+rutina[indiceSesion].ejercicios[i].seriesRealizadas = arrayDeSeries[i];
       }
       return 4;
     })
     .then((result) => {
       if (result!==4) {
-        return new Error('ERROR')
+        return;
       }
       Swal.fire({
         icon: "success",
@@ -677,8 +673,9 @@ btnAnotarRepsUno.addEventListener("click", () => {
   })
     .then(async (result) => {
       if (result.value===undefined) {
-        return new Error('ERROR')
+        return;
       }
+      let grupoDeSeries = [];
       let indiceSesion = result.value.indiceSesion;
       let indiceEjercicio = result.value.indiceEjercicio;
       for (
@@ -699,24 +696,25 @@ btnAnotarRepsUno.addEventListener("click", () => {
             const cantReps = parseInt(
               Swal.getPopup().querySelector("#cantReps").value
             );
-            rutina[indiceSesion].ejercicios[
-              indiceEjercicio
-            ].seriesRealizadas.push(cantReps);
+            grupoDeSeries.push(cantReps);
           },
         }).then(result => {
           if (result.value===undefined) {
             breakSign =false;
-          }
+          } 
         });
         if (breakSign==false){
-          return new Error('ERROR')
+          return;
         }
       }
+      rutina[indiceSesion].ejercicios[
+        indiceEjercicio
+      ].seriesRealizadas= grupoDeSeries;
       return 4;
     })
     .then((result) => {
       if (result!==4) {
-        return new Error('ERROR')
+        return;
       }
       Swal.fire({
         icon: "success",
@@ -748,7 +746,7 @@ btnProxSesion.addEventListener("click", () => {
     },
   }).then((result) => {
     if (result.value===undefined) {
-      return new Error('ERROR')
+      return;
     }
     let indiceSesion = result.value;
     equipararUltimosPesosConProximos(indiceSesion);
@@ -792,7 +790,7 @@ btnProxSesionUno.addEventListener("click", () => {
     },
   }).then((result) => {
     if (result.value===undefined) {
-      return new Error('ERROR')
+      return;
     }
     let indiceSesion = result.value.indiceSesion;
     let indiceEjercicio = result.value.indiceEjercicio;
@@ -834,7 +832,7 @@ btnEliminarSesion.addEventListener("click", () => {
   }).then((result) => {
     let indiceSesion = result.value;
     if (indiceSesion=== undefined) {
-      return new Error('ERROR')
+      return;
     } else { 
       rutina.splice(indiceSesion, 1);
     }
@@ -876,7 +874,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
     },
   }).then((result) => {
     if (result.value===undefined) {
-      return new Error('ERROR')
+      return;
     }
     let indiceDeSesion = result.value.indiceDeSesion;
     let indiceDeEjercicio = result.value.indiceDeEjercicio;
@@ -1110,3 +1108,35 @@ function borrarTablas() {
     table.remove();
   });
 }
+// Nuevas funciones para reducir código
+const progressPopup = Swal.mixin({
+    confirmButtonText: "Siguiente",
+    showCancelButton: true,
+    focusConfirm: false,
+    showClass: {
+      popup: 'animate__animated animate__fadeIn'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOut'
+    }
+})
+
+// progressPopup.fire({
+//   html: '',
+//   title: '',
+//   preConfirm : () => {}
+// })
+
+const endPopup = Swal.mixin({
+  icon: "success",
+  title: "Listo",
+  preConfirm: () => {
+    localStorage.setItem("rutina", JSON.stringify(rutina));
+    reemplazarSesiones();
+  }
+})
+
+// endPopup.fire({
+//   text: '',
+//   preConfirm : () => {}
+// })
