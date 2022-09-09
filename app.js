@@ -205,11 +205,7 @@ btnAgregarSesion.addEventListener("click", () => {
               }
           },
         }).then((result) => {
-          if (result.value===undefined) {
-            breakSign =false;
-          } else {
-            nuevaSesion.ejercicios[i].nombre = result.value;
-          }
+          result.value===undefined ? breakSign =false : nuevaSesion.ejercicios[i].nombre = result.value;
         });
         if (breakSign === false) {
           break
@@ -251,9 +247,7 @@ btnAgregarSesion.addEventListener("click", () => {
             }
           },
         }).then(result => {
-          if (result.value===undefined) {
-            breakSign =false;
-          }
+          result.value === undefined ? breakSign = false : "";
         });
         if (breakSign === false) {
           nuevaSesion = undefined;
@@ -465,9 +459,7 @@ btnAgregarEjercicio.addEventListener("click", () => {
             nuevoEjercicio.seriesBase[i].push(maxReps);
           },
         }).then(result => {
-          if (result.value===undefined) {
-            breakSign =false;
-          };
+          result.value===undefined ? breakSign = false : "";
         });
         if (breakSign==false){
           nuevoEjercicio = undefined;
@@ -590,9 +582,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
               // );
             },
           }).then(result => {
-            if (result.value===undefined) {
-              breakSign =false;
-            };
+            result.value === undefined ? breakSign = false : "";
           });
           if (breakSign==false){
             return;
@@ -662,9 +652,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
             grupoDeSeries.push(cantReps);
           },
         }).then(result => {
-          if (result.value===undefined) {
-            breakSign =false;
-          };
+          result.value === undefined ? breakSign = false : "";
         });
         if (breakSign==false){
           return;
