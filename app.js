@@ -623,13 +623,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
               sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
           )
         );
-        if (!nombreDeSesion || indiceDeSesion < 0) {
-          Swal.showValidationMessage(
-            `Nombre de sesión inválido o inexistente. Prueba con otro nombre.`
-          );
-        } else {
-          return indiceDeSesion;
-        }
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion);
       },
     })
     .then(async (result) => {
@@ -656,13 +650,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
                 const cantReps = parseInt(
                   Swal.getPopup().querySelector("#cantReps").value
                 );
-                if (!cantReps || isNaN(cantReps) || cantReps < 0) {
-                  Swal.showValidationMessage(
-                    `Debes llenar este campo. Recuerda ingresar un número positivo`
-                  );
-                } else {
-                  arrayDeReps.push(cantReps);
-                }
+                validarCantReps(arrayDeReps, cantReps)
               },
             })
             .then((result) => {
@@ -702,36 +690,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
           Swal.getPopup().querySelector("#nombreDeEjercicio").value;
-        if (!nombreDeSesion || !nombreDeEjercicio) {
-          Swal.showValidationMessage(`Recuerda completar ambos campos`);
-        } else {
-          let indiceDeSesion = rutina.indexOf(
-            rutina.find(
-              (sesion) =>
-                sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
-            )
-          );
-          if (indiceDeSesion < 0) {
-            Swal.showValidationMessage(
-              `Nombre de sesión inválido. Intenta con otro.`
-            );
-          } else {
-            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
-              rutina[indiceDeSesion].ejercicios.find(
-                (ejercicio) =>
-                  ejercicio.nombre.toLowerCase() ==
-                  nombreDeEjercicio.toLowerCase()
-              )
-            );
-            if (indiceDeEjercicio < 0) {
-              Swal.showValidationMessage(
-                `Nombre de ejercicio. Intenta con otro.`
-              );
-            } else {
-              return { indiceDeSesion, indiceDeEjercicio };
-            }
-          }
-        }
+        return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
       },
     })
     .then(async (result) => {
@@ -758,13 +717,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
               const cantReps = parseInt(
                 Swal.getPopup().querySelector("#cantReps").value
               );
-              if (!cantReps || isNaN(cantReps) || cantReps < 0) {
-                Swal.showValidationMessage(
-                  `Debes llenar este campo. Recuerda ingresar un número positivo`
-                );
-              } else {
-                grupoDeSeries.push(cantReps);
-              }
+              validarCantReps(grupoDeSeries, cantReps)
             },
           })
           .then((result) => {
@@ -803,15 +756,7 @@ btnProxSesion.addEventListener("click", () => {
               sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
           )
         );
-        if (!nombreDeSesion) {
-          Swal.showValidationMessage(`Recuerda completar este campo`);
-        } else if (indiceDeSesion < 0) {
-          Swal.showValidationMessage(
-            `Nombre de sesión inválido. Intenta con otro.`
-          );
-        } else {
-          return indiceDeSesion;
-        }
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion)
       },
     })
     .then((result) => {
@@ -840,36 +785,7 @@ btnProxSesionUno.addEventListener("click", () => {
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
           Swal.getPopup().querySelector("#nombreDeEjercicio").value;
-        if (!nombreDeSesion || !nombreDeEjercicio) {
-          Swal.showValidationMessage(`Recuerda completar ambos campos`);
-        } else {
-          let indiceDeSesion = rutina.indexOf(
-            rutina.find(
-              (sesion) =>
-                sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
-            )
-          );
-          if (indiceDeSesion < 0) {
-            Swal.showValidationMessage(
-              `Nombre de sesión inválido. Intenta con otro.`
-            );
-          } else {
-            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
-              rutina[indiceDeSesion].ejercicios.find(
-                (ejercicio) =>
-                  ejercicio.nombre.toLowerCase() ==
-                  nombreDeEjercicio.toLowerCase()
-              )
-            );
-            if (indiceDeEjercicio < 0) {
-              Swal.showValidationMessage(
-                `Nombre de ejercicio inexistente. Intenta con otro.`
-              );
-            } else {
-              return { indiceDeSesion, indiceDeEjercicio };
-            }
-          }
-        }
+          return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
       },
     })
     .then((result) => {
@@ -903,15 +819,7 @@ btnEliminarSesion.addEventListener("click", () => {
             return sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase();
           })
         );
-        if (!nombreDeSesion) {
-          Swal.showValidationMessage(`Recuerda completar este campo`);
-        } else if (indiceDeSesion < 0) {
-          Swal.showValidationMessage(
-            `Nombre de sesión inválido. Intenta con otro.`
-          );
-        } else {
-          return indiceDeSesion;
-        }
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion)
       },
     })
     .then((result) => {
@@ -939,36 +847,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
           Swal.getPopup().querySelector("#nombreDeEjercicio").value;
-        if (!nombreDeSesion || !nombreDeEjercicio) {
-          Swal.showValidationMessage(`Recuerda completar ambos campos`);
-        } else {
-          let indiceDeSesion = rutina.indexOf(
-            rutina.find(
-              (sesion) =>
-                sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
-            )
-          );
-          if (indiceDeSesion < 0) {
-            Swal.showValidationMessage(
-              `Nombre de sesión inválido. Intenta con otro.`
-            );
-          } else {
-            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
-              rutina[indiceDeSesion].ejercicios.find(
-                (ejercicio) =>
-                  ejercicio.nombre.toLowerCase() ==
-                  nombreDeEjercicio.toLowerCase()
-              )
-            );
-            if (indiceDeEjercicio < 0) {
-              Swal.showValidationMessage(
-                `Nombre de ejercicio inexistente. Intenta con otro.`
-              );
-            } else {
-              return { indiceDeSesion, indiceDeEjercicio };
-            }
-          }
-        }
+          return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
       },
     })
     .then((result) => {
@@ -1011,6 +890,55 @@ btnBorrarRutina.addEventListener("click", () => {
     }
   });
 });
+/*Val Functions*/
+function validarNombreDeSesion(nombreDeSesion, indiceDeSesion) {
+  if (!nombreDeSesion) {
+      Swal.showValidationMessage(`Recuerda completar este campo`);
+    } else if (indiceDeSesion < 0) {
+      Swal.showValidationMessage(`Nombre de sesión inválido. Intenta con otro.`);
+    } else {
+      return indiceDeSesion;
+    };
+};
+function validarCantReps(arrayReceptor, cantReps) {
+  if (!cantReps || isNaN(cantReps) || cantReps < 0) {
+      Swal.showValidationMessage(
+        `Debes llenar este campo. Recuerda ingresar un número positivo`
+      );
+    } else {
+      arrayReceptor.push(cantReps);
+    };
+};
+function validarNombreSesionYDeEjercicio (nombreDeSesion, nombreDeEjercicio) {
+  if (!nombreDeSesion || !nombreDeEjercicio) {
+    Swal.showValidationMessage(`Recuerda completar ambos campos`);
+  } else {
+    let indiceDeSesion = rutina.indexOf(
+      rutina.find(
+        (sesion) => sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+      )
+    );
+    if (indiceDeSesion < 0) {
+      Swal.showValidationMessage(
+        `Nombre de sesión inválido. Intenta con otro.`
+      );
+    } else {
+      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+        rutina[indiceDeSesion].ejercicios.find(
+          (ejercicio) =>
+            ejercicio.nombre.toLowerCase() == nombreDeEjercicio.toLowerCase()
+        )
+      );
+      if (indiceDeEjercicio < 0) {
+        Swal.showValidationMessage(
+          `Nombre de ejercicio inexistente. Intenta con otro.`
+        );
+      } else {
+        return { indiceDeSesion, indiceDeEjercicio };
+      }
+    }
+  }
+}
 /*Calc Functions start*/
 function equipararUltimosPesosConProximos(num) {
   rutina[num].ejercicios.forEach((ejercicio) => {
