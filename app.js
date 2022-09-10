@@ -47,8 +47,7 @@ const translateInputToast = Swal.mixin({
   },
   icon: "info",
   title: "Recuerda ingresar un número. Entre el 1 y el 1326",
-}
-)
+});
 //Swal2 - welcome
 Swal.fire({
   title: "Bienvenido",
@@ -98,7 +97,7 @@ btnGetExercises.addEventListener("click", async () => {
         icon: "success",
         confirmButtonText: "OK",
       });
-      toggleExerciseButtons()
+      toggleExerciseButtons();
     })
     .catch(async (err) => {
       // if callQuota exceded, ask for exercises in local JSON
@@ -110,7 +109,7 @@ btnGetExercises.addEventListener("click", async () => {
         icon: "info",
         confirmButtonText: "Continuar",
       });
-      toggleExerciseButtons()
+      toggleExerciseButtons();
     });
 });
 //Intro.js
@@ -130,17 +129,19 @@ btnDarkMode.addEventListener("change", () => {
 });
 //Exercise API
 btnExerciseQuery.addEventListener("click", () => {
-  buscarDatosEjercicio()
+  buscarDatosEjercicio();
 });
 inputNumeroEjercicio.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
-    buscarDatosEjercicio()
+    buscarDatosEjercicio();
   }
 });
 //Translate API
-document.querySelector(".btn-translation-query").addEventListener("click", () => {
-  requestTranslation();
-});
+document
+  .querySelector(".btn-translation-query")
+  .addEventListener("click", () => {
+    requestTranslation();
+  });
 inputTranslationQuery.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     requestTranslation();
@@ -160,24 +161,27 @@ btnAgregarSesion.addEventListener("click", () => {
         const cantidadDeEjercicios = parseInt(
           Swal.getPopup().querySelector("#cantidadDeEjercicios").value
         );
-        if (
-          !nombreDeSesion ||
-          !cantidadDeEjercicios ||
-          isNaN(cantidadDeEjercicios) ||
-          cantidadDeEjercicios > 8 ||
-          cantidadDeEjercicios <= 0
-        ) {
+        if (!nombreDeSesion) {
+          Swal.showValidationMessage(`Recuerda ingresar un nombre de sesión`);
+        } else if (nombreDeSesion.length > 40) {
           Swal.showValidationMessage(
-            `Recuerda ingresar un nombre de sesión, y que la cantidad de ejercicios debe ser un número entre 1 y 8`
+            `Nombre demasiado largo. Debe tener menos de 40 caracteres`
           );
-        } 
-        if (
+        } else if (
           rutina.find(
             (s) => s.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
           )
         ) {
           Swal.showValidationMessage(
             `Ya existe una sesión con ese nombre! Elige otro...`
+          );
+        } else if (cantidadDeEjercicios > 8 || cantidadDeEjercicios <= 0) {
+          Swal.showValidationMessage(
+            `La cantidad de ejercicios debe ser un número entre 1 y 8 inclusive`
+          );
+        } else if (!cantidadDeEjercicios || isNaN(cantidadDeEjercicios)) {
+          Swal.showValidationMessage(
+            `Ingresa una cantidad de ejercicios para la sesión`
           );
         } else {
           let ejercicios = [];
@@ -211,13 +215,13 @@ btnAgregarSesion.addEventListener("click", () => {
             preConfirm: () => {
               let nombreDeEjercicio =
                 Swal.getPopup().querySelector(`#ejercicio`).value;
-              if (
-                !nombreDeEjercicio ||
-                nombreDeEjercicio.length > 26 ||
-                nombreDeEjercicio.length <= 0
-              ) {
+              if (!nombreDeEjercicio || nombreDeEjercicio.length <= 0) {
                 Swal.showValidationMessage(
-                  `Debes ingresar un nombre para el ejercicio de hasta 18 caracteres`
+                  `Debes ingresar un nombre para el ejercicio`
+                );
+              } else if (nombreDeEjercicio.length > 26) {
+                Swal.showValidationMessage(
+                  `El nombre del ejercicio no debe superar los 26 caracteres`
                 );
               } else {
                 return nombreDeEjercicio;
@@ -254,15 +258,10 @@ btnAgregarSesion.addEventListener("click", () => {
               const cantSeries = parseInt(
                 Swal.getPopup().querySelector(`#seriesEjercicio`).value
               );
-              if (
-                !cantSeries ||
-                isNaN(cantSeries) ||
-                cantSeries > 6 ||
-                cantSeries <= 0
-              ) {
-                Swal.showValidationMessage(
-                  `Debes ingresar la cantidad de series. Mínimo 1 serie, y máximo 6`
-                );
+              if (cantSeries > 6 || cantSeries <= 0) {
+                Swal.showValidationMessage(`Máximo 6 series, mínimo 1`);
+              } else if (!cantSeries || isNaN(cantSeries)) {
+                Swal.showValidationMessage(`Debes ingresar un número para la cantidad de series`);
               } else {
                 for (let j = 0; j < cantSeries; j++) {
                   nuevaSesion.ejercicios[i].seriesBase.push([]);
@@ -306,18 +305,12 @@ btnAgregarSesion.addEventListener("click", () => {
                 const maxReps = parseInt(
                   Swal.getPopup().querySelector(`#maxReps`).value
                 );
-                if (!minReps || !maxReps || isNaN(minReps) || isNaN(maxReps)) {
+                if (!minReps || !maxReps) {
                   Swal.showValidationMessage(
-                    `Debes ingresar repeticiones mínimas y máximas. Recuerda ingresar solo números`
-                  );
-                } else if (minReps <= 0) {
-                  Swal.showValidationMessage(
-                    "Debes ingresar como cantidad de repeticiones mínimas 1"
+                    `Debes completar los campos con repeticiones mínimas y máximas. Recuerda ingresar solo números mayores a 0`
                   );
                 } else if (maxReps <= minReps) {
-                  Swal.showValidationMessage(
-                    "El máximo no puede ser igual o menor al mínimo"
-                  );
+                  Swal.showValidationMessage("El máximo no puede ser igual o menor al mínimo");
                 } else {
                   nuevaSesion.ejercicios[i].seriesBase[j].push(minReps);
                   nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
@@ -365,10 +358,10 @@ btnAgregarSesion.addEventListener("click", () => {
                 const peso = parseInt(
                   Swal.getPopup().querySelector(`#peso`).value
                 );
-                if (!peso || isNaN(peso) || peso <= 0) {
-                  Swal.showValidationMessage(
-                    `Debes ingresar un peso válido. Mayor a 1(kg)`
-                  );
+                if ((!peso || isNaN(peso)) && peso !==0) {
+                  Swal.showValidationMessage(`Debes ingresar un peso válido`);
+                } else if (peso <= 0) {
+                  Swal.showValidationMessage(`Debes ingresar un número mayor a 1 (kg)`);
                 } else {
                   return peso;
                 }
@@ -837,7 +830,7 @@ btnProxSesionUno.addEventListener("click", () => {
     <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
       preConfirm: () => {
         let indiceSesion;
-        let indiceEjercicio
+        let indiceEjercicio;
         const nombreDeSesion =
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
@@ -864,12 +857,12 @@ btnProxSesionUno.addEventListener("click", () => {
               )
             );
             if (indiceEjercicio < 0) {
-             Swal.showValidationMessage(
-               `Nombre de ejercicio inexistente. Intenta con otro.`
-             );
-           } else {
-             return { indiceSesion, indiceEjercicio };
-           }
+              Swal.showValidationMessage(
+                `Nombre de ejercicio inexistente. Intenta con otro.`
+              );
+            } else {
+              return { indiceSesion, indiceEjercicio };
+            }
           }
         }
       },
@@ -938,7 +931,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
     <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
       preConfirm: () => {
         let indiceSesion;
-        let indiceEjercicio
+        let indiceEjercicio;
         const nombreDeSesion =
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
@@ -965,12 +958,12 @@ btnEliminarEjercicio.addEventListener("click", () => {
               )
             );
             if (indiceEjercicio < 0) {
-            Swal.showValidationMessage(
-              `Nombre de ejercicio inexistente. Intenta con otro.`
-            );
-          } else {
-            return { indiceSesion, indiceEjercicio };
-          }
+              Swal.showValidationMessage(
+                `Nombre de ejercicio inexistente. Intenta con otro.`
+              );
+            } else {
+              return { indiceSesion, indiceEjercicio };
+            }
           }
         }
       },
@@ -1080,12 +1073,12 @@ function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
 }
 /*Calc Functions end*/
 // Enable/Disable ExerciseButtons
-function toggleExerciseButtons () {
+function toggleExerciseButtons() {
   btnGetExercises.disabled = true;
-  btnGetExercises.classList.add('btn--disabled');
-  btnGetExercises.innerText = 'Lista obtenida con éxito';
+  btnGetExercises.classList.add("btn--disabled");
+  btnGetExercises.innerText = "Lista obtenida con éxito";
   btnExerciseQuery.disabled = false;
-  btnExerciseQuery.classList.remove('btn--disabled');
+  btnExerciseQuery.classList.remove("btn--disabled");
 }
 // Input number tester - function
 function filtrarInput(textbox, inputFilter, errMsg) {
@@ -1134,14 +1127,18 @@ filtrarInput(
 );
 // Translate API functions & request setup
 //Exercise API
-function buscarDatosEjercicio () {
+function buscarDatosEjercicio() {
   if (inputNumeroEjercicio.value) {
     idEjercicio = inputNumeroEjercicio.value - 1;
     ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
-    document.querySelector("#nombreDelEjericio").innerText = ejercicioBuscado.name;
-    document.querySelector("#musculoQueInterviene").innerText = ejercicioBuscado.bodyPart;
-    document.querySelector("#elementosAUtilizar").innerText = ejercicioBuscado.equipment;
-    document.querySelector("#zonaAEstimular").innerText = ejercicioBuscado.target;
+    document.querySelector("#nombreDelEjericio").innerText =
+      ejercicioBuscado.name;
+    document.querySelector("#musculoQueInterviene").innerText =
+      ejercicioBuscado.bodyPart;
+    document.querySelector("#elementosAUtilizar").innerText =
+      ejercicioBuscado.equipment;
+    document.querySelector("#zonaAEstimular").innerText =
+      ejercicioBuscado.target;
     document.querySelector("#gifIndicaciones").src = ejercicioBuscado.gifUrl;
   } else {
     translateInputToast.fire();
