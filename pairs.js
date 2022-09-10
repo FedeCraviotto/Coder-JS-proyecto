@@ -1,3 +1,4 @@
+// Designar un nuevo nombre de sesión y cant ejercicios
 if (!nombreDeSesion) {
   Swal.showValidationMessage(`Recuerda ingresar un nombre de sesión`);
 } else if (
@@ -17,7 +18,7 @@ if (!nombreDeSesion) {
 } else {
   return "Todo bien";
 }
-
+// Designar nombre de ejercicio
 if (!nombreDeEjercicio || nombreDeEjercicio.length <= 0) {
   Swal.showValidationMessage(`Debes ingresar un nombre para el ejercicio`);
 } else if (nombreDeEjercicio.length > 26) {
@@ -39,19 +40,40 @@ if (cantSeries > 6 || cantSeries <= 0) {
 }
 
 if (!minReps || !maxReps) {
-    Swal.showValidationMessage(
-      `Debes completar los campos con repeticiones mínimas y máximas. Recuerda ingresar solo números mayores a 0`
-    );
-  } else if (maxReps <= minReps) {
-    Swal.showValidationMessage("El máximo no puede ser igual o menor al mínimo");
+  Swal.showValidationMessage(
+    `Debes completar los campos con repeticiones mínimas y máximas. Recuerda ingresar solo números mayores a 0`
+  );
+} else if (maxReps <= minReps) {
+  Swal.showValidationMessage("El máximo no puede ser igual o menor al mínimo");
+} else {
+  ("todo bien");
+}
+
+if (!peso && peso !== 0) {
+    Swal.showValidationMessage(`Debes ingresar un peso válido`);
+  } else if (isNaN(peso) || peso <= 0) {
+    Swal.showValidationMessage(`El peso debe ser mayor a 1 (kg)`);
   } else {
   ("todo bien");
 }
 
-if (!peso) {
-  Swal.showValidationMessage(`Debes ingresar un peso válido. Mayor a 1(kg)`);
-} else if (isNaN(peso) || peso <= 0) {
-  Swal.showValidationMessage(`Debes ingresar un númnero mayor a 1 (kg)`);
-} else {
-  ("todo bien");
-}
+// "Nombre de" AMBOS
+// "indice" AMBOS
+// "indice de "
+
+
+// Nombre de sesión, que exista
+
+if (!nombreDeSesion || indiceDeSesion < 0) {
+    Swal.showValidationMessage(
+      `Nombre de sesión inválido o inexistente. Prueba con otro nombre.`
+    );
+  } else {
+  'ok' }
+
+
+
+
+
+
+// Nombre de ejercicio, que exista
