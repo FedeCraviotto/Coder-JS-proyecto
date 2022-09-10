@@ -1,3 +1,9 @@
+/*En todas las funciones de modificar 1 solo ejercicio, ya sea para anotar, agregar, eliminar, o generar proxima, inicializaba las variables al tope del preConfirm. Abajo solo reasignaba.
+Ahora las inicializo directo en la validación. Ojo
+En: btnProxSesionUno, btnEliminarEjercicio seguro
+Y tal vez en btnAnotarRepsUno*/
+
+
 // Designar un nuevo nombre de sesión y cant ejercicios
 if (!nombreDeSesion) {
   Swal.showValidationMessage(`Recuerda ingresar un nombre de sesión`);
@@ -57,23 +63,57 @@ if (!peso && peso !== 0) {
   ("todo bien");
 }
 
-// "Nombre de" AMBOS
-// "indice" AMBOS
-// "indice de "
+// Nombre de sesión SOLO, que exista
 
-
-// Nombre de sesión, que exista
-
-if (!nombreDeSesion || indiceDeSesion < 0) {
+if (!nombreDeSesion) {
+    Swal.showValidationMessage(`Recuerda completar este campo`);
+  } else if (indiceDeSesion < 0) {
     Swal.showValidationMessage(
-      `Nombre de sesión inválido o inexistente. Prueba con otro nombre.`
+      `Nombre de sesión inválido. Intenta con otro.`
     );
   } else {
   'ok' }
 
+// Ingresar reps realizadas
+if (!cantReps || isNaN(cantReps) || cantReps < 0) {
+    Swal.showValidationMessage(
+      `Debes llenar este campo. Recuerda ingresar un número positivo`
+    );
+  } else {
+  }
 
 
+// Nombre de sesión Y de ejercicio AMBOS JUNTOS
+
+if (!nombreDeSesion || !nombreDeEjercicio) {
+    Swal.showValidationMessage(`Recuerda completar ambos campos`);
+  } else {
+    let indiceDeSesion = rutina.indexOf(
+      rutina.find(
+        (sesion) =>
+          sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+      )
+    );
+    if (indiceDeSesion < 0) {
+      Swal.showValidationMessage(
+        `Nombre de sesión inválido. Intenta con otro.`
+      );
+    } else {
+      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+        rutina[indiceDeSesion].ejercicios.find(
+          (ejercicio) =>
+            ejercicio.nombre.toLowerCase() ==
+            nombreDeEjercicio.toLowerCase()
+        )
+      );
+      if (indiceDeEjercicio < 0) {
+        Swal.showValidationMessage(
+          `Nombre de ejercicio inexistente. Intenta con otro.`
+        );
+      } else {
 
 
-
-// Nombre de ejercicio, que exista
+        'acción - OJO QUE esta todo anidado en el ELSE'
+      }
+    }
+}

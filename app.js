@@ -675,7 +675,8 @@ btnAnotarRepsSesion.addEventListener("click", () => {
         arrayDeSeries.push(arrayDeReps);
       }
       for (let i = 0; i < rutina[indiceDeSesion].ejercicios.length; i++) {
-        rutina[indiceDeSesion].ejercicios[i].seriesRealizadas = arrayDeSeries[i];
+        rutina[indiceDeSesion].ejercicios[i].seriesRealizadas =
+          arrayDeSeries[i];
       }
       return 4;
     })
@@ -710,24 +711,25 @@ btnAnotarRepsUno.addEventListener("click", () => {
                 sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
             )
           );
-          let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
-            rutina[indiceDeSesion].ejercicios.find(
-              (ejercicio) =>
-                ejercicio.nombre.toLowerCase() ==
-                nombreDeEjercicio.toLowerCase()
-            )
-          );
-
           if (indiceDeSesion < 0) {
             Swal.showValidationMessage(
               `Nombre de sesión inválido. Intenta con otro.`
             );
-          } else if (indiceDeEjercicio < 0) {
-            Swal.showValidationMessage(
-              `Nombre de ejercicio. Intenta con otro.`
-            );
           } else {
-            return { indiceDeSesion, indiceDeEjercicio };
+            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+              rutina[indiceDeSesion].ejercicios.find(
+                (ejercicio) =>
+                  ejercicio.nombre.toLowerCase() ==
+                  nombreDeEjercicio.toLowerCase()
+              )
+            );
+            if (indiceDeEjercicio < 0) {
+              Swal.showValidationMessage(
+                `Nombre de ejercicio. Intenta con otro.`
+              );
+            } else {
+              return { indiceDeSesion, indiceDeEjercicio };
+            }
           }
         }
       },
@@ -741,7 +743,8 @@ btnAnotarRepsUno.addEventListener("click", () => {
       let indiceDeEjercicio = result.value.indiceDeEjercicio;
       for (
         let i = 0;
-        i < rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].seriesBase.length;
+        i <
+        rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].seriesBase.length;
         i++
       ) {
         let breakSign = true;
@@ -833,8 +836,6 @@ btnProxSesionUno.addEventListener("click", () => {
       html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
     <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
       preConfirm: () => {
-        let indiceDeSesion;
-        let indiceDeEjercicio;
         const nombreDeSesion =
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
@@ -842,7 +843,7 @@ btnProxSesionUno.addEventListener("click", () => {
         if (!nombreDeSesion || !nombreDeEjercicio) {
           Swal.showValidationMessage(`Recuerda completar ambos campos`);
         } else {
-          indiceDeSesion = rutina.indexOf(
+          let indiceDeSesion = rutina.indexOf(
             rutina.find(
               (sesion) =>
                 sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
@@ -853,7 +854,7 @@ btnProxSesionUno.addEventListener("click", () => {
               `Nombre de sesión inválido. Intenta con otro.`
             );
           } else {
-            indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
               rutina[indiceDeSesion].ejercicios.find(
                 (ejercicio) =>
                   ejercicio.nombre.toLowerCase() ==
@@ -934,8 +935,6 @@ btnEliminarEjercicio.addEventListener("click", () => {
       html: `<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
     <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
       preConfirm: () => {
-        let indiceDeSesion;
-        let indiceDeEjercicio;
         const nombreDeSesion =
           Swal.getPopup().querySelector("#nombreDeSesion").value;
         const nombreDeEjercicio =
@@ -943,7 +942,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
         if (!nombreDeSesion || !nombreDeEjercicio) {
           Swal.showValidationMessage(`Recuerda completar ambos campos`);
         } else {
-          indiceDeSesion = rutina.indexOf(
+          let indiceDeSesion = rutina.indexOf(
             rutina.find(
               (sesion) =>
                 sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
@@ -954,7 +953,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
               `Nombre de sesión inválido. Intenta con otro.`
             );
           } else {
-            indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+            let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
               rutina[indiceDeSesion].ejercicios.find(
                 (ejercicio) =>
                   ejercicio.nombre.toLowerCase() ==
