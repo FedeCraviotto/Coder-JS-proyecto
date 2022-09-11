@@ -79,54 +79,58 @@
         data-step="12" data-position="auto">
 
     </div>
-    <h1 class="title"><span> Buscador de Ejercicios</span></h1>
-    <h2 class="title"><span>Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus
-            entrenamientos</span></h2>
-    <h2 class="title">¡Contamos con más de 1300 ejercicios para vos!</h2>
-    <div>
-        <button class="btn" id="getExercises" data-tooltip-class="introTT"
-            data-intro="Podés buscar nuevos ejercicios usando el buscador. Primer haz click en este botón, para obtener la base de datos con la lista de todos los ejercicios para descubrir"
-            data-step="13">Pedir lista de ejercicios</button>
-        <label for="exercise-query" class="exercise-element">Ingresá un número entre el 1 y el 1326</label> <br>
-        <input class="exercise-element custom-input" type="text" name="exercise-query" id="inputNumeroEjercicio"
-            data-tooltip-class="introTT"
-            data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326"
-            data-step="14" data-position="right">
-        <button class="btn btn-exercise-query exercise-element btn--disabled" id="anclaBuscador" data-tooltip-class="introTT"
-            data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="15"
-            data-position="right"> Realizar consulta</button>
+    <div class="exerciseQuery__container">
+        <div class="exerciseQuery__section">
+            <h1 class="title"><span> Buscador de Ejercicios</span></h1>
+            <h2 class="title"><span>Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus
+                    entrenamientos</span></h2>
+            <h2 class="title">¡Contamos con más de 1300 ejercicios para vos!</h2>
+            <div>
+                <button class="btn" id="getExercises" data-tooltip-class="introTT"
+                    data-intro="Podés buscar nuevos ejercicios usando el buscador. Primer haz click en este botón, para obtener la base de datos con la lista de todos los ejercicios para descubrir"
+                    data-step="13">Pedir lista de ejercicios</button>
+                <label for="exercise-query" class="exercise-element">Ingresá un número entre el 1 y el 1326</label> <br>
+                <input class="exercise-element custom-input" type="text" name="exercise-query" id="inputNumeroEjercicio"
+                    data-tooltip-class="introTT"
+                    data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326"
+                    data-step="14" data-position="right">
+                <button class="btn btn-exercise-query exercise-element btn--disabled" id="anclaBuscador" data-tooltip-class="introTT"
+                    data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="15"
+                    data-position="right"> Realizar consulta</button>
+            </div>
+        </div>
+        <div class="exercise-container exerciseQuery__section">
+            <div class="exercise exercise-element" data-tooltip-class="introTT"
+                data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés"
+                data-step="17" data-position="bottom-middle-aligned">
+                <p class="exercise-element">Nombre de Ejercicio: <span id="nombreDelEjericio"></span></p>
+                <p class="exercise-element">Músculos que trabajan: <span id="musculoQueInterviene"></span></p>
+                <p class="exercise-element">Elementos requeridos: <span id="elementosAUtilizar"></span></p>
+                <p class="exercise-element">Zona a estimular: <span id="zonaAEstimular"></span></p>
+                <p class="exercise-element">Indicaciones:</p>
+                <div class="exercise-img exercise-element" data-tooltip-class="introTT"
+                    data-intro="Mirá las indicaciones para ver cómo se hace, y ya estás preparad@ para incorporar este ejercicio a tu rutina de entrenamiento."
+                    data-step="16" data-position="right">
+                    <img src="img/imgDefault.jpg" alt="Gif del Ejercicio" id="gifIndicaciones">
+                </div>
+            </div>
+            <div class="translator-container exercise-element">
+                <p class="exercise-element translation-title" data-tooltip-class="introTT"
+                    data-intro="Por suerte, contamos con un traductor de frases en inglés al español, que te podría ser de utilidad"
+                    data-step="18">Copia y pegá en el recuadro de abajo.</p>
+                <p class="exercise-element translation-title">Luego clickeá el botón para traducir el texto</p>
+                <input class="exercise-element custom-input" type="text" name="translation-query" id="translation-query"
+                    data-tooltip-class="introTT" data-intro="Copia aquí el texto en inglés" data-step="19">
+                <button class="btn btn-translation-query exercise-element" data-tooltip-class="introTT"
+                    data-intro="Click en traducir" data-step="20"> Traducir</button>
+                <div class="exercise-element">
+                    <p class="exercise-element translation-title underlined" data-tooltip-class="introTT"
+                        data-intro="Y aquí debajo encontrarás una traducción mas o menos precisa que puede ayudarte a entender mejor el ejercicio"
+                        data-step="21">Traducción:</p>
+                    <span class="exercise-element" id="translation-result"></span>
+                </div>
+            </div>
     </div>
-    <div class="exercise-container exercise-element">
-        <div class="exercise exercise-element" data-tooltip-class="introTT"
-            data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés"
-            data-step="17" data-position="bottom-middle-aligned">
-            <p class="exercise-element">Nombre de Ejercicio: <span id="nombreDelEjericio"></span></p>
-            <p class="exercise-element">Músculos que trabajan: <span id="musculoQueInterviene"></span></p>
-            <p class="exercise-element">Elementos requeridos: <span id="elementosAUtilizar"></span></p>
-            <p class="exercise-element">Zona a estimular: <span id="zonaAEstimular"></span></p>
-            <p class="exercise-element">Indicaciones:</p>
-            <div class="exercise-img exercise-element" data-tooltip-class="introTT"
-                data-intro="Mirá las indicaciones para ver cómo se hace, y ya estás preparad@ para incorporar este ejercicio a tu rutina de entrenamiento."
-                data-step="16" data-position="right">
-                <img src="img/imgDefault.jpg" alt="Gif del Ejercicio" id="gifIndicaciones">
-            </div>
-        </div>
-        <div class="translator-container exercise-element">
-            <p class="exercise-element translation-title" data-tooltip-class="introTT"
-                data-intro="Por suerte, contamos con un traductor de frases en inglés al español, que te podría ser de utilidad"
-                data-step="18">Copia y pegá en el recuadro de abajo.</p>
-            <p class="exercise-element translation-title">Luego clickeá el botón para traducir el texto</p>
-            <input class="exercise-element custom-input" type="text" name="translation-query" id="translation-query"
-                data-tooltip-class="introTT" data-intro="Copia aquí el texto en inglés" data-step="19">
-            <button class="btn btn-translation-query exercise-element" data-tooltip-class="introTT"
-                data-intro="Click en traducir" data-step="20"> Traducir</button>
-            <div class="exercise-element">
-                <p class="exercise-element translation-title underlined" data-tooltip-class="introTT"
-                    data-intro="Y aquí debajo encontrarás una traducción mas o menos precisa que puede ayudarte a entender mejor el ejercicio"
-                    data-step="21">Traducción:</p>
-                <span class="exercise-element" id="translation-result"></span>
-            </div>
-        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

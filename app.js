@@ -87,7 +87,7 @@ const options = {
 // Fetch API Exercise(in Btn because request Quota Limits RapidAPI)
 const btnGetExercises = document.querySelector("#getExercises");
 btnGetExercises.addEventListener("click", async () => {
-  await fetch("https://exercisedb.p.rapid.com/exercises", options) // es --> .p.rapidapi.com
+  await fetch("https://exercisedb.p.rapidapi.com/exercises", options)
     .then((response) => response.json())
     .then((response) => {
       arrayDeEjercicios = response;
@@ -1132,8 +1132,8 @@ function crearTablas() {
     let arrayDeHeaders = ['Ejercicio', 'Cantidad de Series', 'Series Base', 'Pesos Anteriores', 'Series Realizadas', 'Proximas Series', 'Proximos Pesos'];
     arrayDeHeaders.forEach((header, index) => {
       let nuevoHeaderDiv = document.createElement('div');
-      nuevoHeaderDiv.innerHTML = `<div class='session__column-cell session__column-header'>${header}</div>`;
-      nuevoHeaderDiv.setAttribute('class', `session${i+1}__column-${index+1} session__column`);
+      nuevoHeaderDiv.innerHTML = `<div class='session__column-cell session__column-header session__column-header${index+1}'>${header}</div>`;
+      nuevoHeaderDiv.setAttribute('class', `session${i+1}__column-${index+1} session__column session__column${index+1}`);
       exerciseBodyDiv.append(nuevoHeaderDiv);
     })
     nuevaSesionDiv.append(exerciseBodyDiv);
