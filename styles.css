@@ -10,6 +10,7 @@
     text-align: center;
     color:#F5F9E9;
     font-family: 'Montserrat', sans-serif;
+    transition: background-color 0.7s;
 }
 body {
     background-repeat: no-repeat;
