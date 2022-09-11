@@ -1111,7 +1111,7 @@ function reemplazarSesiones() {
 }
 //Tables delete
 function borrarTablas() {
-  const todasLasTablas = document.querySelectorAll("table");
+  const todasLasTablas = document.querySelectorAll(".session-container");
   todasLasTablas.forEach((table) => {
     table.remove();
   });
@@ -1119,50 +1119,52 @@ function borrarTablas() {
 //Table create
 function crearTablas() {
   rutina.forEach((sesion, i) => {
-    const tablaDeSesion = document.createElement("table");
-    tablaDeSesion.innerHTML = `
-    <caption>${sesion.nombre}</caption>
-        <tr>
-            <th>Ejercicio</th>
-            <th>Cantidad de Series</th>
-            <th>Series Base</th>
-            <th>Pesos Anteriores</th>
-            <th>Series Realizadas</th>
-            <th>Proximas Series</th>
-            <th>Proximos Pesos</th>
-        </tr>
-            `;
+    //each session --> title(caption) + body
+    let nuevaSesionDiv = document.createElement('div'); 
+    nuevaSesionDiv.setAttribute('class', `session-container session-${i+1}`);
+    const caption = document.createElement('div')
+    caption.innerHTML = `${sesion.nombre}`
+    caption.setAttribute ('class', `session${i+1}__header session__header`)
+    nuevaSesionDiv.append(caption);
+    //each body with 7 columns. Each column --> a div with flex-d column
+    let exerciseBodyDiv = document.createElement('div');
+    exerciseBodyDiv.setAttribute('class', `session${i+1}__body session__body`)
+    let arrayDeHeaders = ['Ejercicio', 'Cantidad de Series', 'Series Base', 'Pesos Anteriores', 'Series Realizadas', 'Proximas Series', 'Proximos Pesos'];
+    arrayDeHeaders.forEach((header, index) => {
+      let nuevoHeaderDiv = document.createElement('div');
+      nuevoHeaderDiv.innerHTML = `<div class='session__column-cell session__column-header'>${header}</div>`;
+      nuevoHeaderDiv.setAttribute('class', `session${i+1}__column-${index+1} session__column`);
+      exerciseBodyDiv.append(nuevoHeaderDiv);
+    })
+    nuevaSesionDiv.append(exerciseBodyDiv);
+    document.querySelector(".routine-container").append(nuevaSesionDiv);
     sesion.ejercicios.forEach((ejercicio, indice) => {
+      //formatting future innert Texts
       let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
       let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
       let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ");
-      let seriesBaseTD = document.createElement("td");
-      let seriesBaseUL = document.createElement("ul");
+      // li into ul only for specific cases
+      let seriesBaseUL = document.createElement("div");
       ejercicio.seriesBase.forEach((serie, i) => {
-        let seriesBaseLI = document.createElement("li");
+        let seriesBaseLI = document.createElement("p");
         seriesBaseLI.innerText = serie.join(" - ");
         seriesBaseUL.append(seriesBaseLI);
       });
-      seriesBaseTD.append(seriesBaseUL);
-      let proximasSeriesTD = document.createElement("td");
-      let proximasSeriesUL = document.createElement("ul");
+      let proximasSeriesUL = document.createElement("div");
       ejercicio.proximasSeries.forEach((serie, i) => {
-        let proximasSeriesLI = document.createElement("li");
+        let proximasSeriesLI = document.createElement("p");
         proximasSeriesLI.innerText = serie.join(" - ");
         proximasSeriesUL.append(proximasSeriesLI);
       });
-      proximasSeriesTD.append(proximasSeriesUL);
-      const nuevoEjercicio = document.createElement("tr");
-      nuevoEjercicio.innerHTML = `
-            <td>${ejercicio.nombre}</td>
-            <td>${ejercicio.seriesBase.length}</td>
-            <td>${ultimosPesosUnidos}</td>
-            <td>${seriesRealizadasUnidas}</td>
-            <td>${proximosPesosUnidos}</td>`;
-      nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
-      nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
-      tablaDeSesion.append(nuevoEjercicio);
+      //finally every feature into a div. That div into proper column
+      let caracteristicas = [ejercicio.nombre, ejercicio.seriesBase.length, seriesBaseUL.innerHTML, ultimosPesosUnidos, seriesRealizadasUnidas, proximasSeriesUL.innerHTML, proximosPesosUnidos]; 
+      caracteristicas.forEach((caracteristica, index) => {
+        let caracteristicaDiv = document.createElement('div');
+        caracteristicaDiv.setAttribute('class','session__column-cell session__column-data');
+        caracteristicaDiv.innerHTML = `${caracteristica}`;
+        let columnaCorrespondiente = document.querySelector(`.session${i+1}__column-${index+1}`)
+        columnaCorrespondiente.append(caracteristicaDiv)
+      })
     });
-    document.querySelector(".routine-container").append(tablaDeSesion);
   });
 }
