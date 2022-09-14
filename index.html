@@ -4,72 +4,137 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/intro.js/minified/introjs.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link rel="icon" type="image/x-icon" href="img/favicon-32x32.png">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
     <link rel="stylesheet" href="styles.css">
     <title>RutinApp - FNC C-37520 - CoderHouse</title>
 </head>
 <body>
-    
     <input type="checkbox" id="darkmode-toggle">
-    <label for="darkmode-toggle" id="darkmode-label"></label>
-    
-
-
-        <h1 class="title">RutinApp</h1>
-        <h2 class="title">Seleccioná una opción</h2>
-        <div class="interacciones-container">
-            <ul class="interacciones">
-                <li><button class="btn btn-about">Explicación</button></li>
-                <li><button class="btn btn-agregarSesion">+ Sesión</button></li>
-                <li><button class="btn btn-agregarEjercicio">+ Ejercicio</button></li>
-            </ul>
-            <ul class="interacciones">
-                <li><button id="anotarRepeticionesDeTodaUnaSesion" class="btn btn-anotarRepsSesion">Anotar Reps Sesion</button></li>
-                <li><button class="btn btn-anotarRepsx1">Anotar Reps x1</button></li>
-            
-            </ul>
-            <ul class="interacciones">
-                <li><button class="btn btn-generarProximaSesion">Próxima sesión</button></li>
-                <li><button class="btn btn-generarProximaSesionx1"> Prox Sesión x1</button></li>
-                
-            </ul>
-            <ul class="interacciones">
-                <li><button class="btn btn-eliminarEjercicio">- Ejercicio</button></li>
-                <li><button class="btn btn-eliminarSesion">- Sesión</button></li>
-                <li><button class="btn btn-borrarRutina">Borrar rutina</button></li>
-            </ul>
-        </div>
-        <ul id="aboutCuadro" class="hidden">
-            <li>Esta aplicación está destinada a aquellos usuarios con una rutina de entrenamiento semanal</li>
-            <li>Resuelve el problema de determinar el objetivo semana tras semana, respecto a tener que calcular la cantidad de repeticiones y los pesos a levantar en cada ejercicio.</li>
-            <li>Para comenzar, podemos hacer click en "+Sesión", para crear una nueva sesión de entrenamiento. Este botón va a pedir una gran cantidad de información, que deberá ser ingresada de la manera solicitada en cada ventana a medida que vayan progresando en el armado de la sesión, y al finalizar, renderizará la tabla correspondiente para esa sesión de entrenamiento, con el nombre de la sesión, el nombre de cada ejercicio, y otros datos que se explican a continuación.</li>
-            <li>Series base: son rangos -con un número mínimo y otro máximo- de repeticiones de cierto ejercicio. Supongamos que queremos hacer sentadillas, vamos a poner el objetivo de -por ejemplo- hacer entre 6 y 9 sentadillas para la primera serie, entre 7 y 10 repeticiones más para la segunda serie, y entre 5 y 7 para la tercera serie.</li>
-            <li>Cantidad de Series: refiere a la cantidad de veces que vas a realizar ese ejercicio, ese día específico (es decir en esa sesión de entrenamiento específica). En el ejemplo anterior, vamos a hacer 3 series del ejercicio "Sentadillas"</li>
-            <li>Próximos Pesos: van a ser los pesos que el usuario a levantar en cada serie de cada ejercicio. Cada peso corresponde a una serie. Siguiendo con nuestro ejemplo, podría anotar que para la primera serie de "Sentadilla" voy a manejar un peso de 60kg. Para la segunda y la tercera serie, voy a realizar las repeticiones manejando un peso de 65kg.</li>
-            <li>Luego de completar el procedimiento para crear una sesión (luego de clickear en "+Sesion") la idea es que el usuario vaya a entrenar con los datos necesarios para encarar esa sesión de entrenamiento. Esos datos -que van a aparecer en la tabla- son: Nombre del Ejercicio, para saber cual va a tener que hacer; Series Base, para saber cuantas series tiene que realizar de cada ejercicio y cuantas son las repeticiones objetivo para cada serie; y "Proximos Pesos", para saber qué pesos va a tener que manejar en cada serie.</li>
-            <li>Si el usuario se olvidó de agregar un ejercicio al momento de crear la sesión de entrenamiento, va a poder agregarlo clickeando en "+Ejercicio".</li>
-            <li>De la misma manera, va a poder eliminar fácilmente toda una sesión, o un ejercicio en particular, e incluso todas las sesiones, haciendo click en "-Sesion", "-Ejercicio", y en "Borrar Rutina", respectivamente.</li>
-            <li>Generalmente mientras el usuario entrena anota las repeticiones realizadas en cada serie, para luego comparar las Repeticiones Realizadas con las Series Base que estableció como objetivo. De acuerdo a las series base, entonces, si superamos el rango de repeticiones máximo, el proximo peso para esa serie va a incrementarse en 5 kilos. Caso contrario, para la próxima sesión se va a mantener ese peso, dado que la persona no alcanzó el objetivo de repeticiones a realizar para esa serie en particular.</li>
-            <li>El usuario, al volver de entrenar, va a poder anotar las repeticiones de toda la sesión clickeando en "Anotar Reps Sesion". También va a poder optar por anotar las repeticiones de 1 solo ejercicio clickeando en "Anotar Reps x1". Esto puede ser de utilidad en caso de querer agregar un ejercicio a cierta sesión en particular, ya habiendo anotado las repeticiones realizadas del resto de los ejercicios, y luego teniendo que anotar las series realizadas para ese último ejercicio agregado.</li>
-            <li>Luego de anotar las repeticiones, el usuario va a poder hacer click en "Próxima Sesion" para actualizar los valores de la tabla, y poder tener acceso a los nuevos "Proximos Pesos" y "Proximas Series" para  encarar el entrenamiento de la semana entrante. Además, al igual que podría suceder al momento de anotar repeticiones realizadas, el usuario va a poder generar los valores actualizados -para la semana entrante- de un solo ejercicio en particular (clickeando en Prox Sesion x1). </li>
-            <li><strong>La aplicación está todavía por optimizar, tanto a nivel responsive, como funcionalmente, y respecto la prolijidad del código</strong></li>
+    <label for="darkmode-toggle" id="darkmode-label" data-tooltip-class="introTT" data-intro="Modo oscuro"
+        data-step="22" data-position="left"></label>
+    <h1 class="title"><span data-tooltip-class="introTT"
+            data-intro="Bienvenido! Si tenés una rutina de entrenamiento esta aplicación te puede llegar a servir. Comencemos el recorrido"
+            data-step="1"> RutinApp</span></h1>
+    <h2 class="title">Seleccioná una opción</h2>
+    <div class="interacciones-container" data-tooltip-class="introTT"
+        data-intro="Panel de opciones, para todo lo que quieras hacer" data-step="2">
+        <ul class="interacciones">
+            <li><button class="btn btn-about" data-tooltip-class="introTT"
+                    data-intro="Para volver a recorrer las instrucciones de la App navega mediante el menú punteado, o cierra y clickea aquí de nuevo cuando quieras!"
+                    data-step="23" data-position="right">Explicación</button></li>
+            <li>
+                <a href="#anclaBuscador" tabindex="-1">
+                    <button class="btn" data-tooltip-class="introTT"
+                        data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step=""
+                        data-position="right"> Descubrir Ej</button>
+                </a>
+            </li>
         </ul>
+        <ul class="interacciones">
+            <li><button class="btn btn-agregarSesion" data-tooltip-class="introTT"
+                    data-intro="Agrega una sesión de entrenamiento. Ingresa todos los ejercicios, series de repeticiones, rangos mínimos y máximos de repeticiones por cada serie, y pesos a levantar en cada una de ellas."
+                    data-step="3">+ Sesión</button></li>
+            <li><button class="btn btn-agregarEjercicio" data-tooltip-class="introTT"
+                    data-intro="Agrega un ejercicio a una sesión ya creada" data-step="4"
+                    data-position="bottom-left-aligned">+ Ejercicio</button></li>
+        </ul>
+        <ul class="interacciones">
+            <li><button id="anotarRepeticionesDeTodaUnaSesion" class="btn btn-anotarRepsSesion"
+                    data-tooltip-class="introTT"
+                    data-intro="Anota las repeticiones hechas para cada serie, de cada ejercicio, y para una sola sesión. Generalmente se usa después de entrenar."
+                    data-step="8">Anotar Reps Sesion</button></li>
+            <li><button class="btn btn-anotarRepsx1" data-tooltip-class="introTT"
+                    data-intro="Anota las repeticiones realizadas de un ejercicio en particular. Util si ejecutaste un ejercicio que no estaba planeado. Luego de agregarlo con '+Ejercicio', con esta opción vas a poder anotar las repeticiones hechas de ese ejercicio en particular, sin anotar -ni sobreescribir- las repeticiones hechas ya anotadas de los demás ejercicios de la sesión."
+                    data-step="9" data-position="left">Anotar Reps x1</button></li>
 
-        <div class="modal-container container-hidden">
-            <div class="modal modal-close">
+        </ul>
+        <ul class="interacciones">
+            <li><button class="btn btn-generarProximaSesion" data-tooltip-class="introTT"
+                    data-intro="Genera los nuevos datos para la próxima sesión: las próximas series y los próximos pesos a levantar. Ten en cuenta que si superas el máximo de series el peso se incrementará en 5; sino, se mantendrá. Esta funcionalidad se utiliza luego de tener anotadas las repeticiones realizadas de los ejercicios de TODA una sesión."
+                    data-step="10" data-position="right">Próxima sesión</button></li>
+            <li><button class="btn btn-generarProximaSesionx1" data-tooltip-class="introTT"
+                    data-intro="Genera los datos para la nueva serie, pero para 1 solo ejercicio en particular. Se suele usar en combinación con '+Ejercicio' y 'Anotar Reps x1', como paso siguiente y solo si ya generaste los datos para la próxima sesión de toda una sesión completa. Su función es generar los nuevos datos de un ejercicio, sin sobreescribir los nuevos datos del resto."
+                    data-step="11" data-position="left"> Prox Sesión x1</button></li>
 
+        </ul>
+        <ul class="interacciones">
+            <li><button class="btn btn-eliminarEjercicio" data-tooltip-class="introTT"
+                    data-intro="Elimina un ejercicio agregado -tal vez- por equivocación o que ya no quieras seguir haciendo"
+                    data-step="5">- Ejercicio</button></li>
+            <li><button class="btn btn-eliminarSesion" data-tooltip-class="introTT"
+                    data-intro="Elimina toda una tabla de sesión" data-step="6">- Sesión</button></li>
+            <li><button class="btn btn-borrarRutina" data-tooltip-class="introTT"
+                    data-intro="Elimina todas las tablas. TODOS LOS DATOS SE PERDERÁN" data-step="7"
+                    data-position="auto">Borrar rutina</button></li>
+        </ul>
+    </div>
+    <div class="routine-container" data-tooltip-class="introTT"
+        data-intro="Si ya tenías una rutina guardada, esta se cargará automáticamente. Sino, se cargará la tabla de la rutina de prueba -'Rutina desde JSON'- sobre la cual vas a poder implementar todas las funcionalidades de la App y hacer tus pruebas. Puedes borrarla y crear tu propia sesión desde cero."
+        data-step="12" data-position="auto">
+
+    </div>
+    <div class="exerciseQuery__container">
+        <div class="exerciseQuery__section">
+            <h1 class="title"><span> Buscador de Ejercicios</span></h1>
+            <h2 class="title"><span>Consultá nuestra base de datos y descubrí nuevos ejercicios para agregar a tus
+                    entrenamientos</span></h2>
+            <h2 class="title">¡Contamos con más de 1300 ejercicios para vos!</h2>
+            <div>
+                <button class="btn" id="getExercises" data-tooltip-class="introTT"
+                    data-intro="Podés buscar nuevos ejercicios usando el buscador. Primer haz click en este botón, para obtener la base de datos con la lista de todos los ejercicios para descubrir"
+                    data-step="13">Pedir lista de ejercicios</button>
+                <label for="exercise-query" class="exercise-element">Ingresá un número entre el 1 y el 1326</label> <br>
+                <input class="exercise-element custom-input" type="text" name="exercise-query" id="inputNumeroEjercicio"
+                    data-tooltip-class="introTT"
+                    data-intro="Primero ingresá un número de ejercicio, sin caracteres en el medio, puntos ni comas, entre el 1 y el 1326"
+                    data-step="14" data-position="right">
+                <button class="btn btn-exercise-query exercise-element btn--disabled" id="anclaBuscador" data-tooltip-class="introTT"
+                    data-intro="Luego pulsa ENTER, o haz click aquí para realizar la consulta." data-step="15"
+                    data-position="right"> Realizar consulta</button>
             </div>
         </div>
-
-        
-        <div class="routine-container">
-
-        </div>
-        
-    
-
-        
-
+        <div class="exercise-container exerciseQuery__section">
+            <div class="exercise exercise-element" data-tooltip-class="introTT"
+                data-intro="Los datos se visualizarán en esta sección. Por el momento solo están disponibles en inglés"
+                data-step="17" data-position="bottom-middle-aligned">
+                <p class="exercise-element">Nombre de Ejercicio: <span id="nombreDelEjericio"></span></p>
+                <p class="exercise-element">Músculos que trabajan: <span id="musculoQueInterviene"></span></p>
+                <p class="exercise-element">Elementos requeridos: <span id="elementosAUtilizar"></span></p>
+                <p class="exercise-element">Zona a estimular: <span id="zonaAEstimular"></span></p>
+                <p class="exercise-element">Indicaciones:</p>
+                <div class="exercise-img exercise-element" data-tooltip-class="introTT"
+                    data-intro="Mirá las indicaciones para ver cómo se hace, y ya estás preparad@ para incorporar este ejercicio a tu rutina de entrenamiento."
+                    data-step="16" data-position="right">
+                    <img src="img/imgDefault.jpg" alt="Gif del Ejercicio" id="gifIndicaciones">
+                </div>
+            </div>
+            <div class="translator-container exercise-element">
+                <p class="exercise-element translation-title" data-tooltip-class="introTT"
+                    data-intro="Por suerte, contamos con un traductor de frases en inglés al español, que te podría ser de utilidad"
+                    data-step="18">Copia y pegá en el recuadro de abajo.</p>
+                <p class="exercise-element translation-title">Luego clickeá el botón para traducir el texto</p>
+                <input class="exercise-element custom-input" type="text" name="translation-query" id="translation-query"
+                    data-tooltip-class="introTT" data-intro="Copia aquí el texto en inglés" data-step="19">
+                <button class="btn btn-translation-query exercise-element" data-tooltip-class="introTT"
+                    data-intro="Click en traducir" data-step="20"> Traducir</button>
+                <div class="exercise-element">
+                    <p class="exercise-element translation-title underlined" data-tooltip-class="introTT"
+                        data-intro="Y aquí debajo encontrarás una traducción mas o menos precisa que puede ayudarte a entender mejor el ejercicio"
+                        data-step="21">Traducción:</p>
+                    <span class="exercise-element" id="translation-result"></span>
+                </div>
+            </div>
+    </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/intro.js/minified/intro.min.js"></script>
     <script src="app.js"></script>
-
 </body>
 </html>

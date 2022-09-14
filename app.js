@@ -1,1337 +1,1170 @@
+// Variables
 let rutina;
-if (localStorage.getItem('rutina')){
-    rutina = JSON.parse(localStorage.getItem('rutina'));
-    crearTablas()
-} else {
+let arrayDeEjercicios;
+let ejercicioBuscado;
+const inputNumeroEjercicio = document.querySelector("#inputNumeroEjercicio");
+const inputTranslationQuery = document.querySelector("#translation-query");
+const btnExerciseQuery = document.querySelector(".btn-exercise-query");
+btnExerciseQuery.disabled = true;
+// Swal2 Settings
+document.documentElement.style.setProperty("--animate-duration", ".8s");
+const progressPopup = Swal.mixin({
+  confirmButtonText: "Siguiente",
+  showCancelButton: true,
+  focusConfirm: false,
+  backdrop: false,
+  allowOutsideClick: false,
+  allowEnterKey: true,
+  showClass: {
+    popup: "animate__animated animate__fadeIn",
+  },
+  hideClass: {
+    popup: "animate__animated animate__fadeOut",
+  },
+});
+const endPopup = Swal.mixin({
+  icon: "success",
+  title: "Listo",
+  allowEnterKey: true,
+  showClass: {
+    popup: "animate__animated animate__fadeIn",
+  },
+  hideClass: {
+    popup: "animate__animated animate__fadeOut",
+  },
+  preConfirm: () => {
+    localStorage.setItem("rutina", JSON.stringify(rutina));
+    reemplazarSesiones();
+  },
+});
+const translateInputToast = Swal.mixin({
+  toast: true,
+  position: "top",
+  timer: 2000,
+  didOpen: (toast) => {
+    toast.addEventListener("mouseenter", Swal.stopTimer);
+    toast.addEventListener("mouseleave", Swal.resumeTimer);
+  },
+  icon: "info",
+  title: "Recuerda ingresar un número. Entre el 1 y el 1326",
+});
+//Swal2 - welcome
+Swal.fire({
+  title: "Bienvenido",
+  text: 'Tocá "Explicación" para más info sobre la App',
+  icon: "info",
+  confirmButtonText: "OK",
+}).then(() => {
+  // load localStorage. If empty, load default routine sample.
+  rutina = JSON.parse(localStorage.getItem("rutina")) || [];
+  rutina.length == 0 ? leerRutinaAXIOS() : crearTablas();
+});
+// Load default routine (if no localStorage)
+async function leerRutinaAXIOS() {
+  try {
+    const { data } = await axios("./data/rutina.json");
+    rutina = data;
+    crearTablas();
+    Swal.fire({
+      title: "Rutina cargada desde JSON",
+      text: "Se ve que no tenías nada guardado en tu navegador. Hemos creado una tabla de muestra",
+      icon: "info",
+      confirmButtonText: "OK",
+    });
+  } catch {
     rutina = [];
+  }
 }
-
-const bodyElem = document.querySelector('body');
-const darkmodeCheckbox = document.querySelector('#darkmode-toggle');
-darkmodeCheckbox.addEventListener('change', () => {
-        bodyElem.classList.toggle("darkBC");
-})
-
-const aboutCuadro = document.querySelector('#aboutCuadro');
-const btnAbout = document.querySelector('.btn-about');
-btnAbout.addEventListener('click', () => {
-    if (aboutCuadro.classList.contains('hidden')) {
-        aboutCuadro.classList.remove('hidden')
-    } else {
-        aboutCuadro.classList.add('hidden')
-    }
-})
-
-const btnAnotarRepsSesion = document.querySelector('.btn-anotarRepsSesion');
-btnAnotarRepsSesion.addEventListener('click', () => {
-        anotarRepeticionesDeTodaUnaSesion();
-})
-
-const btngenerarProximaSesion = document.querySelector('.btn-generarProximaSesion');
-btngenerarProximaSesion.addEventListener('click', () => {
-    generarProximaSesionCompleta();
-    
-})
-
-const btnGenerarProximaSesionx1 = document.querySelector('.btn-generarProximaSesionx1');
-btnGenerarProximaSesionx1.addEventListener('click', () => {
-    generarProximaSesionUnicoEjercicio();
-})
-
-
-const btnAgregarEjercicio = document.querySelector('.btn-agregarEjercicio');
-btnAgregarEjercicio.addEventListener('click', () => {
-    agregarEjercicio();
+// Fetch API exercises. API HTTP Request settings
+const options = {
+  method: "GET",
+  headers: {
+    "X-RapidAPI-Key": "16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95",
+    "X-RapidAPI-Host": "exercisedb.p.rapidapi.com",
+  },
+};
+//EVENTS
+// Fetch API Exercise(in Btn because request Quota Limits RapidAPI)
+const btnGetExercises = document.querySelector("#getExercises");
+btnGetExercises.addEventListener("click", async () => {
+  await fetch("https://exercisedb.p.rapidapi.com/exercises", options)
+    .then((response) => response.json())
+    .then((response) => {
+      arrayDeEjercicios = response;
+      Swal.fire({
+        title: "Lista cargada exitosamente",
+        text: 'Tocá "Explicación" para más info sobre la App',
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      toggleExerciseButtons();
+    })
+    .catch(async (err) => {
+      // if callQuota exceded, ask for exercises in local JSON
+      const { data } = await axios("./data/exerciseList.json");
+      arrayDeEjercicios = data;
+      Swal.fire({
+        title: "Hubo un problema. Pero tranquilo ;)",
+        text: "Lista cargada desde la base de datos local",
+        icon: "info",
+        confirmButtonText: "Continuar",
+      });
+      toggleExerciseButtons();
+    });
 });
-
-
-const btnAnotarRepsx1 = document.querySelector('.btn-anotarRepsx1');
-btnAnotarRepsx1.addEventListener('click', () => {
-    anotarRepsSoloUno();
-})
-
-
-const btnEliminarEjercicio = document.querySelector('.btn-eliminarEjercicio');
-btnEliminarEjercicio.addEventListener('click', () => {
-    eliminarEjercicio();
-})
-
-const btnEliminarSesion = document.querySelector('.btn-eliminarSesion');
-btnEliminarSesion.addEventListener('click', () => {
-    eliminarSesion();
-})
-
-const btnBorrarRutina = document.querySelector('.btn-borrarRutina');
-btnBorrarRutina.addEventListener('click', () => {
-    borrarRutina();
-})
-
-
-const botonAgregarSesion = document.querySelector('.btn-agregarSesion');
-botonAgregarSesion.addEventListener('click', () => {
-    agregarSesion()
+//Intro.js
+const btnAbout = document.querySelector(".btn-about");
+btnAbout.addEventListener("click", () => {
+  introJs()
+    .setOptions({
+      disableInteraction: true,
+      exitOnOverlayClick: false,
+    })
+    .start();
 });
-
-let nombreDeSesionIngresado = ""; 
-let numeroDeSesionIngresada = 0;
-let nombreDeEjercicioIngresado = "";
-let numeroDeEjercicioIngresado = 0;
-let modalContainer = document.querySelector('.modal-container')
-let modalPadre = document.querySelector('.modal')
-
-// Le pongo valor 2 para probar, tiene que quedar sin inicializar
-
-// let nuevaSesion ={
-//     nombre:"Lunes",
-//     ejercicios: [
-//         { 
-//             nombre:"Jalon",
-//             seriesBase:[[8,12], [8,12]],
-//             seriesRealizadas:[],
-//             ultimosPesos:[],
-//             proximosPesos: [30, 35],
-//             proximasSeries:[]
-//         },
-//         { 
-//             nombre:"Remo",
-//             seriesBase:[[6,9], [6,9], [7,10]],
-//             seriesRealizadas:[],
-//             ultimosPesos:[],
-//             proximosPesos: [40, 55, 60],
-//             proximasSeries:[]
-//         }
-//     ]
-// };
-// let cantidadEjercicios = 2;
-
-let cantidadEjercicios;
-let nuevaSesion;
-let btnContinuar1;
-let btnContinuar2;
-let btnContinuar3;
-let btnContinuar4;
-let btnContinuar5;
-let btnContinuar6;
-let nuevoEjercicio;
-
-function agregarBotonClose () {
-    let botonClose = document.createElement('button');
-    botonClose.setAttribute('class', 'btn close');
-    botonClose.textContent = 'X';
-    modalPadre.append(botonClose);
-    const btnClose = document.querySelector('.close');
-    btnClose.addEventListener('click', () => {
-        //Setea la sesión a cero
-        nuevaSesion = undefined;
-        modalPadre.innerHTML = ""
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-        //Pantalla gris
-        setTimeout(function(){
-            modalContainer.classList.toggle('container-hidden');}, 600)
-    })    
-}
-
-function agregarSesion() {
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    let nuevoParrafo2 = document.createElement('p');
-    let nuevoInput2 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion`
-    nuevoInput1.setAttribute('id',`input-nombreSesion`)
-    nuevoParrafo2.textContent = `Ingrese la cantidad de ejercicios para esta sesion`
-    nuevoInput2.setAttribute('id',`input-cantidadDeEjercicios`)
-    agregarBotonClose()
-    modalPadre.append(nuevoParrafo1)
-    modalPadre.append(nuevoInput1)
-    modalPadre.append(nuevoParrafo2)
-    modalPadre.append(nuevoInput2)
-    // Creo el boton y lo agrego
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.setAttribute('type', 'submit');
-    btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-    btnContinuar1.textContent='Continuar';
-    modalPadre.append(btnContinuar1);
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
-        let nombreSesionPorInput = document.getElementById('input-nombreSesion');
-        console.log(nombreSesionPorInput.value);
-        nuevaSesion ={
-            nombre:nombreSesionPorInput.value,
-            ejercicios: []
-        };
-        
-        let cantidadEjerciciosPorInput = document.getElementById('input-cantidadDeEjercicios');
-        cantidadEjercicios = parseInt(cantidadEjerciciosPorInput.value);
-
-        modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-        agregarBotonClose()
-        for (let i=1; i<=cantidadEjercicios; i++) {
-        let nuevoParrafo = document.createElement('p');
-        let nuevoInput = document.createElement('input');
-        nuevoInput.setAttribute('id',`inputNombreEjercicio${i}`)
-        nuevoParrafo.textContent = `Ingrese el nombre para el ejercicio ${i}`
-        modalPadre.append(nuevoParrafo)
-        modalPadre.append(nuevoInput)
-    } // Creo el boton y lo agrego
-    btnContinuar2 = document.createElement('button');
-    btnContinuar2.setAttribute('type', 'submit');
-    btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-    btnContinuar2.textContent='Continuar';
-    modalPadre.append(btnContinuar2);
-    
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300);
-        
-        
-    //La persona llena el contenido
-    // Toca en Continuar 
-    btnContinuar2.addEventListener('click', () => {
-            for (let i=1; i<=cantidadEjercicios; i++) {
-            const inputValue = document.getElementById(`inputNombreEjercicio${i}`)            
-            nuevaSesion.ejercicios.push(
-                { //Se agregan los datos a la nuevaSesion
-                    nombre:inputValue.value,
-                    seriesBase:[],
-                    seriesRealizadas:[],
-                    ultimosPesos:[],
-                    proximosPesos: [],
-                    proximasSeries:[]
-                }
+//Darkmode
+const btnDarkMode = document.querySelector("#darkmode-toggle");
+btnDarkMode.addEventListener("change", () => {
+  document.querySelector("body").classList.toggle("darkBC");
+});
+//Exercise API
+btnExerciseQuery.addEventListener("click", () => {
+  buscarDatosEjercicio();
+});
+inputNumeroEjercicio.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    buscarDatosEjercicio();
+  }
+});
+//Translate API
+document
+  .querySelector(".btn-translation-query")
+  .addEventListener("click", () => {
+    requestTranslation();
+  });
+inputTranslationQuery.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    requestTranslation();
+  }
+});
+// Core functions
+const btnAgregarSesion = document.querySelector(".btn-agregarSesion");
+btnAgregarSesion.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title: "Ingrese nombre de sesión y cantidad de ejercicios",
+      html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+        <input type="text" id="cantidadDeEjercicios" class="swal2-input" placeholder="Cantidad de Ejercicios">`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        const cantidadDeEjercicios = parseInt(
+          Swal.getPopup().querySelector("#cantidadDeEjercicios").value
+        );
+        if (!nombreDeSesion) {
+          Swal.showValidationMessage(`Recuerda ingresar un nombre de sesión`);
+        } else if (nombreDeSesion.length > 40) {
+          Swal.showValidationMessage(
+            `Nombre demasiado largo. Debe tener menos de 40 caracteres`
+          );
+        } else if (
+          rutina.find(
+            (s) => s.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+          )
+        ) {
+          Swal.showValidationMessage(
+            `Ya existe una sesión con ese nombre! Elige otro...`
+          );
+        } else if (cantidadDeEjercicios > 8 || cantidadDeEjercicios <= 0) {
+          Swal.showValidationMessage(
+            `La cantidad de ejercicios debe ser un número entre 1 y 8 inclusive`
+          );
+        } else if (!cantidadDeEjercicios || isNaN(cantidadDeEjercicios)) {
+          Swal.showValidationMessage(
+            `Ingresa una cantidad de ejercicios para la sesión`
+          );
+        } else {
+          let ejercicios = [];
+          for (let i = 0; i < cantidadDeEjercicios; i++) {
+            ejercicios.push({
+              nombre: "",
+              proximasSeries: [],
+              proximosPesos: [],
+              seriesBase: [],
+              seriesRealizadas: [],
+              ultimosPesos: [],
+            });
+          }
+          let nuevaSesion = { nombre: nombreDeSesion, ejercicios: ejercicios };
+          return nuevaSesion;
+        }
+      },
+    })
+    .then(async (result) => {
+      if (result.value === undefined) {
+        let nuevaSesion = undefined;
+        return;
+      }
+      let nuevaSesion = result.value;
+      let breakSign = true;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        await progressPopup
+          .fire({
+            title: `Nombre para el ejercicio N° ${i + 1}`,
+            html: `<input type="text" id="ejercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
+            preConfirm: () => {
+              let nombreDeEjercicio =
+                Swal.getPopup().querySelector(`#ejercicio`).value;
+              if (!nombreDeEjercicio || nombreDeEjercicio.length <= 0) {
+                Swal.showValidationMessage(
+                  `Debes ingresar un nombre para el ejercicio`
                 );
-            }
-            
-        //Blanqueo el modal
-        modalPadre.innerHTML = ""
-        agregarBotonClose()
-        for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-            let nuevoParrafo = document.createElement('p');
-            let nuevoInput = document.createElement('input');
-            nuevoInput.setAttribute('id',`inputCantidadDeSeriesEjercicio${i+1}`)
-            nuevoParrafo.textContent = `Ingrese cantidad de series para el ejercicio ${i+1}`
-            modalPadre.append(nuevoParrafo)
-            modalPadre.append(nuevoInput)
-            
+              } else if (nombreDeEjercicio.length > 26) {
+                Swal.showValidationMessage(
+                  `El nombre del ejercicio no debe superar los 26 caracteres`
+                );
+              } else {
+                return nombreDeEjercicio;
+              }
+            },
+          })
+          .then((result) => {
+            result.value === undefined
+              ? (breakSign = false)
+              : (nuevaSesion.ejercicios[i].nombre = result.value);
+          });
+        if (breakSign === false) {
+          break;
         }
-        btnContinuar3 = document.createElement('button');
-        btnContinuar3.setAttribute('type', 'submit');
-        btnContinuar3.setAttribute('class', 'btn btn-continuar3');
-        btnContinuar3.textContent='Continuar';
-        modalPadre.append(btnContinuar3);  
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            //La persona llena el contenido (cant series x Ejercicio del array ejercicios, del objeto nuevaSerie)
-            // Toca en Continuar 
-            btnContinuar3.addEventListener('click', () => {
-                    for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-                        const inputValue = parseInt(document.getElementById
-                            (`inputCantidadDeSeriesEjercicio${i+1}`).value)        
-                        for (let j=1; j<=inputValue; j++) {
-                            nuevaSesion.ejercicios[i].seriesBase.push([]);
-                        }
-                    }
-                    
-                    
-        //Blanqueo el modal
-        modalPadre.innerHTML = ""
-        agregarBotonClose()
-        for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-            for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                //Por cada serie creo los input para reps min/max
-                let nuevoParrafoMin = document.createElement('p');
-                let nuevoInputMin = document.createElement('input');
-                let nuevoParrafoMax = document.createElement('p');
-                let nuevoInputMax = document.createElement('input');
-                nuevoInputMin.setAttribute('id',`inputEj${i+1}Serie${j+1}Min`)
-                nuevoParrafoMin.textContent = `${nuevaSesion.ejercicios[i].nombre} - Serie ${j+1} Reps Min.`
-                nuevoInputMax.setAttribute('id',`inputEj${i+1}Serie${j+1}Max`)
-                nuevoParrafoMax.textContent = `${nuevaSesion.ejercicios[i].nombre} - Serie ${j+1} Reps Max.`
-                modalPadre.append(nuevoParrafoMin)
-                modalPadre.append(nuevoInputMin)
-                modalPadre.append(nuevoParrafoMax)
-                modalPadre.append(nuevoInputMax)
-                
-            }
-        }
-                btnContinuar4 = document.createElement('button');
-                btnContinuar4.setAttribute('type', 'submit');
-                btnContinuar4.setAttribute('class', 'btn btn-continuar4');
-                btnContinuar4.textContent='Continuar';
-                modalPadre.append(btnContinuar4);
-                //Sube el modal
-                setTimeout(function(){
-                    modalPadre.classList.toggle('modal-close');})
-                //Baja el modal
-                setTimeout(function(){
-                    modalPadre.classList.toggle('modal-close');}, 300);
-                    
-                    //La persona llena el contenido (Repeticiones Minimas y maximas de cada serie, de cada ejercicio de la sesion)
-                    // Toca en Continuar 
-                    btnContinuar4.addEventListener('click', () => {
-    
-    for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-        for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-            let inputValueMin = parseInt(document.getElementById
-                (`inputEj${i+1}Serie${j+1}Min`).value);
-                let inputValueMax = parseInt(document.getElementById
-                    (`inputEj${i+1}Serie${j+1}Max`).value);      
-                    nuevaSesion.ejercicios[i].seriesBase[j].push(inputValueMin);
-                    nuevaSesion.ejercicios[i].seriesBase[j].push(inputValueMax);
+      }
+      if (breakSign === false) {
+        return;
+      } else {
+        return nuevaSesion;
+      }
+    })
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let nuevaSesion = result;
+      let breakSign = true;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        await progressPopup
+          .fire({
+            title: `${nuevaSesion.ejercicios[i].nombre} - Cantidad de series`,
+            html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Cant Series">`,
+            preConfirm: () => {
+              const cantSeries = parseInt(
+                Swal.getPopup().querySelector(`#seriesEjercicio`).value
+              );
+              if (cantSeries > 6 || cantSeries <= 0) {
+                Swal.showValidationMessage(`Máximo 6 series, mínimo 1`);
+              } else if (!cantSeries || isNaN(cantSeries)) {
+                Swal.showValidationMessage(
+                  `Debes ingresar un número para la cantidad de series`
+                );
+              } else {
+                for (let j = 0; j < cantSeries; j++) {
+                  nuevaSesion.ejercicios[i].seriesBase.push([]);
                 }
-            }
-            
-            
-        //Blanqueo el modal
-        modalPadre.innerHTML = ""
-        agregarBotonClose()
-        for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-            for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                let nuevoParrafo = document.createElement('p');
-            let nuevoInput = document.createElement('input');
-            nuevoInput.setAttribute('id',`inputPesoSerie${j+1}Ejercicio${i+1}`)
-            nuevoParrafo.textContent = `${nuevaSesion.ejercicios[i].nombre} -Serie ${j+1} - Peso a levantar (en kg)`
-            modalPadre.append(nuevoParrafo)
-            modalPadre.append(nuevoInput)
-            
+              }
+            },
+          })
+          .then((result) => {
+            result.value === undefined ? (breakSign = false) : "";
+          });
+        if (breakSign === false) {
+          nuevaSesion = undefined;
+          break;
         }
-    }
-        btnContinuar5 = document.createElement('button');
-        btnContinuar5.setAttribute('type', 'submit');
-        btnContinuar5.setAttribute('class', 'btn btn-continuar5');
-        btnContinuar5.textContent='Continuar';
-        modalPadre.append(btnContinuar5);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            //La persona llena el contenido (Series Minimas y maximas de cada ejercicio de la sesion)
-            // Toca en Continuar 
-            btnContinuar5.addEventListener('click', () => {
-                    for (let i=0; i<nuevaSesion.ejercicios.length; i++) {
-                        for (let j=0; j<nuevaSesion.ejercicios[i].seriesBase.length; j++) {
-                            let inputValue = parseInt(document.getElementById
-                (`inputPesoSerie${j+1}Ejercicio${i+1}`).value)       
-                nuevaSesion.ejercicios[i].proximosPesos.push(inputValue);
-            }
-        }
-        
-        //blanqueo el modal
-        modalPadre.innerHTML = ""
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Sesión creada con éxito'
-        modalPadre.append(ultimoParrafo);
-        btnContinuar6 = document.createElement('button');
-        btnContinuar6.setAttribute('type', 'submit');
-        btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-        btnContinuar6.textContent='Finalizar';
-        modalPadre.append(btnContinuar6);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            // Toca en Continuar 
-            btnContinuar6.addEventListener('click', () => {
-                setTimeout(function(){
-                    modalPadre.classList.toggle('modal-close');
-                    setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
-                    }, 300)
-                }, 300)
-                
-                rutina.push(nuevaSesion);
-                console.log(rutina)
-                localStorage.setItem('rutina', JSON.stringify(rutina));
-                reemplazarSesiones();
-                modalPadre.innerHTML = ""
+      }
+      if (breakSign === false) {
+        return;
+      } else {
+        return nuevaSesion;
+      }
+    })
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let nuevaSesion = result;
+      let breakSign = true;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
+          await progressPopup
+            .fire({
+              title: `Serie N° ${j + 1} - ${
+                nuevaSesion.ejercicios[i].nombre
+              } - Repeticiones min y max`,
+              html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
+                            <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
+              preConfirm: () => {
+                const minReps = parseInt(
+                  Swal.getPopup().querySelector(`#minReps`).value
+                );
+                const maxReps = parseInt(
+                  Swal.getPopup().querySelector(`#maxReps`).value
+                );
+                if (!minReps || !maxReps) {
+                  Swal.showValidationMessage(
+                    `Debes completar los campos con repeticiones mínimas y máximas. Recuerda ingresar solo números mayores a 0`
+                  );
+                } else if (maxReps <= minReps) {
+                  Swal.showValidationMessage(
+                    "El máximo no puede ser igual o menor al mínimo"
+                  );
+                } else {
+                  nuevaSesion.ejercicios[i].seriesBase[j].push(minReps);
+                  nuevaSesion.ejercicios[i].seriesBase[j].push(maxReps);
+                }
+              },
             })
-        })
-        })
-        })
-    })
-    })
-}
-
-
-function agregarEjercicio() {
-//Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-let nuevoParrafo1 = document.createElement('p');
-let nuevoInput1 = document.createElement('input');
-nuevoParrafo1.textContent = `Ingrese el nombre de sesion en el cual vas a agregar el ejercicio`
-nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-agregarBotonClose()
-modalPadre.append(nuevoParrafo1)
-modalPadre.append(nuevoInput1)
-// Creo el boton y lo agrego
-btnContinuar1 = document.createElement('button');
-btnContinuar1.setAttribute('type', 'submit');
-btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-btnContinuar1.textContent='Continuar';
-modalPadre.append(btnContinuar1);
-//Pantalla gris
-setTimeout(function(){
-    modalContainer.classList.toggle('container-hidden');}, 300)
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300)
-    
-btnContinuar1.addEventListener('click', () => {
-    
-    let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-    nombreDeSesionIngresado = nombreSesionPorInput.value;
-    console.log(nombreDeSesionIngresado)
-    rutina.forEach((sesion, i) => {
-        if (sesion.nombre==nombreDeSesionIngresado) {
-            numeroDeSesionIngresada = i;
+            .then((result) => {
+              if (result.value !== true) {
+                nuevaSesion = undefined;
+                breakSign = false;
+              }
+            });
+          if (breakSign === false) {
+            nuevaSesion = undefined;
+            break;
+          }
         }
-    })
-    console.log(numeroDeSesionIngresada)
-    modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-    agregarBotonClose()
-    let nuevoParrafoNombreEj = document.createElement('p');
-    let nuevoInputNombreEj = document.createElement('input');
-    nuevoInputNombreEj.setAttribute('id',`inputNombreEjercicio`)
-    nuevoParrafoNombreEj.textContent = `Ingrese el nombre para el ejercicio`
-    modalPadre.append(nuevoParrafoNombreEj)
-    modalPadre.append(nuevoInputNombreEj) 
-    // Creo el boton y lo agrego
-    btnContinuar2 = document.createElement('button');
-    btnContinuar2.setAttribute('type', 'submit');
-    btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-    btnContinuar2.textContent='Continuar';
-    modalPadre.append(btnContinuar2);
-
-//Sube el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');})
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300);
-     
-    // Toca en Continuar 
-    btnContinuar2.addEventListener('click', () => {
-        const inputValue = document.getElementById(`inputNombreEjercicio`)            
-        nuevoEjercicio ={
-        nombre:inputValue.value,
-        seriesBase:[],
-        seriesRealizadas:[],
-        ultimosPesos:[],
-        proximosPesos: [],
-        proximasSeries:[]
-    }
-    console.log(nuevoEjercicio)
-    
-    //Blanqueo el modal
-    modalPadre.innerHTML = "";
-    agregarBotonClose();
-    let nuevoParrafo = document.createElement('p');
-    let nuevoInput = document.createElement('input');
-    nuevoInput.setAttribute('id',`inputQSeries`)
-    nuevoParrafo.textContent = `Ingrese cantidad de series para el ejercicio`
-    modalPadre.append(nuevoParrafo)
-    modalPadre.append(nuevoInput)
-    
-    
-    btnContinuar3 = document.createElement('button');
-    btnContinuar3.setAttribute('type', 'submit');
-    btnContinuar3.setAttribute('class', 'btn btn-continuar3');
-    btnContinuar3.textContent='Continuar';
-    modalPadre.append(btnContinuar3);  
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-    //La persona llena el contenido (cant series del Ejercicio nuevo)
-    // Toca en Continuar 
-    btnContinuar3.addEventListener('click', () => {
-
-    let inputValue = parseInt(document.getElementById(`inputQSeries`).value)
-    console.log(inputValue);       
-    for (let i=1; i<=inputValue; i++) {
-        nuevoEjercicio.seriesBase.push([]);    
-    }
-
-    //Blanqueo el modal
-    modalPadre.innerHTML = ""
-    agregarBotonClose()
-for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-    //Por cada serie creo los input para reps min/max
-    let nuevoParrafoMin = document.createElement('p');
-    let nuevoInputMin = document.createElement('input');
-    let nuevoParrafoMax = document.createElement('p');
-    let nuevoInputMax = document.createElement('input');
-    nuevoInputMin.setAttribute('id',`inputSerie${i+1}Min`)
-    nuevoParrafoMin.textContent = `Serie ${i+1} Reps Min.`
-    nuevoInputMax.setAttribute('id',`inputSerie${i+1}Max`)
-    nuevoParrafoMax.textContent = `Serie ${i+1} Reps Max.`
-    modalPadre.append(nuevoParrafoMin)
-    modalPadre.append(nuevoInputMin)
-    modalPadre.append(nuevoParrafoMax)
-    modalPadre.append(nuevoInputMax)
-}
-    btnContinuar4 = document.createElement('button');
-    btnContinuar4.setAttribute('type', 'submit');
-    btnContinuar4.setAttribute('class', 'btn btn-continuar4');
-    btnContinuar4.textContent='Continuar';
-    modalPadre.append(btnContinuar4);
-//Sube el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');})
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300);
-    
-    //La persona llena el contenido (Repeticiones Minimas y maximas de cada serie, del nuevo Ejercicio)
-    // Toca en Continuar 
-    btnContinuar4.addEventListener('click', () => {
-
-for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-    let inputValueMin = parseInt(document.getElementById
-    (`inputSerie${i+1}Min`).value);
-    let inputValueMax = parseInt(document.getElementById
-        (`inputSerie${i+1}Max`).value);      
-        nuevoEjercicio.seriesBase[i].push(inputValueMin);
-        nuevoEjercicio.seriesBase[i].push(inputValueMax);
-    }
-
-    //Blanqueo el modal
-    modalPadre.innerHTML = ""
-    agregarBotonClose()
-                    
-for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-    let nuevoParrafo = document.createElement('p');
-    let nuevoInput = document.createElement('input');
-    nuevoInput.setAttribute('id',`inputPesoSerie${i+1}`)
-    nuevoParrafo.textContent = `Serie ${i+1} - Peso a levantar (en kg)`
-    modalPadre.append(nuevoParrafo)
-    modalPadre.append(nuevoInput)
-                                    
-    }
-    btnContinuar5 = document.createElement('button');
-    btnContinuar5.setAttribute('type', 'submit');
-    btnContinuar5.setAttribute('class', 'btn btn-continuar5');
-    btnContinuar5.textContent='Continuar';
-    modalPadre.append(btnContinuar5);
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            //La persona llena el contenido (Series Minimas y maximas de cada ejercicio de la sesion)
-            // Toca en Continuar 
-            btnContinuar5.addEventListener('click', () => {
-                
-                for (let i=0; i<nuevoEjercicio.seriesBase.length; i++) {
-                    let inputValue = parseInt(document.getElementById
-                        (`inputPesoSerie${i+1}`).value)       
-                        nuevoEjercicio.proximosPesos.push(inputValue);
-                    }
-                    
-                    //blanqueo el modal
-                    modalPadre.innerHTML = ""
-                    let ultimoParrafo = document.createElement('p');
-                    ultimoParrafo.textContent = 'Ejercicio creado con éxito'
-                    modalPadre.append(ultimoParrafo);
-                    btnContinuar6 = document.createElement('button');
-                    btnContinuar6.setAttribute('type', 'submit');
-                    btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-    btnContinuar6.textContent='Finalizar';
-    modalPadre.append(btnContinuar6);
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        // Toca en Continuar 
-        btnContinuar6.addEventListener('click', () => {
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');
-                setTimeout(function(){
-                    modalContainer.classList.toggle('container-hidden');
-                }, 300)
-            }, 300)
-            
-            
-            rutina[numeroDeSesionIngresada].ejercicios.push(nuevoEjercicio);
-            console.log(rutina)
-            localStorage.setItem('rutina', JSON.stringify(rutina));
-            reemplazarSesiones();
-            modalPadre.innerHTML = ""
-        })
-    })
-})
-})
-})
-})
-}
-
-function anotarRepeticionesDeTodaUnaSesion() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-let nuevoParrafo1 = document.createElement('p');
-let nuevoInput1 = document.createElement('input');
-nuevoParrafo1.textContent = `Ingrese el nombre de sesion en el cual vas a agregar el ejercicio`
-nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-agregarBotonClose()
-modalPadre.append(nuevoParrafo1)
-modalPadre.append(nuevoInput1)
-// Creo el boton y lo agrego
-btnContinuar1 = document.createElement('button');
-btnContinuar1.setAttribute('type', 'submit');
-btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-btnContinuar1.textContent='Continuar';
-modalPadre.append(btnContinuar1);
-//Pantalla gris
-setTimeout(function(){
-    modalContainer.classList.toggle('container-hidden');}, 300)
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300)
-    
-btnContinuar1.addEventListener('click', () => {
-    
-    let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-    nombreDeSesionIngresado = nombreSesionPorInput.value;
-    console.log(nombreDeSesionIngresado)
-    rutina.forEach((sesion, i) => {
-        if (sesion.nombre==nombreDeSesionIngresado) {
-            numeroDeSesionIngresada = i;
+        if (breakSign === false) {
+          nuevaSesion = undefined;
+          break;
         }
+      }
+      if (breakSign === false) {
+        return;
+      } else {
+        return nuevaSesion;
+      }
     })
-    console.log(numeroDeSesionIngresada)
-    modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-    agregarBotonClose()
-    
-    rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-        ejercicio.seriesBase.forEach((serie, j) => {
-        let parrafoReps = document.createElement('p');
-        let inputReps = document.createElement('input');
-        inputReps.setAttribute('id',`inputRepsSerie${j}Ej${i}`)
-        parrafoReps.textContent = `${ejercicio.nombre} - Serie ${j+1} - Reps Realizadas`
-        modalPadre.append(parrafoReps)
-        modalPadre.append(inputReps) 
-        })
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let breakSign = true;
+      let nuevaSesion = result;
+      for (let i = 0; i < nuevaSesion.ejercicios.length; i++) {
+        for (let j = 0; j < nuevaSesion.ejercicios[i].seriesBase.length; j++) {
+          await progressPopup
+            .fire({
+              title: `${nuevaSesion.ejercicios[i].nombre} - Serie N° ${
+                j + 1
+              } peso a levantar`,
+              text: "Ten en cuenta que los pesos subirán de a 5 kg a medida que vayas progresando en tu entrenamiento",
+              html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
+              preConfirm: () => {
+                const peso = parseInt(
+                  Swal.getPopup().querySelector(`#peso`).value
+                );
+                if ((!peso || isNaN(peso)) && peso !== 0) {
+                  Swal.showValidationMessage(`Debes ingresar un peso válido`);
+                } else if (peso <= 0) {
+                  Swal.showValidationMessage(
+                    `Debes ingresar un número mayor a 1 (kg)`
+                  );
+                } else {
+                  return peso;
+                }
+              },
+            })
+            .then((result) => {
+              if (result.value === undefined) {
+                nuevaSesion = undefined;
+                breakSign = false;
+              } else {
+                nuevaSesion.ejercicios[i].proximosPesos.push(result.value);
+              }
+            });
+          if (breakSign === false) {
+            break;
+          }
+        }
+        if (breakSign === false) {
+          break;
+        }
+      }
+      if (breakSign === false || nuevaSesion === undefined) {
+        return;
+      } else {
+        return nuevaSesion;
+      }
+    })
+    .then((result) => {
+      if (result === undefined) {
+        return;
+      }
+      rutina.push(result);
+      endPopup.fire({
+        text: "Rutina creada con éxito.",
+      });
     });
-    // Creo el boton y lo agrego
-    btnContinuar2 = document.createElement('button');
-    btnContinuar2.setAttribute('type', 'submit');
-    btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-    btnContinuar2.textContent='Continuar';
-    modalPadre.append(btnContinuar2);
-
-//Sube el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');})
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300);
-    
-    
-    
-    
-    // Toca en Continuar 
-    btnContinuar2.addEventListener('click', () => {
-        rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-            let repeticionesHechas = []
-            ejercicio.seriesBase.forEach((serie, j) => {
-                const inputSerieRealizada = parseInt(document.getElementById(`inputRepsSerie${j}Ej${i}`).value)
-                repeticionesHechas.push(inputSerieRealizada);
-            })
-            ejercicio.seriesRealizadas = repeticionesHechas;
+});
+const btnAgregarEjercicio = document.querySelector(".btn-agregarEjercicio");
+btnAgregarEjercicio.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title: `Ingresá el nombre del ejercicio a agregar`,
+      html: `<input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre del ejercicio">`,
+      preConfirm: () => {
+        const nombreDeEjercicio =
+          Swal.getPopup().querySelector(`#nombreDeEjercicio`).value;
+        if (!nombreDeEjercicio || nombreDeEjercicio.length <= 0) {
+          Swal.showValidationMessage(
+            `Debes ingresar un nombre para el ejercicio`
+          );
+        } else if (nombreDeEjercicio.length > 26) {
+          Swal.showValidationMessage(
+            `El nombre del ejercicio no debe superar los 26 caracteres`
+          );
+        } else {
+          let nuevoEjercicio = {
+            nombre: nombreDeEjercicio,
+            seriesBase: [],
+            seriesRealizadas: [],
+            ultimosPesos: [],
+            proximosPesos: [],
+            proximasSeries: [],
+          };
+          return nuevoEjercicio;
+        }
+      },
     })
-
-    //blanqueo el modal
-    modalPadre.innerHTML = ""
-    let ultimoParrafo = document.createElement('p');
-    ultimoParrafo.textContent = 'Series Anotadas con éxito'
-    modalPadre.append(ultimoParrafo);
-    btnContinuar6 = document.createElement('button');
-    btnContinuar6.setAttribute('type', 'submit');
-    btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-    btnContinuar6.textContent='Finalizar';
-    modalPadre.append(btnContinuar6);
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        // Toca en Continuar 
-        btnContinuar6.addEventListener('click', () => {
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');
-                setTimeout(function(){
-                    modalContainer.classList.toggle('container-hidden');
-                }, 300)
-            }, 300)
-            
-            console.log(rutina)
-            localStorage.setItem('rutina', JSON.stringify(rutina));
-            reemplazarSesiones();
-            modalPadre.innerHTML = ""
-        })
-    })
-})
-}
-
-    
-
-
-function anotarRepsSoloUno() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    modalPadre.append(nuevoParrafo1)
-    modalPadre.append(nuevoInput1)
-    // Creo el boton y lo agrego
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.setAttribute('type', 'submit');
-    btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-    btnContinuar1.textContent='Continuar';
-    modalPadre.append(btnContinuar1);
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
+    .then(async (result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let cantSeriesConfirmada;
+      let nuevoEjercicio = result.value;
+      await progressPopup
+        .fire({
+          title: `Ingrese cantidad de series para el ejercicio ${nuevoEjercicio.nombre}`,
+          html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Ingresa cantidad de series">`,
+          preConfirm: () => {
+            let cantSeries = parseInt(
+              Swal.getPopup().querySelector(`#seriesEjercicio`).value
+            );
+            if (cantSeries > 6 || cantSeries <= 0) {
+              Swal.showValidationMessage(`Máximo 6 series, mínimo 1`);
+            } else if (!cantSeries || isNaN(cantSeries)) {
+              Swal.showValidationMessage(
+                `Debes ingresar un número para la cantidad de series`
+              );
+            } else {
+              cantSeriesConfirmada = cantSeries;
             }
+          },
         })
-        console.log(numeroDeSesionIngresada)
-        modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-
-        agregarBotonClose()
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio del cual quiere anotar las repeticiones realizadas`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        agregarBotonClose()
-        modalPadre.append(nuevoParrafo1)
-        modalPadre.append(nuevoInput1)
-        // Creo el boton y lo agrego
-        btnContinuar2 = document.createElement('button');
-        btnContinuar2.setAttribute('type', 'submit');
-        btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-        btnContinuar2.textContent='Continuar';
-        modalPadre.append(btnContinuar2);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300);
-            
-        btnContinuar2.addEventListener('click', () => {
-            
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
-            })
-            console.log(numeroDeEjercicioIngresado)
-            modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-
-        agregarBotonClose()
-        rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesBase.forEach((serie, i) => {
-            let parrafoReps = document.createElement('p');
-            let inputReps = document.createElement('input');
-            inputReps.setAttribute('id',`inputRepsSerie${i+1}`)
-            parrafoReps.textContent = `Serie ${i+1} - Reps Realizadas`
-            modalPadre.append(parrafoReps)
-            modalPadre.append(inputReps) 
+        .then((result) => {
+          if (result.value === undefined) {
+            nuevoEjercicio = undefined;
+            return;
+          } else {
+            for (let i = 0; i < cantSeriesConfirmada; i++) {
+              nuevoEjercicio.seriesBase.push([]);
+            }
+          }
         });
-        // Creo el boton y lo agrego
-        btnContinuar3 = document.createElement('button');
-        btnContinuar3.setAttribute('type', 'submit');
-        btnContinuar3.setAttribute('class', 'btn btn-continuar3');
-        btnContinuar3.textContent='Continuar';
-        modalPadre.append(btnContinuar3);
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300);
-
-        // Toca en Continuar 
-        btnContinuar3.addEventListener('click', () => {
-            let repeticionesHechas = []
-            rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesBase.forEach((serie, i) => {
-                const inputSerieRealizada = parseInt(document.getElementById(`inputRepsSerie${i+1}`).value)
-                repeticionesHechas.push(inputSerieRealizada);
-            })
-            
-            rutina[numeroDeSesionIngresada].ejercicios[numeroDeEjercicioIngresado].seriesRealizadas = repeticionesHechas;
-        //blanqueo el modal
-        modalPadre.innerHTML = ""
-
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Series Anotadas con éxito'
-        modalPadre.append(ultimoParrafo);
-        btnContinuar6 = document.createElement('button');
-        btnContinuar6.setAttribute('type', 'submit');
-        btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-        btnContinuar6.textContent='Finalizar';
-        modalPadre.append(btnContinuar6);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            // Toca en Continuar 
-            btnContinuar6.addEventListener('click', () => {
-                setTimeout(function(){
-                    modalPadre.classList.toggle('modal-close');
-                    setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
-                    }, 300)
-                }, 300)
-                
-                console.log(rutina)
-                localStorage.setItem('rutina', JSON.stringify(rutina));
-                reemplazarSesiones();
-                modalPadre.innerHTML = ""
-            })
-        })
+      return nuevoEjercicio;
     })
-})
-}
-
-
-function generarProximaSesionUnicoEjercicio() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    modalPadre.append(nuevoParrafo1)
-    modalPadre.append(nuevoInput1)
-    // Creo el boton y lo agrego
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.setAttribute('type', 'submit');
-    btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-    btnContinuar1.textContent='Continuar';
-    modalPadre.append(btnContinuar1);
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
-        })
-        console.log(numeroDeSesionIngresada)
-        modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-
-        agregarBotonClose()
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio del cual quieras generar los próximos pesos y repeticiones`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        agregarBotonClose()
-        modalPadre.append(nuevoParrafo1)
-        modalPadre.append(nuevoInput1)
-        // Creo el boton y lo agrego
-        btnContinuar2 = document.createElement('button');
-        btnContinuar2.setAttribute('type', 'submit');
-        btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-        btnContinuar2.textContent='Continuar';
-        modalPadre.append(btnContinuar2);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300);
-            
-        btnContinuar2.addEventListener('click', () => {
-            
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
-            })
-            console.log(numeroDeEjercicioIngresado)
-            modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-            let ultimoParrafo = document.createElement('p');
-            ultimoParrafo.textContent = 'Próxima sesión del ejercicio generada con éxito'
-            modalPadre.append(ultimoParrafo);
-            btnContinuar6 = document.createElement('button');
-            btnContinuar6.setAttribute('type', 'submit');
-            btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-            btnContinuar6.textContent='Finalizar';
-            modalPadre.append(btnContinuar6);
-            //Sube el modal
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');})
-            //Baja el modal
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');}, 300)
-                // Toca en Continuar 
-                btnContinuar6.addEventListener('click', () => {
-                    setTimeout(function(){
-                        modalPadre.classList.toggle('modal-close');
-                        setTimeout(function(){
-                            modalContainer.classList.toggle('container-hidden');
-                        }, 300)
-                    }, 300)
-                    
-                    equipararUltimosPesosConProximosUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                    actualizarPesosUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                    actualizarSeriesUnicoEjercicio(numeroDeSesionIngresada, numeroDeEjercicioIngresado)
-                    localStorage.setItem('rutina', JSON.stringify(rutina))
-                    reemplazarSesiones()
-                
-                    modalPadre.innerHTML = ""
-                })
-            })
-        })
-    }
-
-
-function generarProximaSesionCompleta() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion completa. Se generarán todos los datos para la próxima semana`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    modalPadre.append(nuevoParrafo1)
-    modalPadre.append(nuevoInput1)
-    // Creo el boton y lo agrego
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.setAttribute('type', 'submit');
-    btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-    btnContinuar1.textContent='Continuar';
-    modalPadre.append(btnContinuar1);
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
-        })
-        console.log(numeroDeSesionIngresada)
-
-        modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-        let ultimoParrafo = document.createElement('p');
-        ultimoParrafo.textContent = 'Próxima sesión generada con éxito'
-        modalPadre.append(ultimoParrafo);
-        btnContinuar6 = document.createElement('button');
-        btnContinuar6.setAttribute('type', 'submit');
-        btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-        btnContinuar6.textContent='Finalizar';
-        modalPadre.append(btnContinuar6);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300)
-            // Toca en Continuar 
-            btnContinuar6.addEventListener('click', () => {
-                setTimeout(function(){
-                    modalPadre.classList.toggle('modal-close');
-                    setTimeout(function(){
-                        modalContainer.classList.toggle('container-hidden');
-                    }, 300)
-                }, 300)
-
-                equipararUltimosPesosConProximos(numeroDeSesionIngresada)
-                actualizarPesos(numeroDeSesionIngresada)
-                actualizarSeries(numeroDeSesionIngresada)
-                localStorage.setItem('rutina', JSON.stringify(rutina))
-                reemplazarSesiones()
-                modalPadre.innerHTML = ""
-            })
-        })
-}
-
-function eliminarEjercicio() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-    let nuevoParrafo1 = document.createElement('p');
-    let nuevoInput1 = document.createElement('input');
-    nuevoParrafo1.textContent = `Ingrese el nombre de sesion a la que pertenece el ejercicio a eliminar`
-    nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-    agregarBotonClose()
-    modalPadre.append(nuevoParrafo1)
-    modalPadre.append(nuevoInput1)
-    // Creo el boton y lo agrego
-    btnContinuar1 = document.createElement('button');
-    btnContinuar1.setAttribute('type', 'submit');
-    btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-    btnContinuar1.textContent='Continuar';
-    modalPadre.append(btnContinuar1);
-    //Pantalla gris
-    setTimeout(function(){
-        modalContainer.classList.toggle('container-hidden');}, 300)
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        
-    btnContinuar1.addEventListener('click', () => {
-        
-        let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-        nombreDeSesionIngresado = nombreSesionPorInput.value;
-        console.log(nombreDeSesionIngresado)
-        rutina.forEach((sesion, i) => {
-            if (sesion.nombre==nombreDeSesionIngresado) {
-                numeroDeSesionIngresada = i;
-            }
-        })
-        console.log(numeroDeSesionIngresada)
-        modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-
-        agregarBotonClose()
-        let nuevoParrafo1 = document.createElement('p');
-        let nuevoInput1 = document.createElement('input');
-        nuevoParrafo1.textContent = `Ingrese el nombre del ejercicio a eliminar`
-        nuevoInput1.setAttribute('id',`input-nombreEjercicioAModificar`)
-        agregarBotonClose()
-        modalPadre.append(nuevoParrafo1)
-        modalPadre.append(nuevoInput1)
-        // Creo el boton y lo agrego
-        btnContinuar2 = document.createElement('button');
-        btnContinuar2.setAttribute('type', 'submit');
-        btnContinuar2.setAttribute('class', 'btn btn-continuar2');
-        btnContinuar2.textContent='Continuar';
-        modalPadre.append(btnContinuar2);
-        //Sube el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');})
-        //Baja el modal
-        setTimeout(function(){
-            modalPadre.classList.toggle('modal-close');}, 300);
-            
-        btnContinuar2.addEventListener('click', () => {
-            
-            let nombreEjercicioPorInput = document.getElementById('input-nombreEjercicioAModificar');
-            nombreDeEjercicioIngresado = nombreEjercicioPorInput.value;
-            console.log(nombreDeEjercicioIngresado)
-            rutina[numeroDeSesionIngresada].ejercicios.forEach((ejercicio, i) => {
-                if (ejercicio.nombre==nombreDeEjercicioIngresado) {
-                    numeroDeEjercicioIngresado = i;
-                }
-            })
-            console.log(numeroDeEjercicioIngresado)
-            modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-            let ultimoParrafo = document.createElement('p');
-            ultimoParrafo.textContent = 'Ejercicio eliminado con éxito'
-            modalPadre.append(ultimoParrafo);
-            btnContinuar6 = document.createElement('button');
-            btnContinuar6.setAttribute('type', 'submit');
-            btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-            btnContinuar6.textContent='Finalizar';
-            modalPadre.append(btnContinuar6);
-            //Sube el modal
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');})
-            //Baja el modal
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');}, 300)
-                // Toca en Continuar 
-                btnContinuar6.addEventListener('click', () => {
-                    setTimeout(function(){
-                        modalPadre.classList.toggle('modal-close');
-                        setTimeout(function(){
-                            modalContainer.classList.toggle('container-hidden');
-                        }, 300)
-                    }, 300)
-                    
-                    rutina[numeroDeSesionIngresada].ejercicios.splice(numeroDeEjercicioIngresado, 1);
-                    localStorage.setItem('rutina', JSON.stringify(rutina));
-                    reemplazarSesiones();
-                    modalPadre.innerHTML = ""
-                })
-            })
-        })
-}
-
-function eliminarSesion() {
-    //Creo los elementos del modal para pedir el numero de sesion en el cual crear el ejercicio
-let nuevoParrafo1 = document.createElement('p');
-let nuevoInput1 = document.createElement('input');
-nuevoParrafo1.textContent = `Ingrese el nombre de sesion a eliminar`
-nuevoInput1.setAttribute('id',`input-nombreSesionAModificar`)
-agregarBotonClose()
-modalPadre.append(nuevoParrafo1)
-modalPadre.append(nuevoInput1)
-// Creo el boton y lo agrego
-btnContinuar1 = document.createElement('button');
-btnContinuar1.setAttribute('type', 'submit');
-btnContinuar1.setAttribute('class', 'btn btn-continuar1');
-btnContinuar1.textContent='Continuar';
-modalPadre.append(btnContinuar1);
-//Pantalla gris
-setTimeout(function(){
-    modalContainer.classList.toggle('container-hidden');}, 300)
-//Baja el modal
-setTimeout(function(){
-    modalPadre.classList.toggle('modal-close');}, 300)
-    
-btnContinuar1.addEventListener('click', () => {
-    
-    let nombreSesionPorInput = document.getElementById('input-nombreSesionAModificar');
-    nombreDeSesionIngresado = nombreSesionPorInput.value;
-    console.log(nombreDeSesionIngresado)
-    rutina.forEach((sesion, i) => {
-        if (sesion.nombre==nombreDeSesionIngresado) {
-            numeroDeSesionIngresada = i;
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let nuevoEjercicio = result;
+      let breakSign = true;
+      for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
+        await progressPopup
+          .fire({
+            title: `Ingresá el mínimo y el máximo de repeticiones para la serie ${
+              i + 1
+            } `,
+            html: `<input type="text" id="minReps" class="swal2-input" placeholder="Min">
+            <input type="text" id="maxReps" class="swal2-input" placeholder="Max">`,
+            preConfirm: () => {
+              const minReps = parseInt(
+                Swal.getPopup().querySelector(`#minReps`).value
+              );
+              const maxReps = parseInt(
+                Swal.getPopup().querySelector(`#maxReps`).value
+              );
+              if (!minReps || !maxReps) {
+                Swal.showValidationMessage(
+                  `Debes completar los campos con repeticiones mínimas y máximas. Recuerda ingresar solo números mayores a 0`
+                );
+              } else if (maxReps <= minReps) {
+                Swal.showValidationMessage(
+                  "El máximo no puede ser igual o menor al mínimo"
+                );
+              } else {
+                nuevoEjercicio.seriesBase[i].push(minReps);
+                nuevoEjercicio.seriesBase[i].push(maxReps);
+              }
+            },
+          })
+          .then((result) => {
+            result.value === undefined ? (breakSign = false) : "";
+          });
+        if (breakSign == false) {
+          nuevoEjercicio = undefined;
+          break;
         }
+      }
+      return nuevoEjercicio;
     })
-    console.log(numeroDeSesionIngresada)
-    modalPadre.innerHTML = ""; //Creo los inputs y los agrego
-    
-    let ultimoParrafo = document.createElement('p');
-    ultimoParrafo.textContent = 'Serie eliminada con éxito'
-    modalPadre.append(ultimoParrafo);
-    btnContinuar6 = document.createElement('button');
-    btnContinuar6.setAttribute('type', 'submit');
-    btnContinuar6.setAttribute('class', 'btn btn-continuar6');
-    btnContinuar6.textContent='Finalizar';
-    modalPadre.append(btnContinuar6);
-    //Sube el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');})
-    //Baja el modal
-    setTimeout(function(){
-        modalPadre.classList.toggle('modal-close');}, 300)
-        // Toca en Continuar 
-        btnContinuar6.addEventListener('click', () => {
-            setTimeout(function(){
-                modalPadre.classList.toggle('modal-close');
-                setTimeout(function(){
-                    modalContainer.classList.toggle('container-hidden');
-                }, 300)
-            }, 300)
-            
-            rutina.splice(numeroDeSesionIngresada, 1);
-            localStorage.setItem('rutina', JSON.stringify(rutina));
-            reemplazarSesiones();
-            modalPadre.innerHTML = ""
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let breakSign = true;
+      let nuevoEjercicio = result;
+      for (let i = 0; i < nuevoEjercicio.seriesBase.length; i++) {
+        await progressPopup
+          .fire({
+            title: `Ingresá el peso (kg) a levantar para la serie ${i + 1}`,
+            html: `<input type="text" id="peso" class="swal2-input" placeholder="Peso en kg">`,
+            preConfirm: () => {
+              const peso = parseInt(
+                Swal.getPopup().querySelector(`#peso`).value
+              );
+              if (!peso && peso !== 0) {
+                Swal.showValidationMessage(`Debes ingresar un peso válido`);
+              } else if (isNaN(peso) || peso <= 0) {
+                Swal.showValidationMessage(`El peso debe ser mayor a 1 (kg)`);
+              } else {
+                return peso;
+              }
+            },
+          })
+          .then((result) => {
+            if (result.value === undefined) {
+              breakSign = false;
+            } else {
+              nuevoEjercicio.proximosPesos.push(result.value);
+            }
+          });
+        if (breakSign == false) {
+          nuevoEjercicio = undefined;
+          break;
+        }
+      }
+      return nuevoEjercicio;
+    })
+    .then(async (result) => {
+      if (result === undefined) {
+        return;
+      }
+      let nuevoEjercicio = result;
+      let indiceDeSesion;
+      await progressPopup
+        .fire({
+          title:
+            "Ingrese nombre de la sesión a la cual querés agregar un nuevo ejercicio",
+          html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+          preConfirm: () => {
+            const nombreDeSesion =
+              Swal.getPopup().querySelector("#nombreDeSesion").value;
+            let indiceDeSesion = rutina.indexOf(
+              rutina.find(
+                (sesion) =>
+                  sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+              )
+            );
+            if (!nombreDeSesion || indiceDeSesion < 0) {
+              Swal.showValidationMessage(
+                `Nombre de sesión inválido o inexistente. Prueba con otro nombre.`
+              );
+            } else {
+              return indiceDeSesion;
+            }
+          },
         })
+        .then((result) => {
+          if (result.value === undefined) {
+            return;
+          } else {
+            indiceDeSesion = result.value;
+            rutina[indiceDeSesion].ejercicios.push(nuevoEjercicio);
+          }
+        });
+      if (indiceDeSesion === undefined) {
+        return;
+      } else {
+        return 4;
+      }
     })
+    .then((result) => {
+      if (result !== 4) {
+        return;
+      }
+      endPopup.fire({
+        text: "Ejercicio agregado con éxito.",
+      });
+    });
+});
+const btnAnotarRepsSesion = document.querySelector(".btn-anotarRepsSesion");
+btnAnotarRepsSesion.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      titleText: "Ingrese nombre de la sesión",
+      html: `<p class="input-custom__text">Para anotar las repeticiones realizadas en todos los ejercicios de esa sesión</p>
+    <input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        let indiceDeSesion = rutina.indexOf(
+          rutina.find(
+            (sesion) =>
+              sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+          )
+        );
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion);
+      },
+    })
+    .then(async (result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let indiceDeSesion = result.value;
+      let arrayDeSeries = [];
+      for (let i = 0; i < rutina[indiceDeSesion].ejercicios.length; i++) {
+        let arrayDeReps = [];
+        for (
+          let j = 0;
+          j < rutina[indiceDeSesion].ejercicios[i].seriesBase.length;
+          j++
+        ) {
+          let breakSign = true;
+          await progressPopup
+            .fire({
+              title: `${rutina[indiceDeSesion].ejercicios[i].nombre} - Serie ${
+                j + 1
+              } - Reps Realizadas`,
+              html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+              preConfirm: () => {
+                const cantReps = parseInt(
+                  Swal.getPopup().querySelector("#cantReps").value
+                );
+                validarCantReps(arrayDeReps, cantReps)
+              },
+            })
+            .then((result) => {
+              result.value === undefined ? (breakSign = false) : "";
+            });
+          if (breakSign == false) {
+            return;
+          }
+        }
+        arrayDeSeries.push(arrayDeReps);
+      }
+      for (let i = 0; i < rutina[indiceDeSesion].ejercicios.length; i++) {
+        rutina[indiceDeSesion].ejercicios[i].seriesRealizadas =
+          arrayDeSeries[i];
+      }
+      return 4;
+    })
+    .then((result) => {
+      if (result !== 4) {
+        return;
+      }
+      endPopup.fire({
+        text: "Series Anotadas con éxito.",
+      });
+    });
+});
+const btnAnotarRepsUno = document.querySelector(".btn-anotarRepsx1");
+btnAnotarRepsUno.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title:
+        "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
+      html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        const nombreDeEjercicio =
+          Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+        return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
+      },
+    })
+    .then(async (result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let grupoDeSeries = [];
+      let indiceDeSesion = result.value.indiceDeSesion;
+      let indiceDeEjercicio = result.value.indiceDeEjercicio;
+      for (
+        let i = 0;
+        i <
+        rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].seriesBase.length;
+        i++
+      ) {
+        let breakSign = true;
+        await progressPopup
+          .fire({
+            title: `${
+              rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].nombre
+            } - Serie ${i + 1} - Reps Realizadas`,
+            html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+            preConfirm: () => {
+              const cantReps = parseInt(
+                Swal.getPopup().querySelector("#cantReps").value
+              );
+              validarCantReps(grupoDeSeries, cantReps)
+            },
+          })
+          .then((result) => {
+            result.value === undefined ? (breakSign = false) : "";
+          });
+        if (breakSign == false) {
+          return;
+        }
+      }
+      rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].seriesRealizadas =
+        grupoDeSeries;
+      return 4;
+    })
+    .then((result) => {
+      if (result !== 4) {
+        return;
+      }
+      endPopup.fire({
+        text: "Series Anotadas con éxito.",
+      });
+    });
+});
+const btnProxSesion = document.querySelector(".btn-generarProximaSesion");
+btnProxSesion.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title:
+        "Ingrese nombre de la sesión de la cual quieras generar próximos pesos y repeticiones",
+      html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        let indiceDeSesion = rutina.indexOf(
+          rutina.find(
+            (sesion) =>
+              sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+          )
+        );
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion)
+      },
+    })
+    .then((result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let indiceDeSesion = result.value;
+      equipararUltimosPesosConProximos(indiceDeSesion);
+      actualizarPesos(indiceDeSesion);
+      actualizarSeries(indiceDeSesion);
+      endPopup.fire({
+        text: "Series y pesos de la sesión indicada actualizados con éxito.",
+      });
+    });
+});
+const btnProxSesionUno = document.querySelector(".btn-generarProximaSesionx1");
+btnProxSesionUno.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title:
+        "Ingrese nombre de la sesión del ejercicio, y el nombre del ejercicio ",
+      html: `<input type="text" id="nombreDeSesion" class="swal2-input" placeholder="Nombre de Sesión">
+    <input type="text" id="nombreDeEjercicio" class="swal2-input" placeholder="Nombre de Ejercicio">`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        const nombreDeEjercicio =
+          Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+          return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
+      },
+    })
+    .then((result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let indiceDeSesion = result.value.indiceDeSesion;
+      let indiceDeEjercicio = result.value.indiceDeEjercicio;
+      equipararUltimosPesosConProximosUnicoEjercicio(
+        indiceDeSesion,
+        indiceDeEjercicio
+      );
+      actualizarPesosUnicoEjercicio(indiceDeSesion, indiceDeEjercicio);
+      actualizarSeriesUnicoEjercicio(indiceDeSesion, indiceDeEjercicio);
+      endPopup.fire({
+        text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+      });
+    });
+});
+const btnEliminarSesion = document.querySelector(".btn-eliminarSesion");
+btnEliminarSesion.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title: "Ingrese el nombre de la sesión que quiere borrar",
+      html: `<input class="swal2-input" type="text" id="nombreDeSesion" placeholder="Nombre de sesión"></input>`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        let indiceDeSesion = rutina.indexOf(
+          rutina.find((sesion) => {
+            return sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase();
+          })
+        );
+        return validarNombreDeSesion(nombreDeSesion, indiceDeSesion)
+      },
+    })
+    .then((result) => {
+      let indiceDeSesion = result.value;
+      if (indiceDeSesion === undefined) {
+        return;
+      } else {
+        rutina.splice(indiceDeSesion, 1);
+      }
+      endPopup.fire({
+        text: "Series y pesos del ejercicio indicado actualizados con éxito.",
+      });
+    });
+});
+const btnEliminarEjercicio = document.querySelector(".btn-eliminarEjercicio");
+btnEliminarEjercicio.addEventListener("click", () => {
+  progressPopup
+    .fire({
+      title:
+        "Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar",
+      html: `<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
+    <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
+      preConfirm: () => {
+        const nombreDeSesion =
+          Swal.getPopup().querySelector("#nombreDeSesion").value;
+        const nombreDeEjercicio =
+          Swal.getPopup().querySelector("#nombreDeEjercicio").value;
+          return validarNombreSesionYDeEjercicio(nombreDeSesion, nombreDeEjercicio);
+      },
+    })
+    .then((result) => {
+      if (result.value === undefined) {
+        return;
+      }
+      let indiceDeSesion = result.value.indiceDeSesion;
+      let indiceDeEjercicio = result.value.indiceDeEjercicio;
+      rutina[indiceDeSesion].ejercicios.splice(indiceDeEjercicio, 1);
+      endPopup.fire({
+        text: "Ejercicio eliminado exitosamente",
+      });
+    });
+});
+const btnBorrarRutina = document.querySelector(".btn-borrarRutina");
+btnBorrarRutina.addEventListener("click", () => {
+  Swal.fire({
+    title: "Atención - Confirma borrado",
+    text: "Una vez que elmines la rutina completa no podrás revertir este paso",
+    icon: "warning",
+    confirmButtonColor: "#3085d6",
+    showCancelButton: true,
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Si, eliminar la rutina",
+    focusConfirm: false,
+    backdrop: false,
+    allowOutsideClick: false,
+    showClass: {
+      popup: "animate__animated animate__fadeIn",
+    },
+    hideClass: {
+      popup: "animate__animated animate__fadeOut",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      rutina = [];
+      localStorage.removeItem("rutina");
+      borrarTablas();
+      Swal.fire("Atención", "Has eliminado la rutina completa", "info");
+    }
+  });
+});
+/*Val Functions*/
+function validarNombreDeSesion(nombreDeSesion, indiceDeSesion) {
+  if (!nombreDeSesion) {
+      Swal.showValidationMessage(`Recuerda completar este campo`);
+    } else if (indiceDeSesion < 0) {
+      Swal.showValidationMessage(`Nombre de sesión inválido. Intenta con otro.`);
+    } else {
+      return indiceDeSesion;
+    };
+};
+function validarCantReps(arrayReceptor, cantReps) {
+  if (!cantReps || isNaN(cantReps) || cantReps < 0) {
+      Swal.showValidationMessage(
+        `Debes llenar este campo. Recuerda ingresar un número positivo`
+      );
+    } else {
+      arrayReceptor.push(cantReps);
+    };
+};
+function validarNombreSesionYDeEjercicio (nombreDeSesion, nombreDeEjercicio) {
+  if (!nombreDeSesion || !nombreDeEjercicio) {
+    Swal.showValidationMessage(`Recuerda completar ambos campos`);
+  } else {
+    let indiceDeSesion = rutina.indexOf(
+      rutina.find(
+        (sesion) => sesion.nombre.toLowerCase() == nombreDeSesion.toLowerCase()
+      )
+    );
+    if (indiceDeSesion < 0) {
+      Swal.showValidationMessage(
+        `Nombre de sesión inválido. Intenta con otro.`
+      );
+    } else {
+      let indiceDeEjercicio = rutina[indiceDeSesion].ejercicios.indexOf(
+        rutina[indiceDeSesion].ejercicios.find(
+          (ejercicio) =>
+            ejercicio.nombre.toLowerCase() == nombreDeEjercicio.toLowerCase()
+        )
+      );
+      if (indiceDeEjercicio < 0) {
+        Swal.showValidationMessage(
+          `Nombre de ejercicio inexistente. Intenta con otro.`
+        );
+      } else {
+        return { indiceDeSesion, indiceDeEjercicio };
+      }
+    }
+  }
 }
-
-
-/*FUNCIONES CALCULOS*/
+/*Calc Functions start*/
 function equipararUltimosPesosConProximos(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        ejercicio.ultimosPesos = ejercicio.proximosPesos;
-    })
+  rutina[num].ejercicios.forEach((ejercicio) => {
+    ejercicio.ultimosPesos = ejercicio.proximosPesos;
+  });
 }
-
 function actualizarPesos(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        let nuevosPesos = [];
-        ejercicio.seriesRealizadas.forEach((serie, i) =>{
-            if (serie>=ejercicio.seriesBase[i][1]) {
-                nuevosPesos.push(ejercicio.ultimosPesos[i] + 5)
-            } else {
-                nuevosPesos.push(ejercicio.ultimosPesos[i])
-            }
-        })
-        ejercicio.proximosPesos = nuevosPesos;
-    })
-}
-
-function actualizarSeries(num) {
-    rutina[num].ejercicios.forEach((ejercicio) => {
-        let nuevasSeries = [];
-        ejercicio.seriesRealizadas.forEach((serie, i) => {
-            if (serie>=ejercicio.seriesBase[i][1]) {
-                nuevasSeries.push(ejercicio.seriesBase[i]);
-            } else {
-                let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie);
-                nuevoRangoDeSeries.push(ejercicio.seriesBase[i][1]);
-                nuevasSeries.push(nuevoRangoDeSeries);
-            }
-        })
-        ejercicio.proximasSeries = nuevasSeries;
-    })
-}
-
-function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
-    rutina[sesion].ejercicios[ejercicio].ultimosPesos =rutina[sesion].ejercicios[ejercicio].proximosPesos;
-}
-
-function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
+  rutina[num].ejercicios.forEach((ejercicio) => {
     let nuevosPesos = [];
-    rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) =>{
-            if (serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
-                nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5)
-            } else {
-                nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i])
-            }
-        })
-        rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
+    ejercicio.seriesRealizadas.forEach((serie, i) => {
+      serie >= ejercicio.seriesBase[i][1]
+        ? nuevosPesos.push(ejercicio.ultimosPesos[i] + 5)
+        : nuevosPesos.push(ejercicio.ultimosPesos[i]);
+    });
+    ejercicio.proximosPesos = nuevosPesos;
+  });
 }
-
-function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
+function actualizarSeries(num) {
+  rutina[num].ejercicios.forEach((ejercicio) => {
     let nuevasSeries = [];
-    rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
-            if (serie>=rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
-                nuevasSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i]);
-            } else {
-                let nuevoRangoDeSeries = [];
-                nuevoRangoDeSeries.push(serie);
-                nuevoRangoDeSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]);
-                nuevasSeries.push(nuevoRangoDeSeries);
-            }
-        })
-        rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
-}
-/*FUNCIONES CALCULOS*/
-
-
-
-
-/*FUNCIONES RENDER TABLA*/
-// CALLBACK - Solo renderiza las tablas.
-// No modifica el array rutina. No borra.
-function crearTablas() {
-    const routineContainer = document.querySelector('.routine-container');
-    
-    rutina.forEach((sesion, i) => {
-    const tablaDeSesion = document.createElement('table')
-    tablaDeSesion.innerHTML = `
-    <caption>${sesion.nombre}</caption>
-        <tr>
-            <th>Ejercicio</th>
-            <th>Cantidad de Series</th>
-            <th>Series Base</th>
-            <th>Pesos Anteriores</th>
-            <th>Series Realizadas</th>
-            <th>Proximas Series</th>
-            <th>Proximos Pesos</th>
-        </tr>
-            `;
-            
-        sesion.ejercicios.forEach((ejercicio, indice) => {
-            
-            let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
-            let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
-            let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ")
-
-            let seriesBaseTD = document.createElement('td')
-            let seriesBaseUL = document.createElement('ul')
-            ejercicio.seriesBase.forEach((serie, i) => {
-            let seriesBaseLI = document.createElement('li')
-            seriesBaseLI.innerText = serie.join(" - ");
-            seriesBaseUL.append(seriesBaseLI);
-            })
-            seriesBaseTD.append(seriesBaseUL)
-
-            let proximasSeriesTD = document.createElement('td')
-            let proximasSeriesUL = document.createElement('ul')
-            ejercicio.proximasSeries.forEach((serie, i) => {
-            let proximasSeriesLI = document.createElement('li')
-            proximasSeriesLI.innerText = serie.join(" - ");
-            proximasSeriesUL.append(proximasSeriesLI);
-            })
-            proximasSeriesTD.append(proximasSeriesUL)
-
-            const nuevoEjercicio = document.createElement('tr')
-            nuevoEjercicio.innerHTML = `
-            <td>${ejercicio.nombre}</td>
-            <td>${ejercicio.seriesBase.length}</td>
-            <td>${ultimosPesosUnidos}</td>
-            <td>${seriesRealizadasUnidas}</td>
-            <td>${proximosPesosUnidos}</td>`
-            nuevoEjercicio.insertBefore(seriesBaseTD, nuevoEjercicio.children[2]);
-            nuevoEjercicio.insertBefore(proximasSeriesTD, nuevoEjercicio.children[5]);
-            tablaDeSesion.append(nuevoEjercicio)
-            
-        })
-        tablaDeSesion.id ="sesion" + (i+1)
-        routineContainer.append(tablaDeSesion);
+    ejercicio.seriesRealizadas.forEach((serie, i) => {
+      if (serie >= ejercicio.seriesBase[i][1]) {
+        nuevasSeries.push(ejercicio.seriesBase[i]);
+      } else {
+        let nuevoRangoDeSeries = [];
+        nuevoRangoDeSeries.push(serie, ejercicio.seriesBase[i][1]);
+        nuevasSeries.push(nuevoRangoDeSeries);
+      }
     });
-};
-  
-
-// CALLBACK
-//Borra visualmente, y renderiza de nuevo todas las tablas.
+    ejercicio.proximasSeries = nuevasSeries;
+  });
+}
+function equipararUltimosPesosConProximosUnicoEjercicio(sesion, ejercicio) {
+  rutina[sesion].ejercicios[ejercicio].ultimosPesos =
+    rutina[sesion].ejercicios[ejercicio].proximosPesos;
+}
+function actualizarPesosUnicoEjercicio(sesion, ejercicio) {
+  let nuevosPesos = [];
+  rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
+    serie >= rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]
+      ? nuevosPesos.push(
+          rutina[sesion].ejercicios[ejercicio].ultimosPesos[i] + 5
+        )
+      : nuevosPesos.push(rutina[sesion].ejercicios[ejercicio].ultimosPesos[i]);
+  });
+  rutina[sesion].ejercicios[ejercicio].proximosPesos = nuevosPesos;
+}
+function actualizarSeriesUnicoEjercicio(sesion, ejercicio) {
+  let nuevasSeries = [];
+  rutina[sesion].ejercicios[ejercicio].seriesRealizadas.forEach((serie, i) => {
+    if (serie >= rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]) {
+      nuevasSeries.push(rutina[sesion].ejercicios[ejercicio].seriesBase[i]);
+    } else {
+      let nuevoRangoDeSeries = [];
+      nuevoRangoDeSeries.push(
+        serie,
+        rutina[sesion].ejercicios[ejercicio].seriesBase[i][1]
+      );
+      nuevasSeries.push(nuevoRangoDeSeries);
+    }
+  });
+  rutina[sesion].ejercicios[ejercicio].proximasSeries = nuevasSeries;
+}
+/*Calc Functions end*/
+// Enable/Disable ExerciseButtons
+function toggleExerciseButtons() {
+  btnGetExercises.disabled = true;
+  btnGetExercises.classList.add("btn--disabled");
+  btnGetExercises.innerText = "Lista obtenida con éxito";
+  btnExerciseQuery.disabled = false;
+  btnExerciseQuery.classList.remove("btn--disabled");
+}
+// Input number tester - function
+function filtrarInput(textbox, inputFilter, errMsg) {
+  [
+    "input",
+    "keydown",
+    "keyup",
+    "mousedown",
+    "mouseup",
+    "select",
+    "contextmenu",
+    "drop",
+    "focusout",
+  ].forEach((event) => {
+    textbox.addEventListener(event, function (e) {
+      if (inputFilter(this.value)) {
+        // Accepted value
+        if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+          this.classList.remove("input-error");
+          this.setCustomValidity("");
+        }
+        this.oldValue = this.value;
+        this.oldSelectionStart = this.selectionStart;
+        this.oldSelectionEnd = this.selectionEnd;
+      } else if (this.hasOwnProperty("oldValue")) {
+        // Rejected value - restore the previous one
+        this.classList.add("input-error");
+        this.setCustomValidity(errMsg);
+        this.reportValidity();
+        this.value = this.oldValue;
+        this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+      } else {
+        // Rejected value - nothing to restore
+        this.value = "";
+      }
+    });
+  });
+}
+// Input number tester - call
+filtrarInput(
+  document.getElementById("inputNumeroEjercicio"),
+  (value) => {
+    return /^\d*\.?\d*$/.test(value); // Allow only numbers
+  },
+  "Recordá ingresar números entre 1 y 1326"
+);
+// Translate API functions & request setup
+//Exercise API
+function buscarDatosEjercicio() {
+  if (inputNumeroEjercicio.value) {
+    idEjercicio = inputNumeroEjercicio.value - 1;
+    ejercicioBuscado = arrayDeEjercicios[parseInt(idEjercicio)];
+    document.querySelector("#nombreDelEjericio").innerText =
+      ejercicioBuscado.name;
+    document.querySelector("#musculoQueInterviene").innerText =
+      ejercicioBuscado.bodyPart;
+    document.querySelector("#elementosAUtilizar").innerText =
+      ejercicioBuscado.equipment;
+    document.querySelector("#zonaAEstimular").innerText =
+      ejercicioBuscado.target;
+    document.querySelector("#gifIndicaciones").src = ejercicioBuscado.gifUrl;
+  } else {
+    translateInputToast.fire();
+  }
+}
+async function requestTranslation() {
+  try {
+    let mensajeATraducir = inputTranslationQuery.value;
+    const encodedParams = new URLSearchParams();
+    encodedParams.append("q", mensajeATraducir);
+    encodedParams.append("target", "es");
+    encodedParams.append("source", "en");
+    const translateOptions = {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "Accept-Encoding": "application/gzip",
+        "X-RapidAPI-Key": "16d40f4cf1mshbf396cd2ab8b39ep14cb87jsnce4b384b8a95",
+        "X-RapidAPI-Host": "google-translate1.p.rapidapi.com",
+      },
+      body: encodedParams,
+    };
+    const traduccionObj = await fetch(
+      "https://google-translate1.p.rapidapi.com/language/translate/v2",
+      translateOptions
+    );
+    const data = await traduccionObj.json();
+    let traduccion = data.data.translations[0].translatedText;
+    document.querySelector("#translation-result").innerText = `"${traduccion}"`;
+  } catch {
+    (err) => console.error(err);
+  }
+}
+//Table render functions
+// Tables, visual refresh
 function reemplazarSesiones() {
-    borrarTablas()
-    crearTablas()
+  borrarTablas();
+  crearTablas();
 }
-
-//Borra del array. Actualiza storage. No renderiza
-// NO BUTTON - CALLBACK  de borrarRutina()
-//Solamente borra visualmente las tablas.
+//Tables delete
 function borrarTablas() {
-    const todasLasTablas = document.querySelectorAll('table');
-    todasLasTablas.forEach((table) => {
-        table.remove()
-    });
+  const todasLasTablas = document.querySelectorAll(".session-container");
+  todasLasTablas.forEach((table) => {
+    table.remove();
+  });
 }
-function borrarRutina() {
-    rutina = [];
-    localStorage.removeItem('rutina');
-    borrarTablas();            
-};
-
-
-    
+//Table create
+function crearTablas() {
+  rutina.forEach((sesion, i) => {
+    //each session --> title(caption) + body
+    let nuevaSesionDiv = document.createElement('div'); 
+    nuevaSesionDiv.setAttribute('class', `session-container session-${i+1}`);
+    const caption = document.createElement('div')
+    caption.innerHTML = `${sesion.nombre}`
+    caption.setAttribute ('class', `session${i+1}__header session__header`)
+    nuevaSesionDiv.append(caption);
+    //each body with 7 columns. Each column --> a div with flex-d column
+    let exerciseBodyDiv = document.createElement('div');
+    exerciseBodyDiv.setAttribute('class', `session${i+1}__body session__body`)
+    let arrayDeHeaders = ['Ejercicio', 'Cantidad de Series', 'Series Base', 'Pesos Anteriores', 'Series Realizadas', 'Proximas Series', 'Proximos Pesos'];
+    arrayDeHeaders.forEach((header, index) => {
+      let nuevoHeaderDiv = document.createElement('div');
+      nuevoHeaderDiv.innerHTML = `<div class='session__column-cell session__column-header session__column-header${index+1}'>${header}</div>`;
+      nuevoHeaderDiv.setAttribute('class', `session${i+1}__column-${index+1} session__column session__column${index+1}`);
+      exerciseBodyDiv.append(nuevoHeaderDiv);
+    })
+    nuevaSesionDiv.append(exerciseBodyDiv);
+    document.querySelector(".routine-container").append(nuevaSesionDiv);
+    sesion.ejercicios.forEach((ejercicio, indice) => {
+      //formatting future innert Texts
+      let ultimosPesosUnidos = ejercicio.ultimosPesos.join(" - ");
+      let seriesRealizadasUnidas = ejercicio.seriesRealizadas.join(" - ");
+      let proximosPesosUnidos = ejercicio.proximosPesos.join(" - ");
+      // li into ul only for specific cases
+      let seriesBaseUL = document.createElement("div");
+      ejercicio.seriesBase.forEach((serie, i) => {
+        let seriesBaseLI = document.createElement("p");
+        seriesBaseLI.innerText = serie.join(" - ");
+        seriesBaseUL.append(seriesBaseLI);
+      });
+      let proximasSeriesUL = document.createElement("div");
+      ejercicio.proximasSeries.forEach((serie, i) => {
+        let proximasSeriesLI = document.createElement("p");
+        proximasSeriesLI.innerText = serie.join(" - ");
+        proximasSeriesUL.append(proximasSeriesLI);
+      });
+      //finally every feature into a div. That div into proper column
+      let caracteristicas = [ejercicio.nombre, ejercicio.seriesBase.length, seriesBaseUL.innerHTML, ultimosPesosUnidos, seriesRealizadasUnidas, proximasSeriesUL.innerHTML, proximosPesosUnidos]; 
+      caracteristicas.forEach((caracteristica, index) => {
+        let caracteristicaDiv = document.createElement('div');
+        caracteristicaDiv.setAttribute('class','session__column-cell session__column-data');
+        caracteristicaDiv.innerHTML = `${caracteristica}`;
+        let columnaCorrespondiente = document.querySelector(`.session${i+1}__column-${index+1}`)
+        columnaCorrespondiente.append(caracteristicaDiv)
+      })
+    });
+  });
+}
