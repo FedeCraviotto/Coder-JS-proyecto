@@ -444,7 +444,7 @@ btnAgregarEjercicio.addEventListener("click", () => {
       await progressPopup
         .fire({
           title: `Ingrese cantidad de series para el ejercicio ${nuevoEjercicio.nombre}`,
-          html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Ingresa cantidad de series">`,
+          html: `<input type="text" id="seriesEjercicio" class="swal2-input" placeholder="Cantidad de series">`,
           preConfirm: () => {
             let cantSeries = parseInt(
               Swal.getPopup().querySelector(`#seriesEjercicio`).value
@@ -645,7 +645,7 @@ btnAnotarRepsSesion.addEventListener("click", () => {
               title: `${rutina[indiceDeSesion].ejercicios[i].nombre} - Serie ${
                 j + 1
               } - Reps Realizadas`,
-              html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+              html: `<input type="text" id="cantReps" class="swal2-input" placeholder="Cantidad de Repeticiones">`,
               preConfirm: () => {
                 const cantReps = parseInt(
                   Swal.getPopup().querySelector("#cantReps").value
@@ -712,7 +712,7 @@ btnAnotarRepsUno.addEventListener("click", () => {
             title: `${
               rutina[indiceDeSesion].ejercicios[indiceDeEjercicio].nombre
             } - Serie ${i + 1} - Reps Realizadas`,
-            html: `<input type="text" id="cantReps" class="swal2-input" placeholder="cantReps">`,
+            html: `<input type="text" id="cantReps" class="swal2-input" placeholder="Cantidad de repeticiones">`,
             preConfirm: () => {
               const cantReps = parseInt(
                 Swal.getPopup().querySelector("#cantReps").value
@@ -841,7 +841,7 @@ btnEliminarEjercicio.addEventListener("click", () => {
       title:
         "Ingrese el nombre de la Sesión a la que pertenece el ejercicio que quiere borrar, y luego el nombre del ejercicio a eliminar",
       html: `<input type="text "class="swal2-input" id="nombreDeSesion" placeholder="Nombre de Sesión" ></input>
-    <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="nombreDeEjercicio" ></input>`,
+    <input type="text "class="swal2-input" id="nombreDeEjercicio" placeholder="Nombre del Ejercicio" ></input>`,
       preConfirm: () => {
         const nombreDeSesion =
           Swal.getPopup().querySelector("#nombreDeSesion").value;
@@ -866,7 +866,7 @@ const btnBorrarRutina = document.querySelector(".btn-borrarRutina");
 btnBorrarRutina.addEventListener("click", () => {
   Swal.fire({
     title: "Atención - Confirma borrado",
-    text: "Una vez que elmines la rutina completa no podrás revertir este paso",
+    text: "Una vez que elimines la rutina completa no podrás revertir este paso",
     icon: "warning",
     confirmButtonColor: "#3085d6",
     showCancelButton: true,
