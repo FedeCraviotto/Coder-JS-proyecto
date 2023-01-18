@@ -1,4 +1,6 @@
-# Coder-JS-proyecto
+## Coder-JS-proyecto
+
+#### Proximamente adaptación al MERN stack
 "RutinApp" - Cuaderno de rutina de entrenamiento para el Gimnasio
 Conocimientos implementados / a implementar
 • Arrays, Objetos, Funciones, DOM, Eventos, Storage & JSON
